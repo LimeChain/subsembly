@@ -1,0 +1,35 @@
+{
+  "name": "subsembly-template",
+  "version": "1.0.0",
+  "description": "Template for Subsembly",
+  "main": "index.js",
+  "scripts": {
+    "test": "asc test",
+    "asbuild:untouched": "asc assembly/index.ts -b build/runtime-untouched.wasm -t build/runtime-untouched.wat --runtime half --memoryBase=16777216 --importMemory --noAssert --use abort=",
+    "asbuild:optimized": "asc assembly/index.ts -b build/runtime-optimized.wasm -t build/runtime-optimized.wat --runtime half --memoryBase=16777216 --importMemory --noAssert --optimize --use abort=",
+    "build": "npm run asbuild:optimized && node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/limechain/subsembly-template.git"
+  },
+  "keywords": [
+    "substrate",
+    "assemblyscript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/limechain/subsembly-template/issues"
+  },
+  "homepage": "https://github.com/limechain/subsembly-template#readme",
+  "dependencies": {
+    "@assemblyscript/loader": "^0.16.1",
+    "as-bignum": "^0.2.6",
+    "install": "^0.13.0",
+    "npm": "^6.14.8"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.16.1"
+  }
+}
