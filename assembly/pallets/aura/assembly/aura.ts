@@ -1,4 +1,4 @@
-import { Timestamp } from "subsembly-core";
+import { Timestamp } from "../..";
 import { Storage } from "subsembly-core";
 import { InherentData, Option } from "subsembly-core";
 import { ByteArray, UInt64 } from 'as-scale-codec';

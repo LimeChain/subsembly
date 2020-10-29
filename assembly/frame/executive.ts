@@ -1,16 +1,17 @@
 import { 
     Header, IHeader,
-    IBlock, IExtrinsic, ISignedTransaction,
-    InherentData, SignedTransaction,
+    IBlock, IExtrinsic,
+    InherentData, ISignedTransaction,
     Extrinsic, Inherent, DecodedData,
     ValidTransaction, TransactionTag, ResponseCodes,
-    ExtrinsicType, AccountId
+    ExtrinsicType, AccountId, Signature, IInherent
 } from 'subsembly-core';
-import { Timestamp, Aura,  Balances } from 'subsembly-core';
+import { Timestamp, Aura,  Balances } from '../pallets';
 import { Utils } from 'subsembly-core';
 import { CompactInt, Bool, UInt64, Bytes, Hash } from 'as-scale-codec';
 import { Log, Crypto } from 'subsembly-core';
 import { System } from './system';
+
 import { HashType, HeaderType, BlockNumber } from '../runtime/runtime';
 
 export namespace Executive{
@@ -70,7 +71,7 @@ export namespace Executive{
      * Finalize the block - it is up the caller to ensure that all header fields are valid
 	 * except state-root.
      */
-    export function finalizeBlock(): Header {
+    export function finalizeBlock(): IHeader {
         System.noteFinishedExtrinsics();
         System.computeExtrinsicsRoot();
         return System.finalize() as Header;
@@ -80,7 +81,7 @@ export namespace Executive{
      * @param data inherents
      */
     export function createExtrinsics(data: InherentData): u8[] {
-        const timestamp: Inherent = Timestamp.createInherent(data);
+        const timestamp: IInherent = Timestamp.createInherent(data);
         const aura = Aura.createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
     }
@@ -109,10 +110,10 @@ export namespace Executive{
         const extrinsic: DecodedData<IExtrinsic> = Extrinsic.fromU8Array(ext);
 
         if(Extrinsic.isInherent(extrinsic.getResult())){
-            const inherent: Inherent = <Inherent>extrinsic.getResult();
+            const inherent: IInherent = <IInherent>extrinsic.getResult();
             return Timestamp.applyInherent(inherent);
         }
-        const signedTransaction: SignedTransaction = <SignedTransaction>extrinsic.getResult();
+        const signedTransaction: ISignedTransaction = <ISignedTransaction>extrinsic.getResult();
         return Balances.applyExtrinsic(signedTransaction);
     }
 
@@ -136,7 +137,7 @@ export namespace Executive{
         const from: AccountId = AccountId.fromU8Array(utx.getFrom().toU8a()).getResult();
         const transfer = utx.getTransferBytes();
 
-        if(!Crypto.verifySignature(utx.getSignature(), transfer, from)){
+        if(!Crypto.verifySignature(<Signature>utx.getSignature(), transfer, from)){
             Log.error("Validation error: Invalid signature");
             return ResponseCodes.INVALID_SIGNATURE;
         }   
@@ -145,7 +146,7 @@ export namespace Executive{
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }
-        const validated = Balances.validateTransaction(utx);
+        const validated = Balances.validateTransaction(<ISignedTransaction>utx);
         if(!validated.valid){
             Log.error(validated.message);
             return validated.error;

@@ -2,7 +2,6 @@ import { CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import { Block, DigestItem, Header, RuntimeVersion, Signature, SupportedAPIs } from "subsembly-core";
 import { AccountId } from "subsembly-core";
 
-
 /**
  * General Runtime types
  */

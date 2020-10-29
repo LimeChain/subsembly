@@ -1,4 +1,4 @@
-import { Storage, Log } from 'subsembly-core';
+import { Storage, Log, IInherent } from 'subsembly-core';
 import { InherentData, Inherent, ResponseCodes } from 'subsembly-core';
 import { Utils } from "subsembly-core";
 import { UInt64, Bool, ByteArray } from 'as-scale-codec';
@@ -89,7 +89,7 @@ export class Timestamp{
      * Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: InherentData): Inherent {
+    static createInherent(data: InherentData): IInherent {
         const timestampData: UInt64 = UInt64.fromU8a(extractInherentData(data).values);
         let nextTime = timestampData;
         if(Timestamp.get().value){
@@ -129,8 +129,8 @@ export class Timestamp{
      * 
      * @param inherent 
      */
-    static applyInherent(inherent: Inherent): u8[] {
-        const resCode = Timestamp.set(inherent.arg.value);
+    static applyInherent(inherent: IInherent): u8[] {
+        const resCode = Timestamp.set((<UInt64>inherent.getArgument()).value);
         if(Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)){
             Timestamp.toggleUpdate();
         }

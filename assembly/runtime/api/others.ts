@@ -2,8 +2,8 @@
  * The rest of runtime entries for the Polkadot Host
  * These methods are mocked for this iteration and they return an empty u8 array by default
  */
-import {Serialiser} from "subsembly-core";
-import { Extrinsic, SignedTransaction, AccountId, ISignedTransaction } from 'subsembly-core';
+import { Serialiser, SignedTransaction } from "subsembly-core";
+import { Extrinsic, AccountId, ISignedTransaction } from 'subsembly-core';
 import { Executive, System } from "../../frame";
 
 /**
@@ -33,10 +33,10 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  * len + source + ext
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
-    let input = Serialiser.deserialiseInput(data, len);
-    const uxt = Extrinsic.fromU8Array(input);
-    const result = Executive.validateTransaction(<ISignedTransaction>uxt.getResult());
-    return Serialiser.serialiseResult(result);
+    // let input = Serialiser.deserialiseInput(data, len);
+    // const uxt = Extrinsic.fromU8Array(input);
+    // const result = Executive.validateTransaction(<ISignedTransaction>uxt.getResult());
+    return Serialiser.serialiseResult([]);
 }
 
 /**

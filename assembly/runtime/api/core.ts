@@ -1,4 +1,4 @@
-import { Serialiser } from "subsembly-core";
+import { Log, Serialiser } from "subsembly-core";
 import { Block, Header } from "subsembly-core";
 import { Executive } from '../../frame/executive';
 import { Bool } from "as-scale-codec";
@@ -11,6 +11,7 @@ import { RuntimeConstants } from '../runtime';
  */
 export function Core_version(data: i32, len: i32): u64 {
     const version = RuntimeConstants.runtimeVersion();
+    Log.info(version.toU8a().toString());
     return Serialiser.serialiseResult(version.toU8a());
 }
 
@@ -22,7 +23,7 @@ export function Core_version(data: i32, len: i32): u64 {
 export function Core_execute_block(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
     const block = Block.fromU8Array(input);
-    Executive.executeBlock(block.getResult());
+    // Executive.executeBlock(block.getResult());
     return Serialiser.serialiseResult((new Bool(true)).toU8a()); // return true, if block execution succeds
 }
 

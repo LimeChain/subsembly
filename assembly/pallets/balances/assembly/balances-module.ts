@@ -1,6 +1,6 @@
-import { AccountData, AccountId, SignedTransaction, TransactionValidity, ResponseCodes } from 'subsembly-core';
+import { AccountData, AccountId, ISignedTransaction, TransactionValidity, ResponseCodes } from 'subsembly-core';
 import { Storage, Log} from "subsembly-core";
-import { ByteArray, UInt128 } from "as-scale-codec";
+import { ByteArray, UInt128, UInt64 } from "as-scale-codec";
 import { u128 } from "as-bignum";
 import { System } from "../../../frame";
 
@@ -9,7 +9,7 @@ import { System } from "../../../frame";
  * Used for account balance manipulation such as:
  *  - Getting and setting free/reserved balances
  */
-export class BalancesModule {
+export class Balances {
 
     /**
      * Returns AccountData for a given AccountId
@@ -62,26 +62,26 @@ export class BalancesModule {
      * Apply extrinsic for the module
      * @param extrinsic 
      */
-    static applyExtrinsic(extrinsic: SignedTransaction): u8[]{
-        const sender: AccountId = AccountId.fromU8Array(extrinsic.from.toU8a()).getResult();
-        const receiver: AccountId = AccountId.fromU8Array(extrinsic.to.toU8a()).getResult();
+    static applyExtrinsic(extrinsic: ISignedTransaction): u8[]{
+        const sender: AccountId = AccountId.fromU8Array(extrinsic.getFrom().toU8a()).getResult();
+        const receiver: AccountId = AccountId.fromU8Array(extrinsic.getTo().toU8a()).getResult();
         const validated = this.validateTransaction(extrinsic);
         if(!validated.valid){
             Log.error(validated.message);
             return validated.error;
         }
-        this.transfer(sender, receiver, extrinsic.amount.value);
+        this.transfer(sender, receiver, (<UInt64>extrinsic.getAmount()).value);
         return ResponseCodes.SUCCESS;
     }
 
     /**
      * 
      */
-    static validateTransaction(extrinsic: SignedTransaction): TransactionValidity{
-        const from: AccountId = AccountId.fromU8Array(extrinsic.from.toU8a()).getResult();
-        const fromBalance = BalancesModule.getAccountData(from);
+    static validateTransaction(extrinsic: ISignedTransaction): TransactionValidity{
+        const from: AccountId = AccountId.fromU8Array(extrinsic.getFrom().toU8a()).getResult();
+        const fromBalance = Balances.getAccountData(from);
         const balance: UInt128 = fromBalance.getFree();
-        if(balance.value < u128.fromU64(extrinsic.amount.value)){
+        if(balance.value < u128.fromU64((<UInt64>extrinsic.getAmount()).value)){
             return new TransactionValidity(
                 false,
                 ResponseCodes.INSUFFICIENT_BALANCE,
