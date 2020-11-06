@@ -1,4 +1,4 @@
-import { CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import { Codec, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import { Block, DigestItem, Header, RuntimeVersion, Signature, SupportedAPIs } from "subsembly-core";
 import { AccountId } from "subsembly-core";
 
@@ -14,6 +14,8 @@ export type Balance = UInt128;
 export type HeaderType = Header;
 export type BlockType = Block;
 export type Moment = UInt64;
+
+declare type Sometype = Codec;
 
 export class RuntimeConstants {
     /**

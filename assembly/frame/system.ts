@@ -1,4 +1,4 @@
-import { CompactInt, ByteArray, Bytes, UInt64, UInt32, Hash } from 'as-scale-codec';
+import { CompactInt, ByteArray, Bytes, UInt64, UInt32, Hash, Int16 } from 'as-scale-codec';
 import { Storage, Log} from 'subsembly-core';
 import { ext_trie_blake2_256_ordered_root_version_1 } from 'subsembly-core';
 import { Header, ExtrinsicData, IHeader,AccountId } from 'subsembly-core';
@@ -66,7 +66,7 @@ export class System {
     Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
     const cmpNumber: BlockNumber = <BlockNumber>header.getNumber();
     const blockNumber: CompactInt = new CompactInt(cmpNumber.value - 1);
-    this.setHashAtBlock(blockNumber, <Hash>header.getParentHash());
+    this.setHashAtBlock(blockNumber, <HashType>header.getParentHash());
 }
     /**
      * Remove temporary "environment" entries in storage and finalize block

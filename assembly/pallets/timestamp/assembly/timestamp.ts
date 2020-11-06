@@ -1,4 +1,4 @@
-import { Storage, Log, IInherent } from 'subsembly-core';
+import { Storage, Log, IInherent, IExtrinsic } from 'subsembly-core';
 import { InherentData, Inherent, ResponseCodes } from 'subsembly-core';
 import { Utils } from "subsembly-core";
 import { UInt64, Bool, ByteArray } from 'as-scale-codec';
@@ -89,7 +89,7 @@ export class Timestamp{
      * Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: InherentData): IInherent {
+    static createInherent(data: InherentData): IExtrinsic {
         const timestampData: UInt64 = UInt64.fromU8a(extractInherentData(data).values);
         let nextTime = timestampData;
         if(Timestamp.get().value){

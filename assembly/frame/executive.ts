@@ -4,13 +4,13 @@ import {
     InherentData, ISignedTransaction,
     Extrinsic, Inherent, DecodedData,
     ValidTransaction, TransactionTag, ResponseCodes,
-    ExtrinsicType, AccountId, Signature, IInherent
+    ExtrinsicType, AccountId, Signature, IInherent, SignedTransaction
 } from 'subsembly-core';
 import { Timestamp, Aura,  Balances } from '../pallets';
 import { Utils } from 'subsembly-core';
 import { CompactInt, Bool, UInt64, Bytes, Hash } from 'as-scale-codec';
 import { Log, Crypto } from 'subsembly-core';
-import { System } from './system';
+import { System } from './system';      
 
 import { HashType, HeaderType, BlockNumber } from '../runtime/runtime';
 
@@ -81,7 +81,7 @@ export namespace Executive{
      * @param data inherents
      */
     export function createExtrinsics(data: InherentData): u8[] {
-        const timestamp: IInherent = Timestamp.createInherent(data);
+        const timestamp: IExtrinsic = Timestamp.createInherent(data);
         const aura = Aura.createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
     }
@@ -110,11 +110,11 @@ export namespace Executive{
         const extrinsic: DecodedData<IExtrinsic> = Extrinsic.fromU8Array(ext);
 
         if(Extrinsic.isInherent(extrinsic.getResult())){
-            const inherent: IInherent = <IInherent>extrinsic.getResult();
-            return Timestamp.applyInherent(inherent);
+            const inherent: IExtrinsic = <IExtrinsic>extrinsic.getResult();
+            return Timestamp.applyInherent(<Inherent>inherent);
         }
-        const signedTransaction: ISignedTransaction = <ISignedTransaction>extrinsic.getResult();
-        return Balances.applyExtrinsic(signedTransaction);
+        const signedTransaction: IExtrinsic = <IExtrinsic>extrinsic.getResult();
+        return Balances.applyExtrinsic(<SignedTransaction>signedTransaction);
     }
 
     /**
