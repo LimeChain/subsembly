@@ -2,8 +2,9 @@
  * The rest of runtime entries for the Polkadot Host
  * These methods are mocked for this iteration and they return an empty u8 array by default
  */
-import { Serialiser, SignedTransaction } from "subsembly-core";
-import { Extrinsic, AccountId, ISignedTransaction } from 'subsembly-core';
+import { BytesReader } from "as-scale-codec";
+import { Log, Serialiser, SignedTransaction } from "subsembly-core";
+import { AccountId } from 'subsembly-core';
 import { Executive, System } from "../../frame";
 
 /**
@@ -33,10 +34,12 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  * len + source + ext
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
-    // let input = Serialiser.deserialiseInput(data, len);
-    // const uxt = Extrinsic.fromU8Array(input);
-    // const result = Executive.validateTransaction(<ISignedTransaction>uxt.getResult());
-    return Serialiser.serialiseResult([]);
+    let input = Serialiser.deserialiseInput(data, len);
+    Log.info("Incoming tx: " + input.toString());
+    const uxt = BytesReader.decodeInto<SignedTransaction>(input);
+    Log.info("Decoded tx: " + uxt.toU8a().toString());
+    const result = Executive.validateTransaction(uxt);
+    return Serialiser.serialiseResult(result);
 }
 
 /**
@@ -64,7 +67,7 @@ export function Metadata_metadata(data: i32, len: i32): u64 {
  */
 export function System_account_nonce(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const who = AccountId.fromU8Array(input).getResult();
+    const who = BytesReader.decodeInto<AccountId>(input);
     const nonce = System.accountNonce(who);
     return Serialiser.serialiseResult(nonce.toU8a());
 }

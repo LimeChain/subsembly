@@ -1,7 +1,8 @@
-import { Storage, Log, IInherent, IExtrinsic } from 'subsembly-core';
+import { Storage, Log, IInherent } from 'subsembly-core';
 import { InherentData, Inherent, ResponseCodes } from 'subsembly-core';
 import { Utils } from "subsembly-core";
-import { UInt64, Bool, ByteArray } from 'as-scale-codec';
+import { UInt64, Bool, ByteArray, BytesReader } from 'as-scale-codec';
+import { Moment } from '../../../runtime/runtime';
 
 export class Timestamp{
 
@@ -63,13 +64,13 @@ export class Timestamp{
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        const prev: UInt64 = Timestamp.get();
+        const prev: Moment = Timestamp.get();
         if(now < prev.value + Timestamp.MINIMUM_PERIOD){
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
 
-        const nowu8 = new UInt64(now);
+        const nowu8 = instantiate<Moment>(now);
         const trueu8 = new Bool(true);
         Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, trueu8.toU8a());
         Storage.set(Timestamp.SCALE_TIMESTAMP_NOW, nowu8.toU8a());
@@ -80,21 +81,21 @@ export class Timestamp{
      *  Gets the current time that was set. If this function is called prior 
      *  to setting the timestamp, it will return the timestamp of the previous block.
      */
-    static get(): UInt64 {
+    static get(): Moment {
         const now = Storage.get(Timestamp.SCALE_TIMESTAMP_NOW);
-        return now.isSome() ? UInt64.fromU8a((<ByteArray>now.unwrap()).values) : new UInt64(0);
+        return now.isSome() ? BytesReader.decodeInto<Moment>((<ByteArray>now.unwrap()).values) : instantiate<Moment>(0);
     }
 
     /**
      * Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: InherentData): IExtrinsic {
-        const timestampData: UInt64 = UInt64.fromU8a(extractInherentData(data).values);
+    static createInherent(data: InherentData): Inherent {
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(extractInherentData(data).values);
         let nextTime = timestampData;
         if(Timestamp.get().value){
             let nextTimeValue = <u64>(Math.max(<f64>timestampData.value, <f64>(Timestamp.get().value + Timestamp.MINIMUM_PERIOD)));
-            nextTime = new UInt64(nextTimeValue);
+            nextTime = instantiate<Moment>(nextTimeValue);
         }
         const inherent = new Inherent(
             Timestamp.CALL_INDEX, 
@@ -112,7 +113,7 @@ export class Timestamp{
      */
     static checkInherent(t: u64, data: InherentData): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: u64 = 30 * 1000;
-        const timestampData: UInt64 = UInt64.fromU8a(extractInherentData(data).values);
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(extractInherentData(data).values);
         const minimum: u64 = Timestamp.get().value + Timestamp.MINIMUM_PERIOD;
         if (t > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS){
             return false;
@@ -130,7 +131,7 @@ export class Timestamp{
      * @param inherent 
      */
     static applyInherent(inherent: IInherent): u8[] {
-        const resCode = Timestamp.set((<UInt64>inherent.getArgument()).value);
+        const resCode = Timestamp.set((<Moment>inherent.getArgument()).value);
         if(Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)){
             Timestamp.toggleUpdate();
         }

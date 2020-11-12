@@ -1,4 +1,4 @@
-import { Serialiser } from 'subsembly-core';
+import { Log, Serialiser } from 'subsembly-core';
 import { InherentData } from 'subsembly-core';
 import { Executive } from '../../frame/executive';
 import { Bool } from 'as-scale-codec';
@@ -10,8 +10,8 @@ import { Bool } from 'as-scale-codec';
  */
 export function BlockBuilder_apply_extrinsic(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const applyExtResult = Executive.applyExtrinsic(input);
-    return Serialiser.serialiseResult(applyExtResult);
+    const result = Executive.applyExtrinsic(input);
+    return Serialiser.serialiseResult(result);
 }
 
 /**

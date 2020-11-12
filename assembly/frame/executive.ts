@@ -8,18 +8,18 @@ import {
 } from 'subsembly-core';
 import { Timestamp, Aura,  Balances } from '../pallets';
 import { Utils } from 'subsembly-core';
-import { CompactInt, Bool, UInt64, Bytes, Hash } from 'as-scale-codec';
+import { CompactInt, Bool, UInt64, Bytes, Hash, BytesReader } from 'as-scale-codec';
 import { Log, Crypto } from 'subsembly-core';
-import { System } from './system';      
+import { System } from './system';
 
-import { HashType, HeaderType, BlockNumber } from '../runtime/runtime';
+import { HashType, HeaderType, BlockNumber, BlockType } from '../runtime/runtime';
 
 export namespace Executive{
     /**
      * Calls the System function initializeBlock()
      * @param header Header instance
      */
-    export function initializeBlock(header: IHeader): void{
+    export function initializeBlock(header: HeaderType): void{
         System.initialize(header);
     }
 
@@ -27,7 +27,7 @@ export namespace Executive{
      * Performs necessary checks for Block execution
      * @param block Block instance
      */
-    export function initialChecks(block: IBlock): void{
+    export function initialChecks(block: BlockType): void{
         let header = <HeaderType>block.getHeader();
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
@@ -54,34 +54,32 @@ export namespace Executive{
         }
     }
 
-
-
     /**
      * Actually execute all transactions for Block
      * @param block Block instance
      */
-    export function executeBlock(block: IBlock): void{
-        Executive.initializeBlock(block.getHeader());
+    export function executeBlock(block: BlockType): void{
+        Executive.initializeBlock(<HeaderType>block.getHeader());
         Executive.initialChecks(block);
 
         Executive.executeExtrinsicsWithBookKeeping(block.getExtrinsics());
-        Executive.finalChecks(block.getHeader());
+        Executive.finalChecks(<HeaderType>block.getHeader());
     }
     /**
      * Finalize the block - it is up the caller to ensure that all header fields are valid
 	 * except state-root.
      */
-    export function finalizeBlock(): IHeader {
+    export function finalizeBlock(): HeaderType {
         System.noteFinishedExtrinsics();
         System.computeExtrinsicsRoot();
-        return System.finalize() as Header;
+        return System.finalize() as HeaderType;
     }
     /**
      * creates inherents from internal modules
      * @param data inherents
      */
     export function createExtrinsics(data: InherentData): u8[] {
-        const timestamp: IExtrinsic = Timestamp.createInherent(data);
+        const timestamp: Inherent = Timestamp.createInherent(data);
         const aura = Aura.createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
     }
@@ -91,7 +89,7 @@ export namespace Executive{
      * @param ext extrinsic
      */
     export function applyExtrinsic(ext: u8[]): u8[] {
-        const encodedLen = Bytes.decodeCompactInt(ext);
+        const encodedLen = BytesReader.decodeInto<CompactInt>(ext);
         const result = Executive.applyExtrinsicWithLen(ext, encodedLen.value as u32);
         // if applying extrinsic succeeded, notify System about it
         if(Utils.areArraysEqual(result, ResponseCodes.SUCCESS)){
@@ -107,14 +105,19 @@ export namespace Executive{
      * @param encoded encoded extrinsic
      */
     export function applyExtrinsicWithLen(ext: u8[], encodedLen: u32): u8[]{
-        const extrinsic: DecodedData<IExtrinsic> = Extrinsic.fromU8Array(ext);
-
-        if(Extrinsic.isInherent(extrinsic.getResult())){
-            const inherent: IExtrinsic = <IExtrinsic>extrinsic.getResult();
-            return Timestamp.applyInherent(<Inherent>inherent);
+        switch(encodedLen){
+            case ExtrinsicType.Inherent:{
+                const inherent: IInherent = BytesReader.decodeInto<Inherent>(ext);
+                return Timestamp.applyInherent(<Inherent>inherent)
+            }
+            case ExtrinsicType.SignedTransaction:{
+                const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransaction>(ext);
+                return Balances.applyExtrinsic(<SignedTransaction>signedTransaction);
+            }
+            default:{
+                return ResponseCodes.CALL_ERROR;
+            }
         }
-        const signedTransaction: IExtrinsic = <IExtrinsic>extrinsic.getResult();
-        return Balances.applyExtrinsic(<SignedTransaction>signedTransaction);
     }
 
     /**
@@ -134,9 +137,11 @@ export namespace Executive{
      * @param utx transaction
      */
     export function validateTransaction(utx: ISignedTransaction): u8[] {
-        const from: AccountId = AccountId.fromU8Array(utx.getFrom().toU8a()).getResult();
+        const from: AccountId = BytesReader.decodeInto<AccountId>(utx.getFrom().toU8a());
         const transfer = utx.getTransferBytes();
+        Log.info("tx bytes: " + transfer.toString());
 
+        Log.info("Signature: " + utx.getSignature().toU8a().toString());
         if(!Crypto.verifySignature(<Signature>utx.getSignature(), transfer, from)){
             Log.error("Validation error: Invalid signature");
             return ResponseCodes.INVALID_SIGNATURE;

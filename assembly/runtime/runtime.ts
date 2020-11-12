@@ -14,35 +14,15 @@ export type Balance = UInt128;
 export type HeaderType = Header;
 export type BlockType = Block;
 export type Moment = UInt64;
-
-declare type Sometype = Codec;
+export type NonceType = UInt64;
+export type BlockHashType = UInt32;
+export type ExtrinsicIndex = UInt32;
 
 export class RuntimeConstants {
     /**
      * Instanciates new RuntimeVersion Configration
     */
-    static runtimeVersion(): RuntimeVersion{
-        const SPEC_NAME: string = "node-template";
-        const IMPL_NAME: string = "AssemblyScript"
-        const AUTHORING_VERSION: u32 = 1;
-        const SPEC_VERSION: u32 = 1;
-        const IMPL_VERSION: u32 = 1;
 
-        const APIS_VEC: SupportedAPIs = new SupportedAPIs();
-        APIS_VEC.addAPI([1, 1, 1, 1, 1, 1, 1, 1], 10);
-        
-        const TRANSACTION_VERSION: u32 = 1;
-
-        return new RuntimeVersion(
-            SPEC_NAME,
-            IMPL_NAME,
-            AUTHORING_VERSION,
-            SPEC_VERSION,
-            IMPL_VERSION,
-            APIS_VEC,
-            TRANSACTION_VERSION
-        );
-    };
 
     static blockHashCount(): UInt32{
         return new UInt32(1000);
@@ -54,3 +34,26 @@ export class TimestampTypes{
         return 5000;
     }
 }
+
+export function runtimeVersion(): RuntimeVersion{
+    const SPEC_NAME: string = "node-template";
+    const IMPL_NAME: string = "AssemblyScript"
+    const AUTHORING_VERSION: u32 = 1;
+    const SPEC_VERSION: u32 = 1;
+    const IMPL_VERSION: u32 = 1;
+
+    const APIS_VEC: SupportedAPIs = new SupportedAPIs();
+    APIS_VEC.addAPI([1, 1, 1, 1, 1, 1, 1, 1], 10);
+    
+    const TRANSACTION_VERSION: u32 = 1;
+
+    return new RuntimeVersion(
+        SPEC_NAME,
+        IMPL_NAME,
+        AUTHORING_VERSION,
+        SPEC_VERSION,
+        IMPL_VERSION,
+        APIS_VEC,
+        TRANSACTION_VERSION
+    );
+};

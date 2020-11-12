@@ -1,8 +1,8 @@
 import { Log, Serialiser } from "subsembly-core";
 import { Block, Header } from "subsembly-core";
 import { Executive } from '../../frame/executive';
-import { Bool } from "as-scale-codec";
-import { RuntimeConstants } from '../runtime';
+import { Bool, BytesReader } from "as-scale-codec";
+import { runtimeVersion } from '../runtime';
 
 /**
  * Returns the version data encoded in ABI format as per the specification
@@ -10,8 +10,8 @@ import { RuntimeConstants } from '../runtime';
  * @param len - i32 length (in bytes) of the arguments passed
  */
 export function Core_version(data: i32, len: i32): u64 {
-    const version = RuntimeConstants.runtimeVersion();
-    Log.info(version.toU8a().toString());
+    Log.info("Calling runtime version: " + runtimeVersion().toU8a().toString());
+    const version = runtimeVersion();
     return Serialiser.serialiseResult(version.toU8a());
 }
 
@@ -22,8 +22,8 @@ export function Core_version(data: i32, len: i32): u64 {
  */
 export function Core_execute_block(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const block = Block.fromU8Array(input);
-    // Executive.executeBlock(block.getResult());
+    const block = BytesReader.decodeInto<Block>(input);
+    Executive.executeBlock(block);
     return Serialiser.serialiseResult((new Bool(true)).toU8a()); // return true, if block execution succeds
 }
 
@@ -35,7 +35,7 @@ export function Core_execute_block(data: i32, len: i32): u64 {
 
 export function Core_initialize_block(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const header = Header.fromU8Array(input);
-    Executive.initializeBlock(header.getResult());
+    const header = BytesReader.decodeInto<Header>(input);
+    Executive.initializeBlock(header);
     return Serialiser.serialiseResult([]);
 }

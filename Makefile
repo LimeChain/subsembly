@@ -18,6 +18,7 @@ generate_chain_spec: build_runtime
 # Run Docker container in a detached mode
 run-node:
 	@echo "Running the container in detached mode"
+	@bash compile.sh
 	@docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpecRaw.json":/customSpecRaw.json $(DOCKER_IMAGE)
 
 # Insert the Aura keys and re-attach the container to the shell

@@ -26,7 +26,7 @@
   "dependencies": {
     "@assemblyscript/loader": "^0.16.1",
     "as-bignum": "^0.2.6",
-    "as-scale-codec": "^0.1.1",
+    "as-scale-codec": "^0.2.0",
     "subsembly-core": "link:1.0.0"
   },
   "devDependencies": {
