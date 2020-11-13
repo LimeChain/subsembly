@@ -7,7 +7,7 @@ The project is funded by [Web3 Foundation](https://web3.foundation/) via their [
 This is the starter project for the Subsembly framework used for developing Substrate runtimes in AssemblyScript. The project is work in progress.
 
 ## Folder Structure
-Subsembly starter consists of following folders:
+Subsembly starter project consists of following folders:
 ```
 subsembly
     assembly/
@@ -20,6 +20,8 @@ subsembly
 
     spec-files/     <--- Raw chain-spec files
 ```
+
+Main types and API entries are defined in `runtime` folder. `runtime.ts` file in `runtime` folder defines types and constants for the frame modules and pallets.
 
 ### Adding pallets
 
