@@ -25,7 +25,7 @@ Main types and API entries are defined in `runtime` folder. `runtime.ts` file in
 
 ### Adding pallets
 
-This starter project comes with `Aura`, `Balances` and `Timestamp` pallets. They are the minimal requirements for building and running account-based runtime on Substrate node.
+This starter project comes with `Aura`, `Balances` and `Timestamp` pallets. The minimal requirements for building and running account-based runtime on Substrate node is to have those three pallets.
 
 In order to add pallets to your runtime, place your implementation of pallet inside `/pallets` folder and implement runtime API entries for the pallet.
 
@@ -39,7 +39,19 @@ The above command generates `wasm-code` file in the root folder.
 In order to run Substrate node with generated runtime, use Docker image of node:
 
 1. `docker pull limechain/as-substrate:stable`
-2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/demoSpecRaw.json":/customSpecRaw.json -d limechain/as-substrate`
+2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpec.json":/customSpecRaw.json -d limechain/as-substrate`
+
+Next, insert Aura keys to get started with block production:
+```
+curl --location --request POST 'localhost:5000' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "jsonrpc": "2.0",
+    "method": "author_insertKey",
+    "params": ["aura","dice height enter anger ahead chronic easily wave curious banana era happy","0xdcc1461cba689c60dcae053ef09bc9e9524cdceb696ce39c7ed43bf3a5fa9659"],
+    "id": 1
+}'
+```
 
 ### Makefile
 Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
