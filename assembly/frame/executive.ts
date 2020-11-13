@@ -1,18 +1,15 @@
 import { 
-    Header, IHeader,
-    IBlock, IExtrinsic,
-    InherentData, ISignedTransaction,
-    Extrinsic, Inherent, DecodedData,
-    ValidTransaction, TransactionTag, ResponseCodes,
+    IHeader, IExtrinsic, InherentData, ISignedTransaction,
+    Inherent, ValidTransaction, TransactionTag, ResponseCodes,
     ExtrinsicType, AccountId, Signature, IInherent, SignedTransaction
 } from 'subsembly-core';
 import { Timestamp, Aura,  Balances } from '../pallets';
 import { Utils } from 'subsembly-core';
-import { CompactInt, Bool, UInt64, Bytes, Hash, BytesReader } from 'as-scale-codec';
+import { CompactInt, Bool, UInt64, Hash, BytesReader } from 'as-scale-codec';
 import { Log, Crypto } from 'subsembly-core';
 import { System } from './system';
 
-import { HashType, HeaderType, BlockNumber, BlockType } from '../runtime/runtime';
+import { HashType, HeaderType, BlockNumber, BlockType, NonceType } from '../runtime/runtime';
 
 export namespace Executive{
     /**
@@ -147,7 +144,7 @@ export namespace Executive{
             return ResponseCodes.INVALID_SIGNATURE;
         }   
         const nonce = System.accountNonce(from);
-        if (<u64>nonce.value >= <u64>(<UInt64>utx.getNonce()).value){
+        if (<u64>nonce.value >= <u64>(<NonceType>utx.getNonce()).value){
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }

@@ -1,9 +1,9 @@
 import { ByteArray, UInt32, BytesReader } from 'as-scale-codec';
-import { Storage, Log} from 'subsembly-core';
+import { Storage } from 'subsembly-core';
 import { ext_trie_blake2_256_ordered_root_version_1 } from 'subsembly-core';
-import { Header, ExtrinsicData, IHeader,AccountId } from 'subsembly-core';
+import { ExtrinsicData } from 'subsembly-core';
 import { Utils, Serialiser } from 'subsembly-core';
-import { BlockNumber, HeaderType, BlockType, AccountIdType, HashType, NonceType, BlockHashType, ExtrinsicIndex } from '../runtime/runtime';
+import { BlockNumber, HeaderType, AccountIdType, HashType, NonceType, BlockHashType, ExtrinsicIndex } from '../runtime/runtime';
 
 export class System {
     // execution phases
@@ -59,8 +59,10 @@ export class System {
     Storage.set(Utils.stringsToBytes(this.BLOCK_NUM0, true), header.getNumber().toU8a());
     Storage.set(Utils.stringsToBytes(this.EXTCS_ROOT, true), header.getExtrinsicsRoot().toU8a());
 
-    const digestStartIndex: i32 = header.getNumber().encodedLength() + 3*header.getParentHash().encodedLength();
-    const digests = header.toU8a().slice(digestStartIndex);
+    let digests: u8[] = [];
+    for(let i: i32 = 0; i < header.getDigests().length; i++){
+        digests.concat(header.getDigests()[i].toU8a());
+    }
 
     Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
     const blockNumber: BlockNumber = instantiate<BlockNumber>(header.getNumber().value - 1);
@@ -185,7 +187,7 @@ export class System {
     static noteAppliedExtrinsic(ext: u8[]): void{
         const extrinsics = Storage.get(Utils.stringsToBytes(this.EXTCS_DATA, true));
         const extIndex = this.extrinsicIndex();
-        const extValue = ByteArray.fromU8a(ext);
+        const extValue = BytesReader.decodeInto<ByteArray>(ext);
         if (extrinsics.isSome()){
             let extrinsicsU8a: u8[] = (<ByteArray>extrinsics.unwrap()).values;
             const extcsData = ExtrinsicData.fromU8Array(extrinsicsU8a).getResult();

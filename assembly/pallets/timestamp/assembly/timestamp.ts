@@ -1,7 +1,7 @@
 import { Storage, Log, IInherent } from 'subsembly-core';
 import { InherentData, Inherent, ResponseCodes } from 'subsembly-core';
 import { Utils } from "subsembly-core";
-import { UInt64, Bool, ByteArray, BytesReader } from 'as-scale-codec';
+import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
 import { Moment } from '../../../runtime/runtime';
 
 export class Timestamp{
@@ -41,7 +41,7 @@ export class Timestamp{
      */
     static toggleUpdate(): void {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
-        const didUpdateValue: Bool = didUpdate.isSome() ? Bool.fromU8a((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
+        const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
         if(didUpdateValue.value){
             const falseu8 = new Bool(false);
             Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, falseu8.toU8a());
@@ -59,7 +59,7 @@ export class Timestamp{
      */
     static set(now: u64): u8[] {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
-        const didUpdateValue: Bool = didUpdate.isSome() ? Bool.fromU8a((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
+        const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
         if(didUpdateValue.value){
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();

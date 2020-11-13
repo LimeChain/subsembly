@@ -1,8 +1,9 @@
 import { AccountData, AccountId, ISignedTransaction, TransactionValidity, ResponseCodes } from 'subsembly-core';
 import { Storage, Log} from "subsembly-core";
-import { ByteArray, UInt128, UInt64 } from "as-scale-codec";
+import { ByteArray, BytesReader, UInt128, UInt64 } from "as-scale-codec";
 import { u128 } from "as-bignum";
 import { System } from "../../../frame";
+import { AccountIdType } from "../../../runtime/runtime";
 
 /**
  * The Balances Module.
@@ -15,10 +16,10 @@ export class Balances {
      * Returns AccountData for a given AccountId
      * If the account does not exist, Default AccountData is returned.
      */
-    static getAccountData(accountId: AccountId): AccountData {
+    static getAccountData(accountId: AccountIdType): AccountData {
         const accDataBytes = Storage.get(accountId.getAddress());
         if (accDataBytes.isSome()) {
-            return AccountData.fromU8Array((<ByteArray>accDataBytes.unwrap()).values).getResult();
+            return BytesReader.decodeInto<AccountData>((<ByteArray>accDataBytes.unwrap()).values);
         } else {
             return AccountData.getDefault();
         }
@@ -28,7 +29,7 @@ export class Balances {
      * Sets the balances of a given AccountId
      * Alters the Free balance and Reserved balances in Storage.
      */
-    static setBalance(accountId: AccountId, freeBalance: UInt128, reservedBalance: UInt128): AccountData {
+    static setBalance(accountId: AccountIdType, freeBalance: UInt128, reservedBalance: UInt128): AccountData {
         const currentAccountData = this.getAccountData(accountId);
 
         // TODO Any meaningful checks
@@ -47,7 +48,7 @@ export class Balances {
      * @param receiver 
      * @param amount 
      */
-    static transfer(sender: AccountId, receiver: AccountId, amount: u64): void {
+    static transfer(sender: AccountIdType, receiver: AccountIdType, amount: u64): void {
         const senderAccData = this.getAccountData(sender);
         const receiverAccData = this.getAccountData(receiver);
         const senderNewBalance: UInt128 = new UInt128(u128.sub(senderAccData.getFree().value, u128.fromU64(amount)));
@@ -63,8 +64,8 @@ export class Balances {
      * @param extrinsic 
      */
     static applyExtrinsic(extrinsic: ISignedTransaction): u8[]{
-        const sender: AccountId = AccountId.fromU8Array(extrinsic.getFrom().toU8a()).getResult();
-        const receiver: AccountId = AccountId.fromU8Array(extrinsic.getTo().toU8a()).getResult();
+        const sender: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
+        const receiver: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getTo().toU8a());
         const validated = this.validateTransaction(extrinsic);
         if(!validated.valid){
             Log.error(validated.message);
@@ -78,7 +79,7 @@ export class Balances {
      * 
      */
     static validateTransaction(extrinsic: ISignedTransaction): TransactionValidity{
-        const from: AccountId = AccountId.fromU8Array(extrinsic.getFrom().toU8a()).getResult();
+        const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const fromBalance = Balances.getAccountData(from);
         const balance: UInt128 = fromBalance.getFree();
         if(balance.value < u128.fromU64((<UInt64>extrinsic.getAmount()).value)){
