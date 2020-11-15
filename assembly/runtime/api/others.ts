@@ -3,9 +3,9 @@
  * These methods are mocked for this iteration and they return an empty u8 array by default
  */
 import { BytesReader } from "as-scale-codec";
-import { Log, Serialiser, SignedTransaction } from "subsembly-core";
-import { AccountId } from 'subsembly-core';
+import { Log, Serialiser, SignedTransaction, AccountId } from "subsembly-core";
 import { Executive, System } from "../../frame";
+import { AccountIdType } from "../runtime";
 
 /**
  * 
@@ -67,7 +67,7 @@ export function Metadata_metadata(data: i32, len: i32): u64 {
  */
 export function System_account_nonce(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const who = BytesReader.decodeInto<AccountId>(input);
+    const who = BytesReader.decodeInto<AccountIdType>(input);
     const nonce = System.accountNonce(who);
     return Serialiser.serialiseResult(nonce.toU8a());
 }

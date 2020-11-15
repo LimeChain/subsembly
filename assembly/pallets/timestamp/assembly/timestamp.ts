@@ -1,10 +1,8 @@
-import { Storage, Log, IInherent } from 'subsembly-core';
-import { InherentData, Inherent, ResponseCodes } from 'subsembly-core';
-import { Utils } from "subsembly-core";
+import { Storage, Log, IInherent, InherentData, Inherent, ResponseCodes, Utils } from 'subsembly-core';
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
 import { Moment } from '../../../runtime/runtime';
 
-export class Timestamp{
+export class Timestamp {
 
     /**
      * Minimum period between timestamps
@@ -42,11 +40,11 @@ export class Timestamp{
     static toggleUpdate(): void {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
         const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
-        if(didUpdateValue.value){
+        if (didUpdateValue.value) {
             const falseu8 = new Bool(false);
             Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, falseu8.toU8a());
         }
-        else{
+        else {
             const trueu8 = new Bool(true);
             Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, trueu8.toU8a());
         }
@@ -60,12 +58,12 @@ export class Timestamp{
     static set(now: u64): u8[] {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
         const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
-        if(didUpdateValue.value){
+        if (didUpdateValue.value) {
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
         const prev: Moment = Timestamp.get();
-        if(now < prev.value + Timestamp.MINIMUM_PERIOD){
+        if (now < prev.value + Timestamp.MINIMUM_PERIOD) {
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
@@ -90,16 +88,16 @@ export class Timestamp{
      * Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: InherentData): Inherent {
+    static createInherent(data: InherentData): IInherent {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(extractInherentData(data).values);
         let nextTime = timestampData;
-        if(Timestamp.get().value){
+        if (Timestamp.get().value) {
             let nextTimeValue = <u64>(Math.max(<f64>timestampData.value, <f64>(Timestamp.get().value + Timestamp.MINIMUM_PERIOD)));
             nextTime = instantiate<Moment>(nextTimeValue);
         }
         const inherent = new Inherent(
-            Timestamp.CALL_INDEX, 
-            Timestamp.API_VERSION, 
+            Timestamp.CALL_INDEX,
+            Timestamp.API_VERSION,
             Timestamp.PREFIX,
             nextTime
         );
@@ -115,13 +113,13 @@ export class Timestamp{
         const MAX_TIMESTAMP_DRIFT_MILLS: u64 = 30 * 1000;
         const timestampData: Moment = BytesReader.decodeInto<Moment>(extractInherentData(data).values);
         const minimum: u64 = Timestamp.get().value + Timestamp.MINIMUM_PERIOD;
-        if (t > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS){
+        if (t > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS) {
             return false;
         }
-        else if(t < minimum){
+        else if (t < minimum) {
             return false;
         }
-        else{
+        else {
             return true;
         }
     }
@@ -132,20 +130,20 @@ export class Timestamp{
      */
     static applyInherent(inherent: IInherent): u8[] {
         const resCode = Timestamp.set((<Moment>inherent.getArgument()).value);
-        if(Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)){
+        if (Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)) {
             Timestamp.toggleUpdate();
         }
         return resCode;
     }
 
-    static _tooFrequentResponseCode(): u8[]{
+    static _tooFrequentResponseCode(): u8[] {
         return ResponseCodes.dispatchError(this.MODULE_INDEX, 1);
     }
-    static _timeframeTooLowResponceCode(): u8[]{
+    static _timeframeTooLowResponceCode(): u8[] {
         return ResponseCodes.dispatchError(this.MODULE_INDEX, 2);
     }
 }
- 
+
 /**
  * Gets timestamp inherent data
  * @param inhData inherentData instance provided 

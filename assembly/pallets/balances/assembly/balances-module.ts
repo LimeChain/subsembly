@@ -1,5 +1,4 @@
-import { AccountData, AccountId, ISignedTransaction, TransactionValidity, ResponseCodes } from 'subsembly-core';
-import { Storage, Log} from "subsembly-core";
+import { AccountData, ISignedTransaction, TransactionValidity, ResponseCodes, Storage, Log } from 'subsembly-core';
 import { ByteArray, BytesReader, UInt128, UInt64 } from "as-scale-codec";
 import { u128 } from "as-bignum";
 import { System } from "../../../frame";
@@ -63,11 +62,11 @@ export class Balances {
      * Apply extrinsic for the module
      * @param extrinsic 
      */
-    static applyExtrinsic(extrinsic: ISignedTransaction): u8[]{
+    static applyExtrinsic(extrinsic: ISignedTransaction): u8[] {
         const sender: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const receiver: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getTo().toU8a());
         const validated = this.validateTransaction(extrinsic);
-        if(!validated.valid){
+        if (!validated.valid) {
             Log.error(validated.message);
             return validated.error;
         }
@@ -78,11 +77,11 @@ export class Balances {
     /**
      * 
      */
-    static validateTransaction(extrinsic: ISignedTransaction): TransactionValidity{
+    static validateTransaction(extrinsic: ISignedTransaction): TransactionValidity {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const fromBalance = Balances.getAccountData(from);
         const balance: UInt128 = fromBalance.getFree();
-        if(balance.value < u128.fromU64((<UInt64>extrinsic.getAmount()).value)){
+        if (balance.value < u128.fromU64((<UInt64>extrinsic.getAmount()).value)) {
             return new TransactionValidity(
                 false,
                 ResponseCodes.INSUFFICIENT_BALANCE,

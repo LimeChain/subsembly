@@ -1,6 +1,5 @@
 import { Timestamp } from "../..";
-import { Storage } from "subsembly-core";
-import { InherentData, Option } from "subsembly-core";
+import { InherentData, Option, Storage } from "subsembly-core";
 import { ByteArray, UInt64 } from 'as-scale-codec';
 import { Moment } from '../../../runtime/runtime';
 
@@ -31,7 +30,7 @@ export class Aura {
     }
     /**
      * The function sets the list of AccountIds to the storage
-     */ 
+     */
     static setAuthorities(auths: u8[]): void {
         Storage.set(Aura.AURA_AUTHORITIES, auths);
     }
@@ -52,7 +51,7 @@ export class Aura {
         if (timestampBasedSlot == auraSlot) {
             return true;
         }
-        else{
+        else {
             return false;
         }
     }

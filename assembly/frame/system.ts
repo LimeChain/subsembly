@@ -1,9 +1,6 @@
-import { ByteArray, UInt32, BytesReader } from 'as-scale-codec';
-import { Storage } from 'subsembly-core';
-import { ext_trie_blake2_256_ordered_root_version_1 } from 'subsembly-core';
-import { ExtrinsicData } from 'subsembly-core';
-import { Utils, Serialiser } from 'subsembly-core';
-import { BlockNumber, HeaderType, AccountIdType, HashType, NonceType, BlockHashType, ExtrinsicIndex } from '../runtime/runtime';
+import { ByteArray, UInt32, BytesReader, Codec } from 'as-scale-codec';
+import { IHeader, Storage, ExtrinsicData, ext_trie_blake2_256_ordered_root_version_1, Utils, Serialiser } from 'subsembly-core';
+import { BlockNumber, AccountIdType, HashType, NonceType, BlockHashType, ExtrinsicIndex } from '../runtime/runtime';
 
 export class System {
     // execution phases
@@ -44,48 +41,48 @@ export class System {
     static readonly EXTCS_DATA: string[] = ["system", "extcs_data"];
     // block hash count (max number of blocks to be stored)
     static readonly BHSH_COUNT: string[] = ["system", "bhash_cout"];
-    
+
     /**
      * Sets up the environment necessary for block production
      * @param header Header instance
     */
-   static initialize(header: HeaderType): void{
-    // maximum number of blocks
-    const bhshCount = new UInt32(this.NUMBER_OF_BLOCKS_TO_KEEP);
-    Storage.set(Utils.stringsToBytes(this.BHSH_COUNT, true), bhshCount.toU8a());
-    Storage.set(Utils.stringsToBytes([this.EXTRINSIC_INDEX], true), [<u8>0]);
-    Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.INITIALIZATION], true));
-    Storage.set(Utils.stringsToBytes(this.PARENT_HSH, true), header.getParentHash().toU8a());
-    Storage.set(Utils.stringsToBytes(this.BLOCK_NUM0, true), header.getNumber().toU8a());
-    Storage.set(Utils.stringsToBytes(this.EXTCS_ROOT, true), header.getExtrinsicsRoot().toU8a());
+    static initialize(header: IHeader): void {
+        // maximum number of blocks
+        const bhshCount = new UInt32(this.NUMBER_OF_BLOCKS_TO_KEEP);
+        Storage.set(Utils.stringsToBytes(this.BHSH_COUNT, true), bhshCount.toU8a());
+        Storage.set(Utils.stringsToBytes([this.EXTRINSIC_INDEX], true), [<u8>0]);
+        Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.INITIALIZATION], true));
+        Storage.set(Utils.stringsToBytes(this.PARENT_HSH, true), header.getParentHash().toU8a());
+        Storage.set(Utils.stringsToBytes(this.BLOCK_NUM0, true), header.getNumber().toU8a());
+        Storage.set(Utils.stringsToBytes(this.EXTCS_ROOT, true), header.getExtrinsicsRoot().toU8a());
 
-    let digests: u8[] = [];
-    for(let i: i32 = 0; i < header.getDigests().length; i++){
-        digests.concat(header.getDigests()[i].toU8a());
+        let digests: u8[] = [];
+        for (let i: i32 = 0; i < header.getDigests().length; i++) {
+            digests.concat(header.getDigests()[i].toU8a());
+        }
+
+        Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
+        const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).value - 1);
+        this.setHashAtBlock(blockNumber, header.getParentHash());
     }
-
-    Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
-    const blockNumber: BlockNumber = instantiate<BlockNumber>(header.getNumber().value - 1);
-    this.setHashAtBlock(blockNumber, <HashType>header.getParentHash());
-}
     /**
      * Remove temporary "environment" entries in storage and finalize block
      */
-    static finalize(): HeaderType {
+    static finalize<HeaderType extends IHeader>(): IHeader {
         Storage.clear(Utils.stringsToBytes(this.EXEC_PHASE, true));
         Storage.clear(Utils.stringsToBytes(this.EXTCS_COUT, true));
         let blockNumber = Storage.take(Utils.stringsToBytes(this.BLOCK_NUM0, true));
         let parentHash = Storage.take(Utils.stringsToBytes(this.PARENT_HSH, true));
         let digests = Storage.take(Utils.stringsToBytes(this.DIGESTS_00, true));
         let extrinsicsRoot = Storage.take(Utils.stringsToBytes(this.EXTCS_ROOT, true));
-        
+
         // move block hash pruning window by one block
         let blockHashCount = <u32>(this.blockHashCount().value);
         let blockNum = <u32>(BytesReader.decodeInto<BlockNumber>(blockNumber).value);
-        if(blockNum > blockHashCount){
+        if (blockNum > blockHashCount) {
             let toRemove = blockNum - blockHashCount - 1;
             // keep genesis hash
-            if(toRemove != 0){
+            if (toRemove != 0) {
                 let toRemoveNum = instantiate<BlockNumber>(toRemove);
                 const blockHashKey = Utils.stringsToBytes(this.BLOCK_HASH, true).concat(toRemoveNum.toU8a());
                 Storage.clear(blockHashKey);
@@ -98,8 +95,7 @@ export class System {
             .concat(stateRoot)
             .concat(extrinsicsRoot)
             .concat(digests);
-        const decodedHeader = BytesReader.decodeInto<HeaderType>(result);
-        return decodedHeader;
+        return BytesReader.decodeInto<HeaderType>(result);
     }
     /**
      * Get the nonce value of the given AccountId
@@ -107,10 +103,10 @@ export class System {
      * SCALE(AccountId) + SCALE("nonce")
      * @param who account for which to get the nonce
      */
-    static accountNonce(who: AccountIdType): NonceType{
+    static accountNonce(who: AccountIdType): NonceType {
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
         const value = Storage.get(who.getAddress().concat(nonceKey));
-        if(value.isSome()){
+        if (value.isSome()) {
             return BytesReader.decodeInto<NonceType>((<ByteArray>value.unwrap()).values);
         }
         return instantiate<NonceType>(0);
@@ -120,7 +116,7 @@ export class System {
      * Increment nonce of this account
      * @param who account
      */
-    static incAccountNonce(who: AccountIdType): void{
+    static incAccountNonce(who: AccountIdType): void {
         const oldNonce = System.accountNonce(who);
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
         const newNonce = instantiate<NonceType>(oldNonce.value + 1);
@@ -130,18 +126,18 @@ export class System {
     /**
     * Maximum number of block number to block hash mappings to keep (oldest pruned first).
     */
-   static blockHashCount(): BlockHashType {
-    const value = Storage.get(Utils.stringsToBytes(this.BHSH_COUNT, true));
-    if(value.isSome()){
-        return BytesReader.decodeInto<BlockHashType>((<ByteArray>value.unwrap()).values);
+    static blockHashCount(): BlockHashType {
+        const value = Storage.get(Utils.stringsToBytes(this.BHSH_COUNT, true));
+        if (value.isSome()) {
+            return BytesReader.decodeInto<BlockHashType>((<ByteArray>value.unwrap()).values);
+        }
+        return instantiate<BlockHashType>(0);
     }
-    return instantiate<BlockHashType>(0);
-}
 
     /**
      * Gets the index of extrinsic that is currently executing.
      */
-    static extrinsicIndex(): ExtrinsicIndex{
+    static extrinsicIndex(): ExtrinsicIndex {
         const extIndex = Storage.take(Utils.stringsToBytes([System.EXTRINSIC_INDEX], true));
         return BytesReader.decodeInto<ExtrinsicIndex>(extIndex);
     }
@@ -159,7 +155,7 @@ export class System {
      * Computes the extrinsicsRoot for the given data and populates storage
      * @param data 
      */
-    static computeExtrinsicsRoot(): void{
+    static computeExtrinsicsRoot(): void {
         let extrinsicsDataU8a = Storage.take(Utils.stringsToBytes(this.EXTCS_DATA, true));
         const extcsData = ExtrinsicData.fromU8Array(extrinsicsDataU8a).getResult();
         Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.APPLY_EXTRINSIC], true));
@@ -171,7 +167,7 @@ export class System {
      * Computes the ordered trie root hash of the extrinsics data
      * @param data enumerated values
      */
-    static extrinsicsDataRoot(data: u8[]): HashType{
+    static extrinsicsDataRoot(data: u8[]): HashType {
         let dataPtr = data.dataStart;
         let dataLen = data.length;
         __retain(dataPtr);
@@ -184,17 +180,17 @@ export class System {
      * Adds applied extrinsic to the current ExtrinsicData
      * @param ext extrinsic as bytes
      */
-    static noteAppliedExtrinsic(ext: u8[]): void{
+    static noteAppliedExtrinsic(ext: u8[]): void {
         const extrinsics = Storage.get(Utils.stringsToBytes(this.EXTCS_DATA, true));
         const extIndex = this.extrinsicIndex();
         const extValue = BytesReader.decodeInto<ByteArray>(ext);
-        if (extrinsics.isSome()){
+        if (extrinsics.isSome()) {
             let extrinsicsU8a: u8[] = (<ByteArray>extrinsics.unwrap()).values;
             const extcsData = ExtrinsicData.fromU8Array(extrinsicsU8a).getResult();
             extcsData.insert(extIndex, extValue);
             Storage.set(Utils.stringsToBytes(this.EXTCS_DATA, true), extcsData.toU8a());
             this.incExtrinsicIndex();
-            return ;
+            return;
         }
         const data: Map<UInt32, ByteArray> = new Map();
         data.set(extIndex, extValue);
@@ -206,7 +202,7 @@ export class System {
     /**
      * Sets the new extrinsicsCount and set execution phase to finalization
      */
-    static noteFinishedExtrinsics(): void{
+    static noteFinishedExtrinsics(): void {
         let extIndex = this.extrinsicIndex();
         Storage.set(Utils.stringsToBytes(this.EXTCS_COUT, true), extIndex.toU8a());
         Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.FINALIZATION], true));
@@ -215,12 +211,13 @@ export class System {
     /**
      * Get hash of the block by the block number
      */
-    static getHashAtBlock(number: BlockNumber): HashType{
+    static getHashAtBlock<HashType extends Codec, BlockNumber extends Codec>(number: BlockNumber): HashType {
         let blockHash = Storage.get(Utils.stringsToBytes(this.BLOCK_HASH, true).concat(number.toU8a()));
         let blockHashU8a: u8[] = blockHash.isSome() ? (<ByteArray>blockHash.unwrap()).values : [];
         return BytesReader.decodeInto<HashType>(blockHashU8a);
     }
-    static setHashAtBlock(number: BlockNumber, hash: HashType): void{
+
+    static setHashAtBlock(number: BlockNumber, hash: HashType): void {
         const blockHashKey: u8[] = Utils.stringsToBytes(this.BLOCK_HASH, true).concat(number.toU8a());
         Storage.set(blockHashKey, hash.toU8a());
     }
