@@ -62,15 +62,15 @@ export class Timestamp{
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        if(now.value < Timestamp.get().value + TimestampTypes.minimumPeriod().value){
+        let minValue = Timestamp.get().value + TimestampTypes.minimumPeriod().value;
+        if(now.value < minValue){
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
 
-        const nowu8 = instantiate<Moment>(now);
         const trueu8 = new Bool(true);
         Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, trueu8.toU8a());
-        Storage.set(Timestamp.SCALE_TIMESTAMP_NOW, nowu8.toU8a());
+        Storage.set(Timestamp.SCALE_TIMESTAMP_NOW, now.toU8a());
         return ResponseCodes.SUCCESS;
     }
 

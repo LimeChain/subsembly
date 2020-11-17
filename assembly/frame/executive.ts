@@ -1,5 +1,5 @@
 import { 
-    IHeader, IExtrinsic, IInhrenetData, ISignedTransaction,
+    IHeader, IExtrinsic, IInherentData, ISignedTransaction,
     ValidTransaction, TransactionTag, ResponseCodes,
     ExtrinsicType, Signature, IInherent
 } from 'subsembly-core';
@@ -36,7 +36,7 @@ export namespace Executive{
         const previousBlock: BlockNumber = instantiate<BlockNumber>(n.value - 1);
         const parentHash: Hash = System.getHashAtBlock(previousBlock);
 
-        if(n == instantiate<BlockNumber>(0) && parentHash != <HashType>header.getParentHash()){
+        if(n == instantiate<BlockNumber>(0) && parentHash != header.getParentHash()){
             Log.error("Initial checks: Parent hash should be valid.");
             throw new Error("Executive: Initial checks for block execution failed");
         }
@@ -50,7 +50,7 @@ export namespace Executive{
         System.computeExtrinsicsRoot();
         let newHeader = System.finalize();
         let storageRoot = newHeader.getStateRoot();
-        if(<HashType>header.getStateRoot() != <HashType>storageRoot){
+        if(header.getStateRoot() != storageRoot){
             Log.error("Storage root must match that calculated");
             throw new Error("Executive: Final checks for block execution failed");
         }
@@ -80,7 +80,7 @@ export namespace Executive{
      * creates inherents from internal modules
      * @param data inherents
      */
-    export function createExtrinsics(data: IInhrenetData): u8[] {
+    export function createExtrinsics(data: IInherentData): u8[] {
         const timestamp: InherentType = Timestamp.createInherent(data);
         const aura = Aura.createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
@@ -148,7 +148,7 @@ export namespace Executive{
             return ResponseCodes.INVALID_SIGNATURE;
         }   
         const nonce = System.accountNonce(from);
-        if (nonce >= utx.getNonce()){
+        if (nonce.value >= (<NonceType>utx.getNonce()).value){
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }
