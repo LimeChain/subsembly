@@ -122,7 +122,7 @@ export class System {
     static incAccountNonce(who: IAccountId): void{
         const oldNonce = System.accountNonce(who);
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
-        const newNonce = instantiate<NonceType>(oldNonce.value + 1);
+        const newNonce = oldNonce + instantiate<NonceType>(1);
         Storage.set(who.getAddress().concat(nonceKey), newNonce.toU8a());
     }
 
@@ -150,7 +150,7 @@ export class System {
      */
     static incExtrinsicIndex(): void {
         const count = this.extrinsicIndex();
-        const newCount = instantiate<ExtrinsicIndex>(count.value + 1);
+        const newCount = count + instantiate<ExtrinsicIndex>(1);
         Storage.set(Utils.stringsToBytes([System.EXTRINSIC_INDEX], true), newCount.toU8a());
     }
 

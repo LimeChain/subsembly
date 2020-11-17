@@ -62,8 +62,7 @@ export class Timestamp{
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        const prev: Moment = Timestamp.get();
-        if(now < instantiate<Moment>(prev.value + TimestampTypes.minimumPeriod().value)){
+        if(now.value < Timestamp.get().value + TimestampTypes.minimumPeriod().value){
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
@@ -112,11 +111,11 @@ export class Timestamp{
     static checkInherent(t: Moment, data: IInherentData): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: u64 = 30 * 1000;
         const timestampData: Moment = BytesReader.decodeInto<Moment>(extractInherentData(data).values);
-        const minimum: u64 = Timestamp.get().value + TimestampTypes.minimumPeriod().value;
+        const minimum: Moment = Timestamp.get() + TimestampTypes.minimumPeriod();
         if (t.value > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS){
             return false;
         }
-        else if(t.value < minimum){
+        else if(t.value < minimum.value){
             return false;
         }
         else{

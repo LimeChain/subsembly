@@ -1,6 +1,6 @@
 import { AccountData, AccountId, ISignedTransaction, TransactionValidity, ResponseCodes } from 'subsembly-core';
 import { Storage, Log} from "subsembly-core";
-import { ByteArray, BytesReader, UInt128, UInt64 } from "as-scale-codec";
+import { ByteArray, BytesReader, UInt64 } from "as-scale-codec";
 import { u128 } from "as-bignum";
 import { System } from "../../../frame";
 import { AccountIdType, Balance } from "../../../runtime/runtime";
@@ -48,11 +48,11 @@ export class Balances {
      * @param receiver 
      * @param amount 
      */
-    static transfer(sender: AccountIdType, receiver: AccountIdType, amount: UInt128): void {
+    static transfer(sender: AccountIdType, receiver: AccountIdType, amount: Balance): void {
         const senderAccData = this.getAccountData(sender);
         const receiverAccData = this.getAccountData(receiver);
-        const senderNewBalance: UInt128 = new UInt128(u128.sub(senderAccData.getFree().value, amount.value));
-        const receiverNewBalance: UInt128 = new UInt128(u128.add(receiverAccData.getFree().value, amount.value));
+        const senderNewBalance: Balance = senderAccData.getFree() - amount;
+        const receiverNewBalance: Balance = receiverAccData.getFree() - amount;
         this.setBalance(sender, senderNewBalance, senderAccData.getReserved());
         this.setBalance(receiver, receiverNewBalance, receiverAccData.getReserved());
         System.incAccountNonce(sender);
@@ -71,7 +71,7 @@ export class Balances {
             Log.error(validated.message);
             return validated.error;
         }
-        this.transfer(sender, receiver, BytesReader.decodeInto<UInt128>(extrinsic.getAmount().toU8a()));
+        this.transfer(sender, receiver, BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()));
         return ResponseCodes.SUCCESS;
     }
 
@@ -81,7 +81,7 @@ export class Balances {
     static validateTransaction(extrinsic: ISignedTransaction): TransactionValidity{
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const fromBalance = Balances.getAccountData(from);
-        const balance: UInt128 = fromBalance.getFree();
+        const balance: Balance = fromBalance.getFree();
         if(balance.value < u128.fromU64((<UInt64>extrinsic.getAmount()).value)){
             return new TransactionValidity(
                 false,
