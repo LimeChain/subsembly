@@ -1,8 +1,7 @@
-import { Timestamp } from "../..";
 import { Storage } from "subsembly-core";
-import { InherentData, Option } from "subsembly-core";
-import { ByteArray, UInt64 } from 'as-scale-codec';
-import { Moment } from '../../../runtime/runtime';
+import { IInherentData, Option } from "subsembly-core";
+import { ByteArray, BytesReader } from 'as-scale-codec';
+import { Moment, AuraSlotType, TimestampTypes } from '../../../runtime/runtime';
 
 /**
  * Class for Aura consensus 
@@ -19,7 +18,7 @@ export class Aura {
      * The function calls the TimeStamp module and returns configured min period.
      */
     static getSlotDuration(): Moment {
-        return instantiate<Moment>(Timestamp.MINIMUM_PERIOD);
+        return TimestampTypes.minimumPeriod();
     }
 
     /**
@@ -36,7 +35,7 @@ export class Aura {
         Storage.set(Aura.AURA_AUTHORITIES, auths);
     }
 
-    static createInherent(data: InherentData): u8[] {
+    static createInherent(data: IInherentData): u8[] {
         // TO-DO meaningful checks
         return [];
     }
@@ -46,9 +45,9 @@ export class Aura {
      * @param t new value for the timestamp inherent data
      * @param data inherent data to extract aura inherent data from
      */
-    static checkInherent(t: u64, data: InherentData): bool {
-        const auraSlot = auraInherentData(data);
-        const timestampBasedSlot = t / Aura.getSlotDuration().value;
+    static checkInherent(t: AuraSlotType, data: IInherentData): bool {
+        const auraSlot = Aura.extracAuraInherentData(data);
+        const timestampBasedSlot: AuraSlotType = instantiate<AuraSlotType>(t.value / Aura.getSlotDuration().value);
         if (timestampBasedSlot == auraSlot) {
             return true;
         }
@@ -56,13 +55,12 @@ export class Aura {
             return false;
         }
     }
-}
-
-/**
- * Gets timestamp inherent data
- * @param inhData 
- */
-export function auraInherentData(inhData: InherentData): u64 {
-    const value = inhData.data.get(Aura.INHERENT_IDENTIFIER);
-    return UInt64.fromU8a(value.values).value;
+    /**
+     * Gets timestamp inherent data
+     * @param inhData 
+     */
+    static extracAuraInherentData(inhData: IInherentData): AuraSlotType {
+        const value = inhData.getData().get(Aura.INHERENT_IDENTIFIER);
+        return BytesReader.decodeInto<AuraSlotType>(value.values);
+    }
 }

@@ -3,9 +3,10 @@
  * These methods are mocked for this iteration and they return an empty u8 array by default
  */
 import { BytesReader } from "as-scale-codec";
-import { Log, Serialiser, SignedTransaction } from "subsembly-core";
+import { Log, Serialiser } from "subsembly-core";
 import { AccountId } from 'subsembly-core';
 import { Executive, System } from "../../frame";
+import { SignedTransactionType } from "../runtime";
 
 /**
  * 
@@ -35,9 +36,7 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
     let input = Serialiser.deserialiseInput(data, len);
-    Log.info("Incoming tx: " + input.toString());
-    const uxt = BytesReader.decodeInto<SignedTransaction>(input);
-    Log.info("Decoded tx: " + uxt.toU8a().toString());
+    const uxt = BytesReader.decodeInto<SignedTransactionType>(input);
     const result = Executive.validateTransaction(uxt);
     return Serialiser.serialiseResult(result);
 }

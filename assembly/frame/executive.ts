@@ -1,7 +1,7 @@
 import { 
-    IHeader, IExtrinsic, InherentData, ISignedTransaction,
-    Inherent, ValidTransaction, TransactionTag, ResponseCodes,
-    ExtrinsicType, AccountId, Signature, IInherent, SignedTransaction
+    IHeader, IExtrinsic, IInhrenetData, ISignedTransaction,
+    ValidTransaction, TransactionTag, ResponseCodes,
+    ExtrinsicType, Signature, IInherent
 } from 'subsembly-core';
 import { Timestamp, Aura,  Balances } from '../pallets';
 import { Utils } from 'subsembly-core';
@@ -9,8 +9,13 @@ import { CompactInt, Bool, UInt64, Hash, BytesReader } from 'as-scale-codec';
 import { Log, Crypto } from 'subsembly-core';
 import { System } from './system';
 
-import { HashType, HeaderType, BlockNumber, BlockType, NonceType } from '../runtime/runtime';
+import { HashType, HeaderType, BlockNumber, AccountIdType,
+        BlockType, NonceType, InherentType, SignedTransactionType, SignatureType } from '../runtime/runtime';
 
+/**
+ * @description Acts as the orchestration layer for the runtime.
+ * It dispatches incoming extrinsic calls to the respective pallets in the runtime.
+ */
 export namespace Executive{
     /**
      * Calls the System function initializeBlock()
@@ -28,10 +33,10 @@ export namespace Executive{
         let header = <HeaderType>block.getHeader();
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
-        const previousBlock: BlockNumber = new CompactInt(n.value - 1);
+        const previousBlock: BlockNumber = instantiate<BlockNumber>(n.value - 1);
         const parentHash: Hash = System.getHashAtBlock(previousBlock);
 
-        if(n.value == 0 && parentHash != <HashType>header.getParentHash()){
+        if(n == instantiate<BlockNumber>(0) && parentHash != <HashType>header.getParentHash()){
             Log.error("Initial checks: Parent hash should be valid.");
             throw new Error("Executive: Initial checks for block execution failed");
         }
@@ -75,8 +80,8 @@ export namespace Executive{
      * creates inherents from internal modules
      * @param data inherents
      */
-    export function createExtrinsics(data: InherentData): u8[] {
-        const timestamp: Inherent = Timestamp.createInherent(data);
+    export function createExtrinsics(data: IInhrenetData): u8[] {
+        const timestamp: InherentType = Timestamp.createInherent(data);
         const aura = Aura.createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
     }
@@ -96,7 +101,7 @@ export namespace Executive{
     }
     
     /**
-     * 
+     * Orchestrating function for applying extrinsic
      * @param ext extrinsic
      * @param encodedLen length
      * @param encoded encoded extrinsic
@@ -104,12 +109,12 @@ export namespace Executive{
     export function applyExtrinsicWithLen(ext: u8[], encodedLen: u32): u8[]{
         switch(encodedLen){
             case ExtrinsicType.Inherent:{
-                const inherent: IInherent = BytesReader.decodeInto<Inherent>(ext);
-                return Timestamp.applyInherent(<Inherent>inherent)
+                const inherent: IInherent = BytesReader.decodeInto<InherentType>(ext);
+                return Timestamp.applyInherent(<InherentType>inherent)
             }
             case ExtrinsicType.SignedTransaction:{
-                const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransaction>(ext);
-                return Balances.applyExtrinsic(<SignedTransaction>signedTransaction);
+                const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
+                return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
             }
             default:{
                 return ResponseCodes.CALL_ERROR;
@@ -134,17 +139,16 @@ export namespace Executive{
      * @param utx transaction
      */
     export function validateTransaction(utx: ISignedTransaction): u8[] {
-        const from: AccountId = BytesReader.decodeInto<AccountId>(utx.getFrom().toU8a());
+        const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(utx.getFrom().toU8a());
         const transfer = utx.getTransferBytes();
         Log.info("tx bytes: " + transfer.toString());
 
-        Log.info("Signature: " + utx.getSignature().toU8a().toString());
-        if(!Crypto.verifySignature(<Signature>utx.getSignature(), transfer, from)){
+        if(!Crypto.verifySignature(<SignatureType>utx.getSignature(), transfer, from)){
             Log.error("Validation error: Invalid signature");
             return ResponseCodes.INVALID_SIGNATURE;
         }   
         const nonce = System.accountNonce(from);
-        if (<u64>nonce.value >= <u64>(<NonceType>utx.getNonce()).value){
+        if (nonce >= utx.getNonce()){
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }

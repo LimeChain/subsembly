@@ -3,7 +3,7 @@ import { Storage, Log} from "subsembly-core";
 import { ByteArray, BytesReader, UInt128, UInt64 } from "as-scale-codec";
 import { u128 } from "as-bignum";
 import { System } from "../../../frame";
-import { AccountIdType } from "../../../runtime/runtime";
+import { AccountIdType, Balance } from "../../../runtime/runtime";
 
 /**
  * The Balances Module.
@@ -29,7 +29,7 @@ export class Balances {
      * Sets the balances of a given AccountId
      * Alters the Free balance and Reserved balances in Storage.
      */
-    static setBalance(accountId: AccountIdType, freeBalance: UInt128, reservedBalance: UInt128): AccountData {
+    static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData {
         const currentAccountData = this.getAccountData(accountId);
 
         // TODO Any meaningful checks
@@ -48,11 +48,11 @@ export class Balances {
      * @param receiver 
      * @param amount 
      */
-    static transfer(sender: AccountIdType, receiver: AccountIdType, amount: u64): void {
+    static transfer(sender: AccountIdType, receiver: AccountIdType, amount: UInt128): void {
         const senderAccData = this.getAccountData(sender);
         const receiverAccData = this.getAccountData(receiver);
-        const senderNewBalance: UInt128 = new UInt128(u128.sub(senderAccData.getFree().value, u128.fromU64(amount)));
-        const receiverNewBalance: UInt128 = new UInt128(u128.add(receiverAccData.getFree().value, u128.fromU64(amount)));
+        const senderNewBalance: UInt128 = new UInt128(u128.sub(senderAccData.getFree().value, amount.value));
+        const receiverNewBalance: UInt128 = new UInt128(u128.add(receiverAccData.getFree().value, amount.value));
         this.setBalance(sender, senderNewBalance, senderAccData.getReserved());
         this.setBalance(receiver, receiverNewBalance, receiverAccData.getReserved());
         System.incAccountNonce(sender);
@@ -71,7 +71,7 @@ export class Balances {
             Log.error(validated.message);
             return validated.error;
         }
-        this.transfer(sender, receiver, (<UInt64>extrinsic.getAmount()).value);
+        this.transfer(sender, receiver, BytesReader.decodeInto<UInt128>(extrinsic.getAmount().toU8a()));
         return ResponseCodes.SUCCESS;
     }
 

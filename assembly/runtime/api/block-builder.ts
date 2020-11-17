@@ -1,7 +1,7 @@
 import { Log, Serialiser } from 'subsembly-core';
 import { InherentData } from 'subsembly-core';
 import { Executive } from '../../frame/executive';
-import { Bool } from 'as-scale-codec';
+import { Bool, BytesReader } from 'as-scale-codec';
 
 /**
  * On success returns array of zero length, on failure returns Dispatch error or Apply error (tbd)
@@ -22,8 +22,8 @@ export function BlockBuilder_apply_extrinsic(data: i32, len: i32): u64 {
 
 export function BlockBuilder_inherent_extrinsics(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const inherent = InherentData.fromU8Array(input);
-    const inherents = Executive.createExtrinsics(inherent.getResult());
+    const inherent = BytesReader.decodeInto<InherentData>(input);
+    const inherents = Executive.createExtrinsics(inherent);
     return Serialiser.serialiseResult(inherents);
 }
 

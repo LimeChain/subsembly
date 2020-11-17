@@ -16,7 +16,7 @@ subsembly
     |
     └───frame      <--- Contains Executive and System modules used for orchestrating Runtime
     │
-    └───pallets    <--- Subsembly pallets incluede in Runtime
+    └───pallets    <--- Subsembly pallets include in Runtime
 
     spec-files/     <--- Raw chain-spec files
 ```
@@ -36,7 +36,7 @@ In order to add pallets to your runtime, place your implementation of pallet ins
 
 The above command generates `wasm-code` file in the root folder.
 
-In order to run Substrate node with generated runtime, use Docker image of node:
+In order to run Substrate node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
 
 1. `docker pull limechain/as-substrate:stable`
 2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpec.json":/customSpecRaw.json -d limechain/as-substrate`
@@ -59,5 +59,5 @@ Root folder consists of Makefile that eases the building and running the Subsemb
 ```
 make run-node
 ```
-This command build the Subsembly runtime, copies generated wasm code to a raw chain spec file and runs docker container with the generated raw chain spec file.
+This command builds the Subsembly runtime, copies generated wasm code to a raw chain spec file and runs docker container with the generated raw chain spec file.
 

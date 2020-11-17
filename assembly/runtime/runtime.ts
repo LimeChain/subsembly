@@ -1,5 +1,5 @@
 import { Codec, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
-import { Block, DigestItem, Header, RuntimeVersion, Signature, SupportedAPIs } from "subsembly-core";
+import { Block, DigestItem, ExtrinsicData, ExtrinsicType, Header, Inherent, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs } from "subsembly-core";
 import { AccountId } from "subsembly-core";
 
 /**
@@ -15,8 +15,12 @@ export type HeaderType = Header;
 export type BlockType = Block;
 export type Moment = UInt64;
 export type NonceType = UInt64;
-export type BlockHashType = UInt32;
+export type BlockHashCount = UInt32;
 export type ExtrinsicIndex = UInt32;
+export type InherentType = Inherent;
+export type SignedTransactionType = SignedTransaction;
+export type AuraSlotType = UInt64;
+export type ExtrinsicDataType = ExtrinsicData;
 
 export class RuntimeConstants {
     /**
@@ -44,14 +48,20 @@ export class RuntimeConstants {
             TRANSACTION_VERSION
         );
     };
-
-    static blockHashCount(): UInt32{
-        return new UInt32(1000);
+        
+    /**
+     * Number of block hashes to store in the storage, pruning starts with the oldest block 
+    */
+    static blockHashCount(): BlockHashCount{
+        return instantiate<BlockHashCount>(1000);
     }
 }
 
 export class TimestampTypes{
-    static minimumPeriod(): u64{
-        return 5000;
+    /**
+     * Minimum period between timestamps
+     */
+    static minimumPeriod(): Moment{
+        return instantiate<Moment>(5000);
     }
 }
