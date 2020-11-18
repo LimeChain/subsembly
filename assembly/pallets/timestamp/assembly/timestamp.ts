@@ -1,7 +1,5 @@
-import { Storage, Log, IInherent } from 'subsembly-core';
-import { IInherentData, Inherent, ResponseCodes } from 'subsembly-core';
-import { Utils } from "subsembly-core";
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
+import { IInherent, IInherentData, Inherent, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
 import { Moment, TimestampTypes } from '../../../runtime/runtime';
 
 /**
@@ -35,7 +33,7 @@ export class Timestamp{
     public static readonly MODULE_INDEX: u8 = 1;
 
     /**
-     * Toggles the current value of didUpdate
+     * @description Toggles the current value of didUpdate
      */
     static toggleUpdate(): void {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
@@ -51,7 +49,7 @@ export class Timestamp{
     }
 
     /**
-     * Sets the current time. When setting the new time, 
+     * @description Sets the current time. When setting the new time, 
      * it must be greater than the last one (set into storage) with at least a MinimumPeriod
      * @param now timestamp number
      */
@@ -75,7 +73,7 @@ export class Timestamp{
     }
 
     /**
-     *  Gets the current time that was set. If this function is called prior 
+     *  @description Gets the current time that was set. If this function is called prior 
      *  to setting the timestamp, it will return the timestamp of the previous block.
      */
     static get(): Moment {
@@ -84,11 +82,11 @@ export class Timestamp{
     }
 
     /**
-     * Creates timestamp inherent data
+     * @description Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
     static createInherent(data: IInherentData): Inherent {
-        const timestampData: Moment = BytesReader.decodeInto<Moment>(extractInherentData(data).values);
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
         let nextTime = timestampData;
         if(Timestamp.get().value){
             let nextTimeValue = <u64>(Math.max(<f64>timestampData.value, <f64>(Timestamp.get().value + TimestampTypes.minimumPeriod().value)));
@@ -104,14 +102,14 @@ export class Timestamp{
     }
 
     /**
-     * Checks if the new value can be set as inherent data
+     * @description Checks if the new value can be set as inherent data
      * @param t new value of the timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
     static checkInherent(t: Moment, data: IInherentData): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: u64 = 30 * 1000;
-        const timestampData: Moment = BytesReader.decodeInto<Moment>(extractInherentData(data).values);
-        const minimum: Moment = Timestamp.get() + TimestampTypes.minimumPeriod();
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
+        const minimum: Moment = instantiate<Moment>(Timestamp.get().value + TimestampTypes.minimumPeriod().value);
         if (t.value > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS){
             return false;
         }
@@ -124,7 +122,7 @@ export class Timestamp{
     }
 
     /**
-     * 
+     * @description Applies given inherent
      * @param inherent 
      */
     static applyInherent(inherent: IInherent): u8[] {
@@ -135,18 +133,25 @@ export class Timestamp{
         return resCode;
     }
 
+    /**
+     * @description Construct too frequent response error
+     */
     static _tooFrequentResponseCode(): u8[]{
         return ResponseCodes.dispatchError(this.MODULE_INDEX, 1);
     }
+
+    /**
+     * @description Construct too low response error
+     */
     static _timeframeTooLowResponceCode(): u8[]{
         return ResponseCodes.dispatchError(this.MODULE_INDEX, 2);
     }
-}
- 
-/**
- * Gets timestamp inherent data
- * @param inhData inherentData instance provided 
- */
-export function extractInherentData(inhData: IInherentData): ByteArray {
-    return inhData.getData().get(Timestamp.INHERENT_IDENTIFIER);
+
+    /**
+     * @description Gets timestamp inherent data
+     * @param inhData inherentData instance provided 
+     */
+    static extractInherentData(inhData: IInherentData): ByteArray {
+        return inhData.getData().get(Timestamp.INHERENT_IDENTIFIER);
+    }
 }

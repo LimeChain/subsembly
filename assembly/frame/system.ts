@@ -1,9 +1,12 @@
-import { ByteArray, UInt32, BytesReader } from 'as-scale-codec';
-import { IAccountId, Storage } from 'subsembly-core';
-import { ext_trie_blake2_256_ordered_root_version_1 } from 'subsembly-core';
-import { ExtrinsicData } from 'subsembly-core';
-import { Utils, Serialiser } from 'subsembly-core';
-import { BlockNumber, HeaderType, AccountIdType, HashType, NonceType, BlockHashCount, ExtrinsicIndex, RuntimeConstants, ExtrinsicDataType } from '../runtime/runtime';
+import { ByteArray, BytesReader } from 'as-scale-codec';
+import {
+    ExtrinsicData, ext_trie_blake2_256_ordered_root_version_1,
+    IAccountId, Serialiser, Storage, Utils
+} from 'subsembly-core';
+import {
+    BlockHashCount, BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
+    HashType, HeaderType, NonceType, RuntimeConstants
+} from '../runtime/runtime';
 
 /**
  * @description Provides low-level types, storage, and functions for your blockchain. 
@@ -46,7 +49,7 @@ export class System {
     static readonly BHSH_COUNT: string[] = ["system", "bhash_cout"];
     
     /**
-     * Sets up the environment necessary for block production
+     * @description Sets up the environment necessary for block production
      * @param header Header instance
     */
    static initialize(header: HeaderType): void{
@@ -69,7 +72,7 @@ export class System {
     this.setHashAtBlock(blockNumber, <HashType>header.getParentHash());
 }
     /**
-     * Remove temporary "environment" entries in storage and finalize block
+     * @description Removes temporary "environment" entries in storage and finalize block
      */
     static finalize(): HeaderType {
         Storage.clear(Utils.stringsToBytes(this.EXEC_PHASE, true));
@@ -101,7 +104,7 @@ export class System {
         return BytesReader.decodeInto<HeaderType>(result);
     }
     /**
-     * Get the nonce value of the given AccountId
+     * @description Get the nonce value of the given AccountId
      * The format of the key for storing nonce in the storage is:
      * SCALE(AccountId) + SCALE("nonce")
      * @param who account for which to get the nonce
@@ -122,12 +125,12 @@ export class System {
     static incAccountNonce(who: IAccountId): void{
         const oldNonce = System.accountNonce(who);
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
-        const newNonce = oldNonce + instantiate<NonceType>(1);
+        const newNonce = instantiate<NonceType>(oldNonce.value + 1);
         Storage.set(who.getAddress().concat(nonceKey), newNonce.toU8a());
     }
 
     /**
-    * Maximum number of block number to block hash mappings to keep (oldest pruned first).
+    * @description Maximum number of block number to block hash mappings to keep (oldest pruned first).
     */
    static blockHashCount(): BlockHashCount {
     const value = Storage.get(Utils.stringsToBytes(this.BHSH_COUNT, true));
@@ -138,7 +141,7 @@ export class System {
 }
 
     /**
-     * Gets the index of extrinsic that is currently executing.
+     * @description Gets the index of extrinsic that is currently executing.
      */
     static extrinsicIndex(): ExtrinsicIndex{
         const extIndex = Storage.take(Utils.stringsToBytes([System.EXTRINSIC_INDEX], true));
@@ -146,16 +149,16 @@ export class System {
     }
 
     /**
-     * Increment extrinsic index
+     * @description Increment extrinsic index
      */
     static incExtrinsicIndex(): void {
         const count = this.extrinsicIndex();
-        const newCount = count + instantiate<ExtrinsicIndex>(1);
+        const newCount = instantiate<ExtrinsicIndex>(count.value + 1);
         Storage.set(Utils.stringsToBytes([System.EXTRINSIC_INDEX], true), newCount.toU8a());
     }
 
     /**
-     * Computes the extrinsicsRoot for the given data and populates storage
+     * @description Computes the extrinsicsRoot for the given data and populates storage
      * @param data 
      */
     static computeExtrinsicsRoot(): void{
@@ -167,7 +170,7 @@ export class System {
     }
 
     /**
-     * Computes the ordered trie root hash of the extrinsics data
+     * @description Computes the ordered trie root hash of the extrinsics data
      * @param data enumerated values
      */
     static extrinsicsDataRoot(data: u8[]): HashType{
@@ -180,7 +183,7 @@ export class System {
         return BytesReader.decodeInto<HashType>(hashU8a);
     }
     /**
-     * Adds applied extrinsic to the current ExtrinsicData
+     * @description Adds applied extrinsic to the current ExtrinsicData
      * @param ext extrinsic as bytes
      */
     static noteAppliedExtrinsic(ext: u8[]): void{
@@ -203,7 +206,7 @@ export class System {
     }
 
     /**
-     * Sets the new extrinsicsCount and set execution phase to finalization
+     * @description Sets the new extrinsicsCount and set execution phase to finalization
      */
     static noteFinishedExtrinsics(): void{
         let extIndex = this.extrinsicIndex();
@@ -212,7 +215,7 @@ export class System {
     }
 
     /**
-     * Get hash of the block by the block number
+     * @description Get hash of the block by the block number
      */
     static getHashAtBlock(number: BlockNumber): HashType{
         let blockHash = Storage.get(Utils.stringsToBytes(this.BLOCK_HASH, true).concat(number.toU8a()));
@@ -220,7 +223,7 @@ export class System {
         return BytesReader.decodeInto<HashType>(blockHashU8a);
     }
     /**
-     * Set hash of the block
+     * @description Set hash of the block
      */
     static setHashAtBlock(number: BlockNumber, hash: HashType): void{
         const blockHashKey: u8[] = Utils.stringsToBytes(this.BLOCK_HASH, true).concat(number.toU8a());

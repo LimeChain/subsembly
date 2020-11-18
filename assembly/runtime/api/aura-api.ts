@@ -1,8 +1,13 @@
+import { ByteArray } from 'as-scale-codec';
 import { Serialiser } from "subsembly-core";
 import { Aura } from "../../pallets";
-import { UInt64, ByteArray } from 'as-scale-codec';
 
 /**
+ * @description Runtime API entries for Aura consensus  
+ */
+
+/**
+ * @description Get slot duration
  * @param data - i32 pointer to the start of the arguments passed
  * @param len - i32 length (in bytes) of the arguments passed
  */
@@ -11,6 +16,7 @@ export function AuraApi_slot_duration(data: i32, len: i32): u64 {
 }
 
 /**
+ * @description Get list of Aura authorities
  * @param data - i32 pointer to the start of the arguments passed
  * @param len - i32 length (in bytes) of the arguments passed
  */

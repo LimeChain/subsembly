@@ -1,11 +1,10 @@
-import { Log, Serialiser } from "subsembly-core";
-import { Block, Header } from "subsembly-core";
-import { Executive } from '../../frame/executive';
 import { Bool, BytesReader } from "as-scale-codec";
+import { Block, Header, Serialiser } from "subsembly-core";
+import { Executive } from '../../frame/executive';
 import { RuntimeConstants } from '../runtime';
 
 /**
- * Returns the version data encoded in ABI format as per the specification
+ * @description Returns the version data encoded in ABI format as per the specification
  * @param data - i32 pointer to the start of the arguments passed
  * @param len - i32 length (in bytes) of the arguments passed
  */
@@ -15,7 +14,7 @@ export function Core_version(data: i32, len: i32): u64 {
 }
 
 /**
- * Executes a full block by executing all exctrinsics included in it and update state accordingly.
+ * @description Executes a full block by executing all exctrinsics included in it and update state accordingly.
  * @param data - i32 pointer to the start of the arguments passed
  * @param len - i32 length (in bytes) of the arguments passed
  */
@@ -27,7 +26,7 @@ export function Core_execute_block(data: i32, len: i32): u64 {
 }
 
 /**
- * Initializes the Block instance from the passed argument
+ * @description Initializes the Block instance from the passed argument
  * @param data - i32 pointer to the start of the arguments passed
  * @param len - i32 length ( in bytes ) of the arguments passed
  */

@@ -1,19 +1,18 @@
-import { AccountData, AccountId, ISignedTransaction, TransactionValidity, ResponseCodes } from 'subsembly-core';
-import { Storage, Log} from "subsembly-core";
-import { ByteArray, BytesReader, UInt64 } from "as-scale-codec";
 import { u128 } from "as-bignum";
+import { ByteArray, BytesReader, UInt64 } from "as-scale-codec";
+import { AccountData, ISignedTransaction, Log, ResponseCodes, Storage, TransactionValidity } from 'subsembly-core';
 import { System } from "../../../frame";
 import { AccountIdType, Balance } from "../../../runtime/runtime";
 
 /**
- * The Balances Module.
+ * @description The Balances Module.
  * Used for account balance manipulation such as:
  *  - Getting and setting free/reserved balances
  */
 export class Balances {
 
     /**
-     * Returns AccountData for a given AccountId
+     * @description Returns AccountData for a given AccountId
      * If the account does not exist, Default AccountData is returned.
      */
     static getAccountData(accountId: AccountIdType): AccountData {
@@ -26,7 +25,7 @@ export class Balances {
     }
 
     /**
-     * Sets the balances of a given AccountId
+     * @description Sets the balances of a given AccountId
      * Alters the Free balance and Reserved balances in Storage.
      */
     static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData {
@@ -42,17 +41,17 @@ export class Balances {
     }
 
     /**
-     * Transfer the given amount from sender to receiver
+     * @description Transfer the given amount from sender to receiver
      * Note: this is just draft implementation, without necessary checks
-     * @param sender 
-     * @param receiver 
-     * @param amount 
+     * @param sender sender account
+     * @param receiver receiver account
+     * @param amount amount of the transfer
      */
     static transfer(sender: AccountIdType, receiver: AccountIdType, amount: Balance): void {
         const senderAccData = this.getAccountData(sender);
         const receiverAccData = this.getAccountData(receiver);
-        const senderNewBalance: Balance = senderAccData.getFree() - amount;
-        const receiverNewBalance: Balance = receiverAccData.getFree() - amount;
+        const senderNewBalance: Balance = instantiate<Balance>(u128.sub(senderAccData.getFree().value, amount.value));
+        const receiverNewBalance: Balance = instantiate<Balance>(u128.sub(receiverAccData.getFree().value, amount.value));
         this.setBalance(sender, senderNewBalance, senderAccData.getReserved());
         this.setBalance(receiver, receiverNewBalance, receiverAccData.getReserved());
         System.incAccountNonce(sender);
@@ -60,8 +59,8 @@ export class Balances {
     }
 
     /**
-     * Apply extrinsic for the module
-     * @param extrinsic 
+     * @description Apply extrinsic for the module
+     * @param extrinsic SignedTransaction instance
      */
     static applyExtrinsic(extrinsic: ISignedTransaction): u8[]{
         const sender: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
@@ -76,7 +75,8 @@ export class Balances {
     }
 
     /**
-     * 
+     * @description Validate transaction before applying it 
+     * @param extrinsic SignedTransaction instance
      */
     static validateTransaction(extrinsic: ISignedTransaction): TransactionValidity{
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());

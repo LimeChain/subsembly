@@ -1,10 +1,10 @@
-import { Storage } from "subsembly-core";
-import { IInherentData, Option } from "subsembly-core";
 import { ByteArray, BytesReader } from 'as-scale-codec';
-import { Moment, AuraSlotType, TimestampTypes } from '../../../runtime/runtime';
+import { IInherentData, Option, Storage } from "subsembly-core";
+import { AuraSlotType, Moment, TimestampTypes } from '../../../runtime/runtime';
 
 /**
- * Class for Aura consensus 
+ * @description Aura provides a slot-based block authoring mechanism. 
+ * In Aura a known set of authorities take turns producing blocks.
  */
 export class Aura {
     /**
@@ -15,33 +15,39 @@ export class Aura {
     public static readonly INHERENT_IDENTIFIER: string = "auraslot";
 
     /**
-     * The function calls the TimeStamp module and returns configured min period.
+     * @description Calls the TimeStamp module and returns configured min period.
      */
     static getSlotDuration(): Moment {
         return TimestampTypes.minimumPeriod();
     }
 
     /**
-     * The function reads from the Storage the authorities that 
+     * @description Reads from the Storage the authorities that 
      * were set on genesis, creates a vector of AccountIds and return it
      */
     static getAuthorities(): Option<ByteArray> {
         return Storage.get(Aura.AURA_AUTHORITIES);
     }
     /**
-     * The function sets the list of AccountIds to the storage
+     * @description Sets the list of AccountIds to the storage
+     * @param auths SCALE encoded list of authorities
      */ 
     static setAuthorities(auths: u8[]): void {
         Storage.set(Aura.AURA_AUTHORITIES, auths);
     }
-
+    
+    /**
+     * @description Creates Aura inherent
+     * NOTE: Draft implementation
+     * @param data Inherent data
+     */
     static createInherent(data: IInherentData): u8[] {
         // TO-DO meaningful checks
         return [];
     }
 
     /**
-     * Verify the validity of the inherent using the timestamp.
+     * @description Verify the validity of the inherent using the timestamp.
      * @param t new value for the timestamp inherent data
      * @param data inherent data to extract aura inherent data from
      */
@@ -56,7 +62,7 @@ export class Aura {
         }
     }
     /**
-     * Gets timestamp inherent data
+     * @description Gets timestamp inherent data
      * @param inhData 
      */
     static extracAuraInherentData(inhData: IInherentData): AuraSlotType {

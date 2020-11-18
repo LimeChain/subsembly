@@ -1,16 +1,16 @@
-import { 
-    IHeader, IExtrinsic, IInherentData, ISignedTransaction,
-    ValidTransaction, TransactionTag, ResponseCodes,
-    ExtrinsicType, Signature, IInherent
+import { Bool, BytesReader, CompactInt, Hash, UInt64 } from 'as-scale-codec';
+import {
+    Crypto, ExtrinsicType, IExtrinsic, IHeader,
+    IInherent, IInherentData, ISignedTransaction,
+    Log, ResponseCodes, TransactionTag, Utils, ValidTransaction
 } from 'subsembly-core';
-import { Timestamp, Aura,  Balances } from '../pallets';
-import { Utils } from 'subsembly-core';
-import { CompactInt, Bool, UInt64, Hash, BytesReader } from 'as-scale-codec';
-import { Log, Crypto } from 'subsembly-core';
+import { Aura, Balances, Timestamp } from '../pallets';
+import {
+    AccountIdType, BlockNumber, BlockType, HeaderType,
+    InherentType, NonceType, SignatureType, SignedTransactionType
+} from '../runtime/runtime';
 import { System } from './system';
 
-import { HashType, HeaderType, BlockNumber, AccountIdType,
-        BlockType, NonceType, InherentType, SignedTransactionType, SignatureType } from '../runtime/runtime';
 
 /**
  * @description Acts as the orchestration layer for the runtime.
@@ -18,7 +18,7 @@ import { HashType, HeaderType, BlockNumber, AccountIdType,
  */
 export namespace Executive{
     /**
-     * Calls the System function initializeBlock()
+     * @description Calls the System function initializeBlock()
      * @param header Header instance
      */
     export function initializeBlock(header: HeaderType): void{
@@ -26,7 +26,7 @@ export namespace Executive{
     }
 
     /**
-     * Performs necessary checks for Block execution
+     * @description Performs necessary checks for Block execution
      * @param block Block instance
      */
     export function initialChecks(block: BlockType): void{
@@ -43,7 +43,7 @@ export namespace Executive{
     }
 
     /**
-     * Final checks before including block in the chain
+     * @description Final checks before including block in the chain
      * @param header 
      */
     export function finalChecks(header: IHeader): void{
@@ -57,7 +57,7 @@ export namespace Executive{
     }
 
     /**
-     * Actually execute all transactions for Block
+     * @description Actually execute all transactions for Block
      * @param block Block instance
      */
     export function executeBlock(block: BlockType): void{
@@ -68,7 +68,7 @@ export namespace Executive{
         Executive.finalChecks(<HeaderType>block.getHeader());
     }
     /**
-     * Finalize the block - it is up the caller to ensure that all header fields are valid
+     * @description Finalize the block - it is up the caller to ensure that all header fields are valid
 	 * except state-root.
      */
     export function finalizeBlock(): HeaderType {
@@ -77,7 +77,7 @@ export namespace Executive{
         return System.finalize() as HeaderType;
     }
     /**
-     * creates inherents from internal modules
+     * @description creates inherents from internal modules
      * @param data inherents
      */
     export function createExtrinsics(data: IInherentData): u8[] {
@@ -87,7 +87,7 @@ export namespace Executive{
     }
 
     /**
-     * Apply Extrinsics
+     * @description Apply Extrinsics
      * @param ext extrinsic
      */
     export function applyExtrinsic(ext: u8[]): u8[] {
@@ -101,7 +101,7 @@ export namespace Executive{
     }
     
     /**
-     * Orchestrating function for applying extrinsic
+     * @description Orchestrating function for applying extrinsic
      * @param ext extrinsic
      * @param encodedLen length
      * @param encoded encoded extrinsic
@@ -123,7 +123,7 @@ export namespace Executive{
     }
 
     /**
-     * Execute given extrinsics and take care of post-extrinsics book-keeping
+     * @description Execute given extrinsics and take care of post-extrinsics book-keeping
      * @param extrinsics byte array of extrinsics 
      */
     export function executeExtrinsicsWithBookKeeping(extrinsics: IExtrinsic[]): void{
@@ -134,7 +134,7 @@ export namespace Executive{
     }
 
     /**
-     * Initial transaction validation
+     * @description Initial transaction validation
      * @param source source of the transaction (external, inblock, etc.)
      * @param utx transaction
      */
@@ -177,7 +177,7 @@ export namespace Executive{
     }
 
     /**
-     * module hooks
+     * @description module hook
      */
     export function onFinalize(): void{
         Log.info("onInitialize() called");

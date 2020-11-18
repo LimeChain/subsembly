@@ -1,6 +1,8 @@
-import { Codec, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
-import { Block, DigestItem, ExtrinsicData, ExtrinsicType, Header, Inherent, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs } from "subsembly-core";
-import { AccountId } from "subsembly-core";
+import { CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import {
+    AccountId, Block, DigestItem, ExtrinsicData, Header, Inherent,
+    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
+} from "subsembly-core";
 
 /**
  * General Runtime types
@@ -22,6 +24,9 @@ export type SignedTransactionType = SignedTransaction;
 export type AuraSlotType = UInt64;
 export type ExtrinsicDataType = ExtrinsicData;
 
+/**
+ * @description Constants for runtime
+ */
 export class RuntimeConstants {
     /**
      * Instanciates new RuntimeVersion Configration
@@ -50,16 +55,20 @@ export class RuntimeConstants {
     };
         
     /**
-     * Number of block hashes to store in the storage, pruning starts with the oldest block 
+     * @description Number of block hashes to store in the storage, pruning starts with the oldest block 
     */
     static blockHashCount(): BlockHashCount{
         return instantiate<BlockHashCount>(1000);
     }
 }
 
+/**
+ * @description Types and constants used in Timestamp pallet
+ */
+
 export class TimestampTypes{
     /**
-     * Minimum period between timestamps
+     * @description Minimum period between timestamps
      */
     static minimumPeriod(): Moment{
         return instantiate<Moment>(5000);

@@ -1,7 +1,7 @@
 import { Serialiser } from "subsembly-core";
 
 /**
- * The API for querying the state of parachains on-chain.
+ * @description The API for querying the state of parachains on-chain.
  * Current state of the API is mocked and returns either empty array or True
  */
 
