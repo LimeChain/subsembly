@@ -81,7 +81,7 @@ export class AccountData implements IAccountData {
     /**
      * @description Instanciates new AccountData object from SCALE encoded byte array
      * @param input - SCALE encoded AccountData
-     * TODO - avoid slicing the aray for better performance
+     * @param index - index to start decoding from
      */
     static fromU8Array(input: u8[], index: i32 = 0): DecodedData<AccountData> {
         const bytesReader = new BytesReader(input.slice(index));

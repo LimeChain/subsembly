@@ -89,7 +89,6 @@ export class Balances {
                 "Validation error: Sender does not have enough balance"
             );
         }
-        // TO-DO add check for existentialDeposit amount
         return new TransactionValidity(
             true,
             [],
