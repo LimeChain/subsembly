@@ -1,13 +1,13 @@
 import { Bool, BytesReader, CompactInt, Hash, UInt64 } from 'as-scale-codec';
 import {
-    Crypto, ExtrinsicType, IExtrinsic, IHeader,
+    Crypto, ExtrinsicType, IBlock, IExtrinsic, IHeader,
     IInherent, IInherentData, ISignedTransaction,
     Log, ResponseCodes, TransactionTag, Utils, ValidTransaction
 } from 'subsembly-core';
 import { Aura, Balances, Timestamp } from '../pallets';
 import {
-    AccountIdType, BlockNumber, BlockType, HeaderType,
-    InherentType, NonceType, SignatureType, SignedTransactionType
+    AccountIdType, BlockNumber, HeaderType,
+    InherentType, NonceType, SignatureType
 } from '../runtime/runtime';
 import { System } from './system';
 
@@ -21,7 +21,7 @@ export namespace Executive{
      * @description Calls the System function initializeBlock()
      * @param header Header instance
      */
-    export function initializeBlock(header: HeaderType): void{
+    export function initializeBlock(header: IHeader): void{
         System.initialize(header);
     }
 
@@ -29,7 +29,7 @@ export namespace Executive{
      * @description Performs necessary checks for Block execution
      * @param block Block instance
      */
-    export function initialChecks(block: BlockType): void{
+    export function initialChecks(block: IBlock): void{
         let header = <HeaderType>block.getHeader();
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
@@ -60,12 +60,12 @@ export namespace Executive{
      * @description Actually execute all transactions for Block
      * @param block Block instance
      */
-    export function executeBlock(block: BlockType): void{
-        Executive.initializeBlock(<HeaderType>block.getHeader());
+    export function executeBlock(block: IBlock): void{
+        Executive.initializeBlock(block.getHeader());
         Executive.initialChecks(block);
 
         Executive.executeExtrinsicsWithBookKeeping(block.getExtrinsics());
-        Executive.finalChecks(<HeaderType>block.getHeader());
+        Executive.finalChecks(block.getHeader());
     }
     /**
      * @description Finalize the block - it is up the caller to ensure that all header fields are valid
@@ -112,10 +112,10 @@ export namespace Executive{
                 const inherent: IInherent = BytesReader.decodeInto<InherentType>(ext);
                 return Timestamp.applyInherent(<InherentType>inherent)
             }
-            case ExtrinsicType.SignedTransaction:{
-                const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
-                return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
-            }
+            // case ExtrinsicType.SignedTransaction:{
+            //     const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
+            //     return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
+            // }
             default:{
                 return ResponseCodes.CALL_ERROR;
             }

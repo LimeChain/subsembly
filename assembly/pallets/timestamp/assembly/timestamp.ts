@@ -1,6 +1,6 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
 import { IInherent, IInherentData, Inherent, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
-import { Moment, TimestampTypes } from '../../../runtime/runtime';
+import { Moment, TimestampConfig } from '../../../runtime/runtime';
 
 /**
  * @description The Timestamp pallet provides functionality to get and set the on-chain time.
@@ -60,7 +60,7 @@ export class Timestamp{
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        let minValue = Timestamp.get().value + TimestampTypes.minimumPeriod().value;
+        let minValue = Timestamp.get().value + TimestampConfig.minimumPeriod().value;
         if(now.value < minValue){
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
@@ -88,8 +88,11 @@ export class Timestamp{
     static createInherent(data: IInherentData): Inherent {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
         let nextTime = timestampData;
+        
         if(Timestamp.get().value){
-            let nextTimeValue = <u64>(Math.max(<f64>timestampData.value, <f64>(Timestamp.get().value + TimestampTypes.minimumPeriod().value)));
+            let nextTimeValue = timestampData.value > Timestamp.get().value + TimestampConfig.minimumPeriod().value 
+                ? timestampData.value : Timestamp.get().value + TimestampConfig.minimumPeriod().value;
+                
             nextTime = instantiate<Moment>(nextTimeValue);
         }
         const inherent = new Inherent(
@@ -107,10 +110,10 @@ export class Timestamp{
      * @param data inherent data to extract timestamp from
      */
     static checkInherent(t: Moment, data: IInherentData): bool {
-        const MAX_TIMESTAMP_DRIFT_MILLS: u64 = 30 * 1000;
+        const MAX_TIMESTAMP_DRIFT_MILLS: Moment = instantiate<Moment>(30 * 1000);
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
-        const minimum: Moment = instantiate<Moment>(Timestamp.get().value + TimestampTypes.minimumPeriod().value);
-        if (t.value > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS){
+        const minimum: Moment = instantiate<Moment>(Timestamp.get().value + TimestampConfig.minimumPeriod().value);
+        if (t.value > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS.value){
             return false;
         }
         else if(t.value < minimum.value){

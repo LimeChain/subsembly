@@ -1,7 +1,7 @@
 import { Bool, BytesReader } from "as-scale-codec";
-import { Block, Header, Serialiser } from "subsembly-core";
+import { Serialiser } from "subsembly-core";
 import { Executive } from '../../frame/executive';
-import { RuntimeConstants } from '../runtime';
+import { BlockType, HeaderType, RuntimeConstants } from '../runtime';
 
 /**
  * @description Returns the version data encoded in ABI format as per the specification
@@ -20,7 +20,7 @@ export function Core_version(data: i32, len: i32): u64 {
  */
 export function Core_execute_block(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const block = BytesReader.decodeInto<Block>(input);
+    const block = BytesReader.decodeInto<BlockType>(input);
     Executive.executeBlock(block);
     return Serialiser.serialiseResult((new Bool(true)).toU8a()); // return true, if block execution succeds
 }
@@ -33,7 +33,7 @@ export function Core_execute_block(data: i32, len: i32): u64 {
 
 export function Core_initialize_block(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const header = BytesReader.decodeInto<Header>(input);
+    const header = BytesReader.decodeInto<HeaderType>(input);
     Executive.initializeBlock(header);
     return Serialiser.serialiseResult([]);
 }

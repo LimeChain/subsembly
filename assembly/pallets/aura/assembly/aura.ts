@@ -1,6 +1,6 @@
 import { ByteArray, BytesReader } from 'as-scale-codec';
 import { IInherentData, Option, Storage } from "subsembly-core";
-import { AuraSlotType, Moment, TimestampTypes } from '../../../runtime/runtime';
+import { AuraSlotType, Moment, TimestampConfig } from '../../../runtime/runtime';
 
 /**
  * @description Aura provides a slot-based block authoring mechanism. 
@@ -18,7 +18,7 @@ export class Aura {
      * @description Calls the TimeStamp module and returns configured min period.
      */
     static getSlotDuration(): Moment {
-        return TimestampTypes.minimumPeriod();
+        return TimestampConfig.minimumPeriod();
     }
 
     /**
@@ -42,7 +42,6 @@ export class Aura {
      * @param data Inherent data
      */
     static createInherent(data: IInherentData): u8[] {
-        // TO-DO meaningful checks
         return [];
     }
 

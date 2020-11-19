@@ -1,10 +1,10 @@
 import { ByteArray, BytesReader } from 'as-scale-codec';
 import {
     ExtrinsicData, ext_trie_blake2_256_ordered_root_version_1,
-    IAccountId, Serialiser, Storage, Utils
+    IAccountId, IHeader, Serialiser, Storage, Utils
 } from 'subsembly-core';
 import {
-    BlockHashCount, BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
+    BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
     HashType, HeaderType, NonceType, RuntimeConstants
 } from '../runtime/runtime';
 
@@ -52,7 +52,7 @@ export class System {
      * @description Sets up the environment necessary for block production
      * @param header Header instance
     */
-   static initialize(header: HeaderType): void{
+   static initialize(header: IHeader): void{
     // maximum number of blocks
     const bhshCount = RuntimeConstants.blockHashCount();
     Storage.set(Utils.stringsToBytes(this.BHSH_COUNT, true), bhshCount.toU8a());
@@ -68,7 +68,7 @@ export class System {
     }
 
     Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
-    const blockNumber: BlockNumber = instantiate<BlockNumber>(header.getNumber().value - 1);
+    const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).value - 1);
     this.setHashAtBlock(blockNumber, <HashType>header.getParentHash());
 }
     /**
@@ -83,10 +83,10 @@ export class System {
         let extrinsicsRoot = Storage.take(Utils.stringsToBytes(this.EXTCS_ROOT, true));
         
         // move block hash pruning window by one block
-        let blockHashCount = <u32>(this.blockHashCount().value);
-        let blockNum = <u32>(BytesReader.decodeInto<BlockNumber>(blockNumber).value);
-        if(blockNum > blockHashCount){
-            let toRemove = blockNum - blockHashCount - 1;
+        let blockHashCount = (this.blockHashCount());
+        let blockNum = BytesReader.decodeInto<BlockNumber>(blockNumber);
+        if(blockNum.value > blockHashCount.value){
+            let toRemove = blockNum.value - blockHashCount.value - 1;
             // keep genesis hash
             if(toRemove != 0){
                 let toRemoveNum = instantiate<BlockNumber>(toRemove);
@@ -132,12 +132,12 @@ export class System {
     /**
     * @description Maximum number of block number to block hash mappings to keep (oldest pruned first).
     */
-   static blockHashCount(): BlockHashCount {
+   static blockHashCount(): BlockNumber {
     const value = Storage.get(Utils.stringsToBytes(this.BHSH_COUNT, true));
     if(value.isSome()){
-        return BytesReader.decodeInto<BlockHashCount>((<ByteArray>value.unwrap()).values);
+        return BytesReader.decodeInto<BlockNumber>((<ByteArray>value.unwrap()).values);
     }
-    return instantiate<BlockHashCount>(0);
+    return instantiate<BlockNumber>(0);
 }
 
     /**

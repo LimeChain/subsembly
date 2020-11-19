@@ -1,9 +1,9 @@
 import { u128 } from "as-bignum";
 import { ByteArray, BytesReader, UInt64 } from "as-scale-codec";
-import { AccountData, ISignedTransaction, Log, ResponseCodes, Storage, TransactionValidity } from 'subsembly-core';
-import { System } from "../../../frame";
+import { ISignedTransaction, Log, ResponseCodes, Storage, TransactionValidity } from 'subsembly-core';
+import { AccountData } from '.';
+import { System } from '../../../frame/system';
 import { AccountIdType, Balance } from "../../../runtime/runtime";
-
 /**
  * @description The Balances Module.
  * Used for account balance manipulation such as:
@@ -20,7 +20,7 @@ export class Balances {
         if (accDataBytes.isSome()) {
             return BytesReader.decodeInto<AccountData>((<ByteArray>accDataBytes.unwrap()).values);
         } else {
-            return AccountData.getDefault();
+            return new AccountData();
         }
     }
 
@@ -30,8 +30,6 @@ export class Balances {
      */
     static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData {
         const currentAccountData = this.getAccountData(accountId);
-
-        // TODO Any meaningful checks
 
         currentAccountData.setFree(freeBalance);
         currentAccountData.setReserved(reservedBalance);
@@ -50,10 +48,12 @@ export class Balances {
     static transfer(sender: AccountIdType, receiver: AccountIdType, amount: Balance): void {
         const senderAccData = this.getAccountData(sender);
         const receiverAccData = this.getAccountData(receiver);
-        const senderNewBalance: Balance = instantiate<Balance>(u128.sub(senderAccData.getFree().value, amount.value));
-        const receiverNewBalance: Balance = instantiate<Balance>(u128.sub(receiverAccData.getFree().value, amount.value));
-        this.setBalance(sender, senderNewBalance, senderAccData.getReserved());
-        this.setBalance(receiver, receiverNewBalance, receiverAccData.getReserved());
+        const senderNewBalance = senderAccData.getFree().value - amount.value;
+        const receiverNewBalance = receiverAccData.getFree().value + amount.value;
+
+        this.setBalance(sender, instantiate<Balance>(senderNewBalance), senderAccData.getReserved());
+        this.setBalance(receiver, instantiate<Balance>(receiverNewBalance), receiverAccData.getReserved());
+
         System.incAccountNonce(sender);
         Log.info("Done transfering: " + amount.toString());
     }

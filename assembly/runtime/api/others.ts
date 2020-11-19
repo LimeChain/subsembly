@@ -1,7 +1,7 @@
 import { BytesReader } from "as-scale-codec";
-import { AccountId, Serialiser } from "subsembly-core";
+import { Serialiser } from "subsembly-core";
 import { Executive, System } from "../../frame";
-import { SignedTransactionType } from "../runtime";
+import { AccountIdType, SignedTransactionType } from "../runtime";
 /**
  * @description The rest of runtime entries for the Polkadot Host
  * These methods are mocked for this iteration and they return an empty u8 array by default
@@ -64,7 +64,7 @@ export function Metadata_metadata(data: i32, len: i32): u64 {
  */
 export function System_account_nonce(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    const who = BytesReader.decodeInto<AccountId>(input);
+    const who = BytesReader.decodeInto<AccountIdType>(input);
     const nonce = System.accountNonce(who);
     return Serialiser.serialiseResult(nonce.toU8a());
 }

@@ -66,7 +66,7 @@ export class RuntimeConstants {
  * @description Types and constants used in Timestamp pallet
  */
 
-export class TimestampTypes{
+export class TimestampConfig{
     /**
      * @description Minimum period between timestamps
      */
