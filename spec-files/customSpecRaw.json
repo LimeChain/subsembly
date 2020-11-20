@@ -1,0 +1,24 @@
+{
+  "name": "Local Testnet",
+  "id": "local_testnet",
+  "chainType": "Local",
+  "bootNodes": [],
+  "telemetryEndpoints": null,
+  "protocolId": null,
+  "properties": null,
+  "consensusEngine": null,
+  "genesis": {
+    "raw": {
+      "top": {
+        "0x3a636f6465": "0x",
+        "0x82b3f9330690e5a74aa9806d71298e68a03d80e773332f615e3bdd64ee71f050": "0x13180000000000001000",
+        "0x203d05ced7e80c58db6ca60ceb28041dc28be0066ce9b1d75fd92597adae124f": "0x13180000000000001000",
+        "0xdcc1461cba689c60dcae053ef09bc9e9524cdceb696ce39c7ed43bf3a5fa9659": "0x13180000000000001000",
+        "0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d": "0x13180000000000001000",
+        "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48": "0x13180000000000001000",
+        "0x10617572612c617574686f726974696573": "0x04dcc1461cba689c60dcae053ef09bc9e9524cdceb696ce39c7ed43bf3a5fa9659"
+      },
+      "childrenDefault": {}
+    }
+  }
+}

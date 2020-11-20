@@ -7,7 +7,7 @@ import {
 import { Aura, Balances, Timestamp } from '../pallets';
 import {
     AccountIdType, BlockNumber, HeaderType,
-    InherentType, NonceType, SignatureType
+    InherentType, NonceType, SignatureType, SignedTransactionType
 } from '../runtime/runtime';
 import { System } from './system';
 
@@ -74,7 +74,7 @@ export namespace Executive{
     export function finalizeBlock(): HeaderType {
         System.noteFinishedExtrinsics();
         System.computeExtrinsicsRoot();
-        return System.finalize() as HeaderType;
+        return System.finalize();
     }
     /**
      * @description creates inherents from internal modules
@@ -112,10 +112,10 @@ export namespace Executive{
                 const inherent: IInherent = BytesReader.decodeInto<InherentType>(ext);
                 return Timestamp.applyInherent(<InherentType>inherent)
             }
-            // case ExtrinsicType.SignedTransaction:{
-            //     const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
-            //     return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
-            // }
+            case ExtrinsicType.SignedTransaction:{
+                const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
+                return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
+            }
             default:{
                 return ResponseCodes.CALL_ERROR;
             }
@@ -141,7 +141,6 @@ export namespace Executive{
     export function validateTransaction(utx: ISignedTransaction): u8[] {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(utx.getFrom().toU8a());
         const transfer = utx.getTransferBytes();
-        Log.info("tx bytes: " + transfer.toString());
 
         if(!Crypto.verifySignature(<SignatureType>utx.getSignature(), transfer, from)){
             Log.error("Validation error: Invalid signature");

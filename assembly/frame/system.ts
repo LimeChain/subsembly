@@ -1,4 +1,4 @@
-import { ByteArray, BytesReader } from 'as-scale-codec';
+import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
     ExtrinsicData, ext_trie_blake2_256_ordered_root_version_1,
     IAccountId, IHeader, Serialiser, Storage, Utils
@@ -53,24 +53,26 @@ export class System {
      * @param header Header instance
     */
    static initialize(header: IHeader): void{
-    // maximum number of blocks
-    const bhshCount = RuntimeConstants.blockHashCount();
-    Storage.set(Utils.stringsToBytes(this.BHSH_COUNT, true), bhshCount.toU8a());
-    Storage.set(Utils.stringsToBytes([this.EXTRINSIC_INDEX], true), [<u8>0]);
-    Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.INITIALIZATION], true));
-    Storage.set(Utils.stringsToBytes(this.PARENT_HSH, true), header.getParentHash().toU8a());
-    Storage.set(Utils.stringsToBytes(this.BLOCK_NUM0, true), header.getNumber().toU8a());
-    Storage.set(Utils.stringsToBytes(this.EXTCS_ROOT, true), header.getExtrinsicsRoot().toU8a());
+        // maximum number of blocks
+        const bhshCount = RuntimeConstants.blockHashCount();
+        Storage.set(Utils.stringsToBytes(this.BHSH_COUNT, true), bhshCount.toU8a());
+        Storage.set(Utils.stringsToBytes([this.EXTRINSIC_INDEX], true), [<u8>0]);
+        Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.INITIALIZATION], true));
+        Storage.set(Utils.stringsToBytes(this.PARENT_HSH, true), header.getParentHash().toU8a());
+        Storage.set(Utils.stringsToBytes(this.BLOCK_NUM0, true), header.getNumber().toU8a());
+        Storage.set(Utils.stringsToBytes(this.EXTCS_ROOT, true), header.getExtrinsicsRoot().toU8a());
+        
+        let digestsArr = header.getDigests();
+        let digests: u8[] = (new CompactInt(digestsArr.length)).toU8a();
 
-    let digests: u8[] = [];
-    for(let i: i32 = 0; i < header.getDigests().length; i++){
-        digests.concat(header.getDigests()[i].toU8a());
+        for(let i: i32 = 0; i < digestsArr.length; i++){
+            digests = digests.concat(digestsArr[i].toU8a());
+        }
+
+        Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
+        const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).value - 1);
+        this.setHashAtBlock(blockNumber, <HashType>header.getParentHash());
     }
-
-    Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
-    const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).value - 1);
-    this.setHashAtBlock(blockNumber, <HashType>header.getParentHash());
-}
     /**
      * @description Removes temporary "environment" entries in storage and finalize block
      */
@@ -83,7 +85,7 @@ export class System {
         let extrinsicsRoot = Storage.take(Utils.stringsToBytes(this.EXTCS_ROOT, true));
         
         // move block hash pruning window by one block
-        let blockHashCount = (this.blockHashCount());
+        let blockHashCount = this.blockHashCount();
         let blockNum = BytesReader.decodeInto<BlockNumber>(blockNumber);
         if(blockNum.value > blockHashCount.value){
             let toRemove = blockNum.value - blockHashCount.value - 1;
