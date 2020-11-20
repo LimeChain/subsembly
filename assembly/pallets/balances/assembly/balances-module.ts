@@ -1,9 +1,8 @@
-import { u128 } from "as-bignum";
-import { ByteArray, BytesReader, UInt64 } from "as-scale-codec";
-import { ISignedTransaction, Log, ResponseCodes, Storage, TransactionValidity } from 'subsembly-core';
+import { ByteArray, BytesReader } from "as-scale-codec";
+import { Log, ResponseCodes, Storage, TransactionValidity } from 'subsembly-core';
 import { AccountData } from '.';
 import { System } from '../../../frame/system';
-import { AccountIdType, Balance } from "../../../runtime/runtime";
+import { AccountIdType, Balance, ISignedTransactionType } from "../../../runtime/runtime";
 /**
  * @description The Balances Module.
  * Used for account balance manipulation such as:
@@ -62,7 +61,7 @@ export class Balances {
      * @description Apply extrinsic for the module
      * @param extrinsic SignedTransaction instance
      */
-    static applyExtrinsic(extrinsic: ISignedTransaction): u8[]{
+    static applyExtrinsic(extrinsic: ISignedTransactionType): u8[]{
         const sender: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const receiver: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getTo().toU8a());
         const validated = this.validateTransaction(extrinsic);
@@ -78,11 +77,11 @@ export class Balances {
      * @description Validate transaction before applying it 
      * @param extrinsic SignedTransaction instance
      */
-    static validateTransaction(extrinsic: ISignedTransaction): TransactionValidity{
+    static validateTransaction(extrinsic: ISignedTransactionType): TransactionValidity{
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const fromBalance = Balances.getAccountData(from);
         const balance: Balance = fromBalance.getFree();
-        if(balance.value < u128.fromU64((<UInt64>extrinsic.getAmount()).value)){
+        if(balance.value < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).value){
             return new TransactionValidity(
                 false,
                 ResponseCodes.INSUFFICIENT_BALANCE,

@@ -1,6 +1,6 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
-import { IInherent, IInherentData, Inherent, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
-import { Moment, TimestampConfig } from '../../../runtime/runtime';
+import { IInherent, IInherentData, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
+import { InherentType, Moment, TimestampConfig } from '../../../runtime/runtime';
 
 /**
  * @description The Timestamp pallet provides functionality to get and set the on-chain time.
@@ -85,7 +85,7 @@ export class Timestamp{
      * @description Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: IInherentData): Inherent {
+    static createInherent(data: IInherentData): InherentType {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
         let nextTime = timestampData;
         
@@ -95,7 +95,7 @@ export class Timestamp{
                 
             nextTime = instantiate<Moment>(nextTimeValue);
         }
-        const inherent = new Inherent(
+        const inherent = instantiate<InherentType>(
             Timestamp.CALL_INDEX, 
             Timestamp.API_VERSION, 
             Timestamp.PREFIX,

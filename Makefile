@@ -1,7 +1,7 @@
 all: run-node-demo run-node
 
 # Name of our Docker image
-DOCKER_IMAGE=limechain/as-substrate:stable
+DOCKER_IMAGE=limechain/as-substrate:latest
 # Name of our Docker container
 DOCKER_CONTAINER=as-substrate-node
 

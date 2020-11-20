@@ -1,13 +1,13 @@
 import { Bool, BytesReader, CompactInt, Hash, UInt64 } from 'as-scale-codec';
 import {
     Crypto, ExtrinsicType, IBlock, IExtrinsic, IHeader,
-    IInherent, IInherentData, ISignedTransaction,
+    IInherent, IInherentData,
     Log, ResponseCodes, TransactionTag, Utils, ValidTransaction
 } from 'subsembly-core';
 import { Aura, Balances, Timestamp } from '../pallets';
 import {
     AccountIdType, BlockNumber, HeaderType,
-    InherentType, NonceType, SignatureType, SignedTransactionType
+    InherentType, ISignedTransactionType, NonceType, SignatureType, SignedTransactionType
 } from '../runtime/runtime';
 import { System } from './system';
 
@@ -138,7 +138,7 @@ export namespace Executive{
      * @param source source of the transaction (external, inblock, etc.)
      * @param utx transaction
      */
-    export function validateTransaction(utx: ISignedTransaction): u8[] {
+    export function validateTransaction(utx: ISignedTransactionType): u8[] {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(utx.getFrom().toU8a());
         const transfer = utx.getTransferBytes();
 
@@ -151,7 +151,7 @@ export namespace Executive{
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }
-        const validated = Balances.validateTransaction(<ISignedTransaction>utx);
+        const validated = Balances.validateTransaction(utx);
         if(!validated.valid){
             Log.error(validated.message);
             return validated.error;

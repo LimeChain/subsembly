@@ -29,6 +29,10 @@ This starter project comes with `Aura`, `Balances` and `Timestamp` pallets. The 
 
 In order to add pallets to your runtime, place your implementation of pallet inside `/pallets` folder and implement runtime API entries for the pallet.
 
+### Runtime file
+
+In the runtime folder, there is `runtime.ts` file where you define types and constants to be used in the Subsembly runtime. 
+
 ## Building and running
 ### Build runtime
 1. `yarn install`
