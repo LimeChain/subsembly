@@ -17,7 +17,7 @@ export class Balances {
     static getAccountData(accountId: AccountIdType): AccountData<Balance> {
         const accDataBytes = Storage.get(accountId.getAddress());
         if (accDataBytes.isSome()) {
-            return BytesReader.decodeInto<AccountData<Balance>>((<ByteArray>accDataBytes.unwrap()).values);
+            return BytesReader.decodeInto<AccountData<Balance>>((<ByteArray>accDataBytes.unwrap()).unwrap());
         } else {
             return new AccountData();
         }
@@ -47,8 +47,8 @@ export class Balances {
     static transfer(sender: AccountIdType, receiver: AccountIdType, amount: Balance): void {
         const senderAccData = this.getAccountData(sender);
         const receiverAccData = this.getAccountData(receiver);
-        const senderNewBalance = senderAccData.getFree().value - amount.value;
-        const receiverNewBalance = receiverAccData.getFree().value + amount.value;
+        const senderNewBalance = senderAccData.getFree().unwrap() - amount.unwrap();
+        const receiverNewBalance = receiverAccData.getFree().unwrap() + amount.unwrap();
 
         this.setBalance(sender, instantiate<Balance>(senderNewBalance), senderAccData.getReserved());
         this.setBalance(receiver, instantiate<Balance>(receiverNewBalance), receiverAccData.getReserved());
@@ -81,7 +81,7 @@ export class Balances {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const fromBalance = Balances.getAccountData(from);
         const balance: Balance = fromBalance.getFree();
-        if(balance.value < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).value){
+        if(balance.unwrap() < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).unwrap()){
             return new TransactionValidity(
                 false,
                 ResponseCodes.INSUFFICIENT_BALANCE,

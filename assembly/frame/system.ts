@@ -71,7 +71,7 @@ export class System {
         }
 
         Storage.set(Utils.stringsToBytes(this.DIGESTS_00, true), digests);
-        const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).value - 1);
+        const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).unwrap() - 1);
         this.setHashAtBlock(blockNumber, <HashType>header.getParentHash());
     }
     /**
@@ -88,8 +88,8 @@ export class System {
         // move block hash pruning window by one block
         let blockHashCount = this.blockHashCount();
         let blockNum = BytesReader.decodeInto<BlockNumber>(blockNumber);
-        if(blockNum.value > blockHashCount.value){
-            let toRemove = blockNum.value - blockHashCount.value - 1;
+        if(blockNum.unwrap() > blockHashCount.unwrap()){
+            let toRemove = blockNum.unwrap() - blockHashCount.unwrap() - 1;
             // keep genesis hash
             if(toRemove != 0){
                 let toRemoveNum = instantiate<BlockNumber>(toRemove);
@@ -116,7 +116,7 @@ export class System {
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
         const value = Storage.get(who.getAddress().concat(nonceKey));
         if(value.isSome()){
-            return BytesReader.decodeInto<NonceType>((<ByteArray>value.unwrap()).values);
+            return BytesReader.decodeInto<NonceType>((<ByteArray>value.unwrap()).unwrap());
         }
         return instantiate<NonceType>(0);
     }
@@ -128,7 +128,7 @@ export class System {
     static incAccountNonce(who: AccountId): void{
         const oldNonce = System.accountNonce(who);
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
-        const newNonce = instantiate<NonceType>(oldNonce.value + 1);
+        const newNonce = instantiate<NonceType>(oldNonce.unwrap() + 1);
         Storage.set(who.getAddress().concat(nonceKey), newNonce.toU8a());
     }
 
@@ -138,7 +138,7 @@ export class System {
    static blockHashCount(): BlockNumber {
     const value = Storage.get(Utils.stringsToBytes(this.BHSH_COUNT, true));
     if(value.isSome()){
-        return BytesReader.decodeInto<BlockNumber>((<ByteArray>value.unwrap()).values);
+        return BytesReader.decodeInto<BlockNumber>((<ByteArray>value.unwrap()).unwrap());
     }
     return instantiate<BlockNumber>(0);
 }
@@ -156,7 +156,7 @@ export class System {
      */
     static incExtrinsicIndex(): void {
         const count = this.extrinsicIndex();
-        const newCount = instantiate<ExtrinsicIndex>(count.value + 1);
+        const newCount = instantiate<ExtrinsicIndex>(count.unwrap() + 1);
         Storage.set(Utils.stringsToBytes([System.EXTRINSIC_INDEX], true), newCount.toU8a());
     }
 
@@ -194,7 +194,7 @@ export class System {
         const extIndex = this.extrinsicIndex();
         const extValue = BytesReader.decodeInto<ByteArray>(ext);
         if (extrinsics.isSome()){
-            let extrinsicsU8a: u8[] = (<ByteArray>extrinsics.unwrap()).values;
+            let extrinsicsU8a: u8[] = (<ByteArray>extrinsics.unwrap()).unwrap();
             const extcsData = ExtrinsicData.fromU8Array<ExtrinsicIndex, ByteArray>(extrinsicsU8a).getResult();
             extcsData.insert(extIndex, extValue);
             Storage.set(Utils.stringsToBytes(this.EXTCS_DATA, true), extcsData.toU8a());
@@ -221,7 +221,7 @@ export class System {
      */
     static getHashAtBlock(number: BlockNumber): HashType{
         let blockHash = Storage.get(Utils.stringsToBytes(this.BLOCK_HASH, true).concat(number.toU8a()));
-        let blockHashU8a: u8[] = blockHash.isSome() ? (<ByteArray>blockHash.unwrap()).values : [];
+        let blockHashU8a: u8[] = blockHash.isSome() ? (<ByteArray>blockHash.unwrap()).unwrap() : [];
         return BytesReader.decodeInto<HashType>(blockHashU8a);
     }
     /**

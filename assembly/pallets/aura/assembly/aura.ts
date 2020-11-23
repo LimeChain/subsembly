@@ -52,7 +52,7 @@ export class Aura {
      */
     static checkInherent(t: AuraSlotType, data: InherentData<ByteArray>): bool {
         const auraSlot = Aura.extracAuraInherentData(data);
-        const timestampBasedSlot: AuraSlotType = instantiate<AuraSlotType>(t.value / Aura.getSlotDuration().value);
+        const timestampBasedSlot: AuraSlotType = instantiate<AuraSlotType>(t.unwrap() / Aura.getSlotDuration().unwrap());
         if (timestampBasedSlot == auraSlot) {
             return true;
         }
@@ -66,6 +66,6 @@ export class Aura {
      */
     static extracAuraInherentData(inhData: InherentData<ByteArray>): AuraSlotType {
         const value = inhData.getData().get(Aura.INHERENT_IDENTIFIER);
-        return BytesReader.decodeInto<AuraSlotType>(value.values);
+        return BytesReader.decodeInto<AuraSlotType>(value.unwrap());
     }
 }

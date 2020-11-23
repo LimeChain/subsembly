@@ -32,7 +32,7 @@ export namespace Executive{
         let header = <HeaderType>block.getHeader();
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
-        const previousBlock: BlockNumber = instantiate<BlockNumber>(n.value - 1);
+        const previousBlock: BlockNumber = instantiate<BlockNumber>(n.unwrap() - 1);
         const parentHash: Hash = System.getHashAtBlock(previousBlock);
 
         if(n == instantiate<BlockNumber>(0) && parentHash != header.getParentHash()){
@@ -91,7 +91,7 @@ export namespace Executive{
      */
     export function applyExtrinsic(ext: u8[]): u8[] {
         const encodedLen = BytesReader.decodeInto<CompactInt>(ext);
-        const result = Executive.applyExtrinsicWithLen(ext, encodedLen.value as u32);
+        const result = Executive.applyExtrinsicWithLen(ext, encodedLen.unwrap() as u32);
         // if applying extrinsic succeeded, notify System about it
         if(Utils.areArraysEqual(result, ResponseCodes.SUCCESS)){
             System.noteAppliedExtrinsic(ext);
@@ -146,7 +146,7 @@ export namespace Executive{
             return ResponseCodes.INVALID_SIGNATURE;
         }   
         const nonce = System.accountNonce(from);
-        if (nonce.value >= (<NonceType>utx.getNonce()).value){
+        if (nonce.unwrap() >= (<NonceType>utx.getNonce()).unwrap()){
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }
