@@ -1,13 +1,12 @@
-import { Bool, BytesReader, CompactInt, Hash, UInt64 } from 'as-scale-codec';
+import { Bool, ByteArray, BytesReader, CompactInt, Hash, UInt64 } from 'as-scale-codec';
 import {
-    Crypto, ExtrinsicType, IBlock, IExtrinsic, IHeader,
-    IInherent, IInherentData,
+    Crypto, Extrinsic, ExtrinsicType, InherentData,
     Log, ResponseCodes, TransactionTag, Utils, ValidTransaction
 } from 'subsembly-core';
 import { Aura, Balances, Timestamp } from '../pallets';
 import {
-    AccountIdType, BlockNumber, HeaderType,
-    InherentType, ISignedTransactionType, NonceType, SignatureType, SignedTransactionType
+    AccountIdType, BlockNumber, BlockType, HeaderType,
+    InherentType, NonceType, SignatureType, SignedTransactionType, UncheckedExtrinsic
 } from '../runtime/runtime';
 import { System } from './system';
 
@@ -21,7 +20,7 @@ export namespace Executive{
      * @description Calls the System function initializeBlock()
      * @param header Header instance
      */
-    export function initializeBlock(header: IHeader): void{
+    export function initializeBlock(header: HeaderType): void{
         System.initialize(header);
     }
 
@@ -29,7 +28,7 @@ export namespace Executive{
      * @description Performs necessary checks for Block execution
      * @param block Block instance
      */
-    export function initialChecks(block: IBlock): void{
+    export function initialChecks(block: BlockType): void{
         let header = <HeaderType>block.getHeader();
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
@@ -46,7 +45,7 @@ export namespace Executive{
      * @description Final checks before including block in the chain
      * @param header 
      */
-    export function finalChecks(header: IHeader): void{
+    export function finalChecks(header: HeaderType): void{
         System.computeExtrinsicsRoot();
         let newHeader = System.finalize();
         let storageRoot = newHeader.getStateRoot();
@@ -60,7 +59,7 @@ export namespace Executive{
      * @description Actually execute all transactions for Block
      * @param block Block instance
      */
-    export function executeBlock(block: IBlock): void{
+    export function executeBlock(block: BlockType): void{
         Executive.initializeBlock(block.getHeader());
         Executive.initialChecks(block);
 
@@ -80,7 +79,7 @@ export namespace Executive{
      * @description creates inherents from internal modules
      * @param data inherents
      */
-    export function createExtrinsics(data: IInherentData): u8[] {
+    export function createExtrinsics(data: InherentData<ByteArray>): u8[] {
         const timestamp: InherentType = Timestamp.createInherent(data);
         const aura = Aura.createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
@@ -109,11 +108,11 @@ export namespace Executive{
     export function applyExtrinsicWithLen(ext: u8[], encodedLen: u32): u8[]{
         switch(encodedLen){
             case ExtrinsicType.Inherent:{
-                const inherent: IInherent = BytesReader.decodeInto<InherentType>(ext);
+                const inherent: InherentType = BytesReader.decodeInto<InherentType>(ext);
                 return Timestamp.applyInherent(<InherentType>inherent)
             }
             case ExtrinsicType.SignedTransaction:{
-                const signedTransaction: IExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
+                const signedTransaction: UncheckedExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
                 return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
             }
             default:{
@@ -126,7 +125,7 @@ export namespace Executive{
      * @description Execute given extrinsics and take care of post-extrinsics book-keeping
      * @param extrinsics byte array of extrinsics 
      */
-    export function executeExtrinsicsWithBookKeeping(extrinsics: IExtrinsic[]): void{
+    export function executeExtrinsicsWithBookKeeping(extrinsics: Extrinsic[]): void{
         for(let i=0; i<extrinsics.length; i++){
             Executive.applyExtrinsic(extrinsics[i].toU8a());
         }
@@ -138,7 +137,7 @@ export namespace Executive{
      * @param source source of the transaction (external, inblock, etc.)
      * @param utx transaction
      */
-    export function validateTransaction(utx: ISignedTransactionType): u8[] {
+    export function validateTransaction(utx: SignedTransactionType): u8[] {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(utx.getFrom().toU8a());
         const transfer = utx.getTransferBytes();
 
@@ -161,11 +160,11 @@ export namespace Executive{
          * If all the validations are passed, construct validTransaction instance
          */
         const priority: UInt64 = new UInt64(<u64>ExtrinsicType.SignedTransaction);
-        const requires: TransactionTag[] = [];
-        const provides: TransactionTag[] = [new TransactionTag(from, <UInt64>utx.getNonce())];
+        const requires: TransactionTag<AccountIdType>[] = [];
+        const provides: TransactionTag<AccountIdType>[] = [new TransactionTag(from, <UInt64>utx.getNonce())];
         const longevity: UInt64 = new UInt64(64);
         const propogate: Bool = new Bool(true);
-        const validTransaction = new ValidTransaction(
+        const validTransaction = new ValidTransaction<AccountIdType>(
             priority,
             requires,
             provides,

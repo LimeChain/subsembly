@@ -1,7 +1,8 @@
 import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
+    AccountId,
     ExtrinsicData, ext_trie_blake2_256_ordered_root_version_1,
-    IAccountId, IHeader, Serialiser, Storage, Utils
+    Serialiser, Storage, Utils
 } from 'subsembly-core';
 import {
     BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
@@ -52,7 +53,7 @@ export class System {
      * @description Sets up the environment necessary for block production
      * @param header Header instance
     */
-   static initialize(header: IHeader): void{
+   static initialize(header: HeaderType): void{
         // maximum number of blocks
         const bhshCount = RuntimeConstants.blockHashCount();
         Storage.set(Utils.stringsToBytes(this.BHSH_COUNT, true), bhshCount.toU8a());
@@ -111,7 +112,7 @@ export class System {
      * SCALE(AccountId) + SCALE("nonce")
      * @param who account for which to get the nonce
      */
-    static accountNonce(who: IAccountId): NonceType{
+    static accountNonce(who: AccountId): NonceType{
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
         const value = Storage.get(who.getAddress().concat(nonceKey));
         if(value.isSome()){
@@ -124,7 +125,7 @@ export class System {
      * Increment nonce of this account
      * @param who account
      */
-    static incAccountNonce(who: IAccountId): void{
+    static incAccountNonce(who: AccountId): void{
         const oldNonce = System.accountNonce(who);
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
         const newNonce = instantiate<NonceType>(oldNonce.value + 1);
@@ -194,15 +195,14 @@ export class System {
         const extValue = BytesReader.decodeInto<ByteArray>(ext);
         if (extrinsics.isSome()){
             let extrinsicsU8a: u8[] = (<ByteArray>extrinsics.unwrap()).values;
-            const extcsData = ExtrinsicData.fromU8Array(extrinsicsU8a).getResult();
+            const extcsData = ExtrinsicData.fromU8Array<ExtrinsicIndex, ByteArray>(extrinsicsU8a).getResult();
             extcsData.insert(extIndex, extValue);
             Storage.set(Utils.stringsToBytes(this.EXTCS_DATA, true), extcsData.toU8a());
             this.incExtrinsicIndex();
             return ;
         }
-        const data: Map<ExtrinsicIndex, ByteArray> = new Map();
-        data.set(extIndex, extValue);
-        const extcsData = new ExtrinsicData(data);
+        const extcsData = new ExtrinsicData<ExtrinsicIndex, ByteArray>();
+        extcsData.insert(extIndex, extValue);
         Storage.set(Utils.stringsToBytes(this.EXTCS_DATA, true), extcsData.toU8a());
         this.incExtrinsicIndex();
     }

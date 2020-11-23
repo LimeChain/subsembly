@@ -1,5 +1,5 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
-import { IInherent, IInherentData, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
+import { InherentData, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
 import { InherentType, Moment, TimestampConfig } from '../../../runtime/runtime';
 
 /**
@@ -85,7 +85,7 @@ export class Timestamp{
      * @description Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: IInherentData): InherentType {
+    static createInherent(data: InherentData<ByteArray>): InherentType {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
         let nextTime = timestampData;
         
@@ -109,7 +109,7 @@ export class Timestamp{
      * @param t new value of the timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static checkInherent(t: Moment, data: IInherentData): bool {
+    static checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: Moment = instantiate<Moment>(30 * 1000);
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
         const minimum: Moment = instantiate<Moment>(Timestamp.get().value + TimestampConfig.minimumPeriod().value);
@@ -128,7 +128,7 @@ export class Timestamp{
      * @description Applies given inherent
      * @param inherent 
      */
-    static applyInherent(inherent: IInherent): u8[] {
+    static applyInherent(inherent: InherentType): u8[] {
         const resCode = Timestamp.set((<Moment>inherent.getArgument()));
         if(Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)){
             Timestamp.toggleUpdate();
@@ -154,7 +154,7 @@ export class Timestamp{
      * @description Gets timestamp inherent data
      * @param inhData inherentData instance provided 
      */
-    static extractInherentData(inhData: IInherentData): ByteArray {
+    static extractInherentData(inhData: InherentData<ByteArray>): ByteArray {
         return inhData.getData().get(Timestamp.INHERENT_IDENTIFIER);
     }
 }

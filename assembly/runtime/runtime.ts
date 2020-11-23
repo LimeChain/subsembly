@@ -1,7 +1,6 @@
-import { CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
-    AccountId, Block, DigestItem, ExtrinsicData, Header, Inherent,
-    ISignedTransaction,
+    AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
     RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
 } from "subsembly-core";
 
@@ -14,18 +13,18 @@ export type SignatureType = Signature;
 export type HashType = Hash;
 export type DigestItemType = DigestItem;
 export type Balance = UInt128;
-export type HeaderType = Header;
-export type BlockType = Block;
+export type HeaderType = Header<BlockNumber, HashType>;
+export type UncheckedExtrinsic = Extrinsic;
+export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type Moment = UInt64;
 export type NonceType = UInt64;
 export type AmountType = UInt64;
 export type BlockHashCount = UInt32;
 export type ExtrinsicIndex = UInt32;
 export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;
-export type ISignedTransactionType = ISignedTransaction<HashType, AmountType, NonceType, SignatureType>;
 export type InherentType = Inherent<Moment>;
 export type AuraSlotType = UInt64;
-export type ExtrinsicDataType = ExtrinsicData;
+export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndex, ByteArray>;
 
 /**
  * @description Runtime specific methods

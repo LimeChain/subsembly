@@ -1,8 +1,8 @@
 import { ByteArray, BytesReader } from "as-scale-codec";
-import { Log, ResponseCodes, Storage, TransactionValidity } from 'subsembly-core';
-import { AccountData } from '.';
+import { AccountData, Log, ResponseCodes, Storage, TransactionValidity } from 'subsembly-core';
 import { System } from '../../../frame/system';
-import { AccountIdType, Balance, ISignedTransactionType } from "../../../runtime/runtime";
+import { AccountIdType, Balance, SignedTransactionType } from "../../../runtime/runtime";
+
 /**
  * @description The Balances Module.
  * Used for account balance manipulation such as:
@@ -14,10 +14,10 @@ export class Balances {
      * @description Returns AccountData for a given AccountId
      * If the account does not exist, Default AccountData is returned.
      */
-    static getAccountData(accountId: AccountIdType): AccountData {
+    static getAccountData(accountId: AccountIdType): AccountData<Balance> {
         const accDataBytes = Storage.get(accountId.getAddress());
         if (accDataBytes.isSome()) {
-            return BytesReader.decodeInto<AccountData>((<ByteArray>accDataBytes.unwrap()).values);
+            return BytesReader.decodeInto<AccountData<Balance>>((<ByteArray>accDataBytes.unwrap()).values);
         } else {
             return new AccountData();
         }
@@ -27,7 +27,7 @@ export class Balances {
      * @description Sets the balances of a given AccountId
      * Alters the Free balance and Reserved balances in Storage.
      */
-    static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData {
+    static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData<Balance> {
         const currentAccountData = this.getAccountData(accountId);
 
         currentAccountData.setFree(freeBalance);
@@ -61,7 +61,7 @@ export class Balances {
      * @description Apply extrinsic for the module
      * @param extrinsic SignedTransaction instance
      */
-    static applyExtrinsic(extrinsic: ISignedTransactionType): u8[]{
+    static applyExtrinsic(extrinsic: SignedTransactionType): u8[]{
         const sender: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const receiver: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getTo().toU8a());
         const validated = this.validateTransaction(extrinsic);
@@ -77,7 +77,7 @@ export class Balances {
      * @description Validate transaction before applying it 
      * @param extrinsic SignedTransaction instance
      */
-    static validateTransaction(extrinsic: ISignedTransactionType): TransactionValidity{
+    static validateTransaction(extrinsic: SignedTransactionType): TransactionValidity{
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const fromBalance = Balances.getAccountData(from);
         const balance: Balance = fromBalance.getFree();
