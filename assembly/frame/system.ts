@@ -1,12 +1,12 @@
 import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
-    AccountId,
     ExtrinsicData, ext_trie_blake2_256_ordered_root_version_1,
     Serialiser, Storage, Utils
 } from 'subsembly-core';
 import {
+    AccountIdType,
     BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
-    HashType, HeaderType, NonceType, RuntimeConstants
+    HashType, HeaderType, NonceType
 } from '../runtime/runtime';
 
 /**
@@ -54,9 +54,6 @@ export class System {
      * @param header Header instance
     */
    static initialize(header: HeaderType): void{
-        // maximum number of blocks
-        const bhshCount = RuntimeConstants.blockHashCount();
-        Storage.set(Utils.stringsToBytes(this.BHSH_COUNT, true), bhshCount.toU8a());
         Storage.set(Utils.stringsToBytes([this.EXTRINSIC_INDEX], true), [<u8>0]);
         Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.INITIALIZATION], true));
         Storage.set(Utils.stringsToBytes(this.PARENT_HSH, true), header.getParentHash().toU8a());
@@ -112,7 +109,7 @@ export class System {
      * SCALE(AccountId) + SCALE("nonce")
      * @param who account for which to get the nonce
      */
-    static accountNonce(who: AccountId): NonceType{
+    static accountNonce(who: AccountIdType): NonceType{
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
         const value = Storage.get(who.getAddress().concat(nonceKey));
         if(value.isSome()){
@@ -125,7 +122,7 @@ export class System {
      * Increment nonce of this account
      * @param who account
      */
-    static incAccountNonce(who: AccountId): void{
+    static incAccountNonce(who: AccountIdType): void{
         const oldNonce = System.accountNonce(who);
         const nonceKey: u8[] = Utils.stringsToBytes([System.NONCE_KEY], true);
         const newNonce = instantiate<NonceType>(oldNonce.unwrap() + 1);
