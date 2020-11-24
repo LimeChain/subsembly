@@ -46,8 +46,6 @@ export class System {
     static readonly EXTCS_COUT: string[] = ["system", "extcs_cout"];
     // extrinsics data 
     static readonly EXTCS_DATA: string[] = ["system", "extcs_data"];
-    // block hash count (max number of blocks to be stored)
-    static readonly BHSH_COUNT: string[] = ["system", "bhash_cout"];
     
     /**
      * @description Sets up the environment necessary for block production

@@ -41,7 +41,6 @@ export namespace Runtime{
  * @description Constants for runtime
  */
 export class RuntimeConstants {
-    static readonly BHSH_COUNT: string[] = ["system", "bhash_cout"];
     /**
      * @description Instanciates new RuntimeVersion Configration
     */
