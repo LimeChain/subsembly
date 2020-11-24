@@ -1,7 +1,7 @@
 import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
     AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
-    RuntimeVersion, Signature, SignedTransaction, Storage, SupportedAPIs, Utils
+    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
 } from "subsembly-core";
 
 /**
@@ -34,14 +34,6 @@ export namespace Runtime{
     export function metadata(): u8[]{
         // returns hard-coded value, currently
         return [0x6d, 0x65, 0x74, 0x61, 9];
-    }
-    /**
-     * @description Steps to take after the runtime Initialization
-     */
-    export function initialize(): void{
-        // when the runtime is initialized, set the maximum number of block hashes to store
-        const bhshCount = RuntimeConstants.blockHashCount();
-        Storage.set(Utils.stringsToBytes(RuntimeConstants.BHSH_COUNT), bhshCount.toU8a());
     }
 }
 

@@ -6,7 +6,7 @@ import {
 import {
     AccountIdType,
     BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
-    HashType, HeaderType, NonceType, Runtime
+    HashType, HeaderType, NonceType, RuntimeConstants
 } from '../runtime/runtime';
 
 /**
@@ -54,7 +54,6 @@ export class System {
      * @param header Header instance
     */
    static initialize(header: HeaderType): void{
-        Runtime.initialize();
         Storage.set(Utils.stringsToBytes([this.EXTRINSIC_INDEX], true), [<u8>0]);
         Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.INITIALIZATION], true));
         Storage.set(Utils.stringsToBytes(this.PARENT_HSH, true), header.getParentHash().toU8a());
@@ -84,7 +83,7 @@ export class System {
         let extrinsicsRoot = Storage.take(Utils.stringsToBytes(this.EXTCS_ROOT, true));
         
         // move block hash pruning window by one block
-        let blockHashCount = this.blockHashCount();
+        let blockHashCount = RuntimeConstants.blockHashCount();
         let blockNum = BytesReader.decodeInto<BlockNumber>(blockNumber);
         if(blockNum.unwrap() > blockHashCount.unwrap()){
             let toRemove = blockNum.unwrap() - blockHashCount.unwrap() - 1;
@@ -129,17 +128,6 @@ export class System {
         const newNonce = instantiate<NonceType>(oldNonce.unwrap() + 1);
         Storage.set(who.getAddress().concat(nonceKey), newNonce.toU8a());
     }
-
-    /**
-    * @description Maximum number of block number to block hash mappings to keep (oldest pruned first).
-    */
-   static blockHashCount(): BlockNumber {
-    const value = Storage.get(Utils.stringsToBytes(this.BHSH_COUNT, true));
-    if(value.isSome()){
-        return BytesReader.decodeInto<BlockNumber>((<ByteArray>value.unwrap()).unwrap());
-    }
-    return instantiate<BlockNumber>(0);
-}
 
     /**
      * @description Gets the index of extrinsic that is currently executing.
