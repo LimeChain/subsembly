@@ -22,5 +22,5 @@ export function AuraApi_slot_duration(data: i32, len: i32): u64 {
  */
 export function AuraApi_authorities(data: i32, len: i32): u64 {
     const authorities = Aura.getAuthorities();
-    return authorities.isSome() ? Serialiser.serialiseResult((<ByteArray>authorities.unwrap()).values) : Serialiser.serialiseResult([]);
+    return authorities.isSome() ? Serialiser.serialiseResult((<ByteArray>authorities.unwrap()).unwrap()) : Serialiser.serialiseResult([]);
 }

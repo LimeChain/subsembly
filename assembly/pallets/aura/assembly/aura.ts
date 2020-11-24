@@ -1,6 +1,6 @@
 import { ByteArray, BytesReader } from 'as-scale-codec';
-import { IInherentData, Option, Storage } from "subsembly-core";
-import { AuraSlotType, Moment, TimestampConfig } from '../../../runtime/runtime';
+import { InherentData, Option, Storage } from "subsembly-core";
+import { Moment, TimestampConfig } from '../../../runtime/runtime';
 
 /**
  * @description Aura provides a slot-based block authoring mechanism. 
@@ -41,7 +41,7 @@ export class Aura {
      * NOTE: Draft implementation
      * @param data Inherent data
      */
-    static createInherent(data: IInherentData): u8[] {
+    static createInherent(data: InherentData<ByteArray>): u8[] {
         return [];
     }
 
@@ -50,9 +50,9 @@ export class Aura {
      * @param t new value for the timestamp inherent data
      * @param data inherent data to extract aura inherent data from
      */
-    static checkInherent(t: AuraSlotType, data: IInherentData): bool {
+    static checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
         const auraSlot = Aura.extracAuraInherentData(data);
-        const timestampBasedSlot: AuraSlotType = instantiate<AuraSlotType>(t.value / Aura.getSlotDuration().value);
+        const timestampBasedSlot: Moment = instantiate<Moment>(t.unwrap() / Aura.getSlotDuration().unwrap());
         if (timestampBasedSlot == auraSlot) {
             return true;
         }
@@ -64,8 +64,8 @@ export class Aura {
      * @description Gets timestamp inherent data
      * @param inhData 
      */
-    static extracAuraInherentData(inhData: IInherentData): AuraSlotType {
+    static extracAuraInherentData(inhData: InherentData<ByteArray>): Moment {
         const value = inhData.getData().get(Aura.INHERENT_IDENTIFIER);
-        return BytesReader.decodeInto<AuraSlotType>(value.values);
+        return BytesReader.decodeInto<Moment>(value.unwrap());
     }
 }

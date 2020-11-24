@@ -1,5 +1,5 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
-import { IInherent, IInherentData, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
+import { InherentData, Log, ResponseCodes, Storage, Utils } from 'subsembly-core';
 import { InherentType, Moment, TimestampConfig } from '../../../runtime/runtime';
 
 /**
@@ -37,8 +37,8 @@ export class Timestamp{
      */
     static toggleUpdate(): void {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
-        const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
-        if(didUpdateValue.value){
+        const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).unwrap()) : new Bool(false);
+        if(didUpdateValue.unwrap()){
             const falseu8 = new Bool(false);
             Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, falseu8.toU8a());
         }
@@ -55,13 +55,13 @@ export class Timestamp{
      */
     static set(now: Moment): u8[] {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
-        const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).values) : new Bool(false);
-        if(didUpdateValue.value){
+        const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).unwrap()) : new Bool(false);
+        if(didUpdateValue.unwrap()){
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        let minValue = Timestamp.get().value + TimestampConfig.minimumPeriod().value;
-        if(now.value < minValue){
+        let minValue = Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
+        if(now.unwrap() < minValue){
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
@@ -78,20 +78,20 @@ export class Timestamp{
      */
     static get(): Moment {
         const now = Storage.get(Timestamp.SCALE_TIMESTAMP_NOW);
-        return now.isSome() ? BytesReader.decodeInto<Moment>((<ByteArray>now.unwrap()).values) : instantiate<Moment>(0);
+        return now.isSome() ? BytesReader.decodeInto<Moment>((<ByteArray>now.unwrap()).unwrap()) : instantiate<Moment>(0);
     }
 
     /**
      * @description Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: IInherentData): InherentType {
-        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
+    static createInherent(data: InherentData<ByteArray>): InherentType {
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).unwrap());
         let nextTime = timestampData;
         
-        if(Timestamp.get().value){
-            let nextTimeValue = timestampData.value > Timestamp.get().value + TimestampConfig.minimumPeriod().value 
-                ? timestampData.value : Timestamp.get().value + TimestampConfig.minimumPeriod().value;
+        if(Timestamp.get().unwrap()){
+            let nextTimeValue = timestampData.unwrap() > Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap() 
+                ? timestampData.unwrap() : Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
                 
             nextTime = instantiate<Moment>(nextTimeValue);
         }
@@ -109,14 +109,14 @@ export class Timestamp{
      * @param t new value of the timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static checkInherent(t: Moment, data: IInherentData): bool {
+    static checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: Moment = instantiate<Moment>(30 * 1000);
-        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).values);
-        const minimum: Moment = instantiate<Moment>(Timestamp.get().value + TimestampConfig.minimumPeriod().value);
-        if (t.value > timestampData.value + MAX_TIMESTAMP_DRIFT_MILLS.value){
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).unwrap());
+        const minimum: Moment = instantiate<Moment>(Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
+        if (t.unwrap() > timestampData.unwrap() + MAX_TIMESTAMP_DRIFT_MILLS.unwrap()){
             return false;
         }
-        else if(t.value < minimum.value){
+        else if(t.unwrap() < minimum.unwrap()){
             return false;
         }
         else{
@@ -128,7 +128,7 @@ export class Timestamp{
      * @description Applies given inherent
      * @param inherent 
      */
-    static applyInherent(inherent: IInherent): u8[] {
+    static applyInherent(inherent: InherentType): u8[] {
         const resCode = Timestamp.set((<Moment>inherent.getArgument()));
         if(Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)){
             Timestamp.toggleUpdate();
@@ -154,7 +154,7 @@ export class Timestamp{
      * @description Gets timestamp inherent data
      * @param inhData inherentData instance provided 
      */
-    static extractInherentData(inhData: IInherentData): ByteArray {
+    static extractInherentData(inhData: InherentData<ByteArray>): ByteArray {
         return inhData.getData().get(Timestamp.INHERENT_IDENTIFIER);
     }
 }
