@@ -6,7 +6,7 @@ import {
 import {
     AccountIdType,
     BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
-    HashType, HeaderType, NonceType
+    HashType, HeaderType, NonceType, Runtime
 } from '../runtime/runtime';
 
 /**
@@ -54,6 +54,7 @@ export class System {
      * @param header Header instance
     */
    static initialize(header: HeaderType): void{
+        Runtime.initialize();
         Storage.set(Utils.stringsToBytes([this.EXTRINSIC_INDEX], true), [<u8>0]);
         Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.INITIALIZATION], true));
         Storage.set(Utils.stringsToBytes(this.PARENT_HSH, true), header.getParentHash().toU8a());
