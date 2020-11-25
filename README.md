@@ -18,7 +18,7 @@ subsembly
     │
     └───pallets    <--- Subsembly pallets include in Runtime
 
-    spec-files/     <--- Raw chain-spec files
+    spec-files/    <--- Raw chain-spec files
 ```
 
 Main types and API entries are defined in `runtime` folder. `runtime.ts` file in `runtime` folder defines types and constants for the frame modules and pallets.
