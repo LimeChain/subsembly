@@ -103,7 +103,7 @@ The above command generates `wasm-code` file in the root folder.
 In order to run Substrate node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
 
 1. `docker pull limechain/as-substrate:stable`
-2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpec.json":/customSpecRaw.json -d limechain/as-substrate`
+2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(pwd)/spec-files/customSpecRaw.json":/customSpecRaw.json -d limechain/as-substrate`
 
 In order for you to start block production, you will have to instert your Aura keys as described above.
 
