@@ -5,7 +5,7 @@ import { InherentType, Moment, TimestampConfig } from '../../../runtime/runtime'
 /**
  * @description The Timestamp pallet provides functionality to get and set the on-chain time.
  */
-export class Timestamp{
+export class Timestamp {
     /**
      * Scale encoded key {scale("timestamp")}{scale("now")} 
      * Scale encoded key {scale("timestamp")}{scale("didupdate")} 
@@ -38,11 +38,11 @@ export class Timestamp{
     static toggleUpdate(): void {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
         const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).unwrap()) : new Bool(false);
-        if(didUpdateValue.unwrap()){
+        if (didUpdateValue.unwrap()) {
             const falseu8 = new Bool(false);
             Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, falseu8.toU8a());
         }
-        else{
+        else {
             const trueu8 = new Bool(true);
             Storage.set(Timestamp.SCALE_TIMESTAMP_DID_UPDATE, trueu8.toU8a());
         }
@@ -56,12 +56,12 @@ export class Timestamp{
     static set(now: Moment): u8[] {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
         const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).unwrap()) : new Bool(false);
-        if(didUpdateValue.unwrap()){
+        if (didUpdateValue.unwrap()) {
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
         let minValue = Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
-        if(now.unwrap() < minValue){
+        if (now.unwrap() < minValue) {
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
@@ -88,16 +88,16 @@ export class Timestamp{
     static createInherent(data: InherentData<ByteArray>): InherentType {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).unwrap());
         let nextTime = timestampData;
-        
-        if(Timestamp.get().unwrap()){
-            let nextTimeValue = timestampData.unwrap() > Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap() 
+
+        if (Timestamp.get().unwrap()) {
+            let nextTimeValue = timestampData.unwrap() > Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap()
                 ? timestampData.unwrap() : Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
-                
+
             nextTime = instantiate<Moment>(nextTimeValue);
         }
         const inherent = instantiate<InherentType>(
-            Timestamp.CALL_INDEX, 
-            Timestamp.API_VERSION, 
+            Timestamp.CALL_INDEX,
+            Timestamp.API_VERSION,
             Timestamp.PREFIX,
             nextTime
         );
@@ -113,13 +113,13 @@ export class Timestamp{
         const MAX_TIMESTAMP_DRIFT_MILLS: Moment = instantiate<Moment>(30 * 1000);
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).unwrap());
         const minimum: Moment = instantiate<Moment>(Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
-        if (t.unwrap() > timestampData.unwrap() + MAX_TIMESTAMP_DRIFT_MILLS.unwrap()){
+        if (t.unwrap() > timestampData.unwrap() + MAX_TIMESTAMP_DRIFT_MILLS.unwrap()) {
             return false;
         }
-        else if(t.unwrap() < minimum.unwrap()){
+        else if (t.unwrap() < minimum.unwrap()) {
             return false;
         }
-        else{
+        else {
             return true;
         }
     }
@@ -130,7 +130,7 @@ export class Timestamp{
      */
     static applyInherent(inherent: InherentType): u8[] {
         const resCode = Timestamp.set((<Moment>inherent.getArgument()));
-        if(Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)){
+        if (Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)) {
             Timestamp.toggleUpdate();
         }
         return resCode;
@@ -139,14 +139,14 @@ export class Timestamp{
     /**
      * @description Construct too frequent response error
      */
-    static _tooFrequentResponseCode(): u8[]{
+    static _tooFrequentResponseCode(): u8[] {
         return ResponseCodes.dispatchError(this.MODULE_INDEX, 1);
     }
 
     /**
      * @description Construct too low response error
      */
-    static _timeframeTooLowResponceCode(): u8[]{
+    static _timeframeTooLowResponceCode(): u8[] {
         return ResponseCodes.dispatchError(this.MODULE_INDEX, 2);
     }
 

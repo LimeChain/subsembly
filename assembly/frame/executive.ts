@@ -15,12 +15,12 @@ import { System } from './system';
  * @description Acts as the orchestration layer for the runtime.
  * It dispatches incoming extrinsic calls to the respective pallets in the runtime.
  */
-export namespace Executive{
+export namespace Executive {
     /**
      * @description Calls the System function initializeBlock()
      * @param header Header instance
      */
-    export function initializeBlock(header: HeaderType): void{
+    export function initializeBlock(header: HeaderType): void {
         System.initialize(header);
     }
 
@@ -28,14 +28,14 @@ export namespace Executive{
      * @description Performs necessary checks for Block execution
      * @param block Block instance
      */
-    export function initialChecks(block: BlockType): void{
+    export function initialChecks(block: BlockType): void {
         let header = <HeaderType>block.getHeader();
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
         const previousBlock: BlockNumber = instantiate<BlockNumber>(n.unwrap() - 1);
         const parentHash: Hash = System.getHashAtBlock(previousBlock);
 
-        if(n == instantiate<BlockNumber>(0) && parentHash != header.getParentHash()){
+        if (n == instantiate<BlockNumber>(0) && parentHash != header.getParentHash()) {
             Log.error("Initial checks: Parent hash should be valid.");
             throw new Error("Executive: Initial checks for block execution failed");
         }
@@ -45,11 +45,11 @@ export namespace Executive{
      * @description Final checks before including block in the chain
      * @param header 
      */
-    export function finalChecks(header: HeaderType): void{
+    export function finalChecks(header: HeaderType): void {
         System.computeExtrinsicsRoot();
         let newHeader = System.finalize();
         let storageRoot = newHeader.getStateRoot();
-        if(header.getStateRoot() != storageRoot){
+        if (header.getStateRoot() != storageRoot) {
             Log.error("Storage root must match that calculated");
             throw new Error("Executive: Final checks for block execution failed");
         }
@@ -59,7 +59,7 @@ export namespace Executive{
      * @description Actually execute all transactions for Block
      * @param block Block instance
      */
-    export function executeBlock(block: BlockType): void{
+    export function executeBlock(block: BlockType): void {
         Executive.initializeBlock(block.getHeader());
         Executive.initialChecks(block);
 
@@ -68,7 +68,7 @@ export namespace Executive{
     }
     /**
      * @description Finalize the block - it is up the caller to ensure that all header fields are valid
-	 * except state-root.
+     * except state-root.
      */
     export function finalizeBlock(): HeaderType {
         System.noteFinishedExtrinsics();
@@ -93,29 +93,29 @@ export namespace Executive{
         const encodedLen = BytesReader.decodeInto<CompactInt>(ext);
         const result = Executive.applyExtrinsicWithLen(ext, encodedLen.unwrap() as u32);
         // if applying extrinsic succeeded, notify System about it
-        if(Utils.areArraysEqual(result, ResponseCodes.SUCCESS)){
+        if (Utils.areArraysEqual(result, ResponseCodes.SUCCESS)) {
             System.noteAppliedExtrinsic(ext);
         }
         return result;
     }
-    
+
     /**
      * @description Orchestrating function for applying extrinsic
      * @param ext extrinsic
      * @param encodedLen length
      * @param encoded encoded extrinsic
      */
-    export function applyExtrinsicWithLen(ext: u8[], encodedLen: u32): u8[]{
-        switch(encodedLen){
-            case ExtrinsicType.Inherent:{
+    export function applyExtrinsicWithLen(ext: u8[], encodedLen: u32): u8[] {
+        switch (encodedLen) {
+            case ExtrinsicType.Inherent: {
                 const inherent: InherentType = BytesReader.decodeInto<InherentType>(ext);
                 return Timestamp.applyInherent(<InherentType>inherent)
             }
-            case ExtrinsicType.SignedTransaction:{
+            case ExtrinsicType.SignedTransaction: {
                 const signedTransaction: UncheckedExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
                 return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
             }
-            default:{
+            default: {
                 return ResponseCodes.CALL_ERROR;
             }
         }
@@ -125,8 +125,8 @@ export namespace Executive{
      * @description Execute given extrinsics and take care of post-extrinsics book-keeping
      * @param extrinsics byte array of extrinsics 
      */
-    export function executeExtrinsicsWithBookKeeping(extrinsics: Extrinsic[]): void{
-        for(let i=0; i<extrinsics.length; i++){
+    export function executeExtrinsicsWithBookKeeping(extrinsics: Extrinsic[]): void {
+        for (let i = 0; i < extrinsics.length; i++) {
             Executive.applyExtrinsic(extrinsics[i].toU8a());
         }
         System.noteFinishedExtrinsics();
@@ -141,17 +141,17 @@ export namespace Executive{
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(utx.getFrom().toU8a());
         const transfer = utx.getTransferBytes();
 
-        if(!Crypto.verifySignature(<SignatureType>utx.getSignature(), transfer, from)){
+        if (!Crypto.verifySignature(<SignatureType>utx.getSignature(), transfer, from)) {
             Log.error("Validation error: Invalid signature");
             return ResponseCodes.INVALID_SIGNATURE;
-        }   
+        }
         const nonce = System.accountNonce(from);
-        if (nonce.unwrap() >= (<NonceType>utx.getNonce()).unwrap()){
+        if (nonce.unwrap() >= (<NonceType>utx.getNonce()).unwrap()) {
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }
         const validated = Balances.validateTransaction(utx);
-        if(!validated.valid){
+        if (!validated.valid) {
             Log.error(validated.message);
             return validated.error;
         }
@@ -177,7 +177,7 @@ export namespace Executive{
     /**
      * @description module hook
      */
-    export function onFinalize(): void{
+    export function onFinalize(): void {
         Log.info("onInitialize() called");
     }
 }
