@@ -76,10 +76,10 @@ Some other important modules for the runtime are imported from `subsembly-core`:
 ### Makefile
 Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
 
-```
-make run-node
-```
-This command builds the Subsembly runtime, copies generated wasm code to a raw chain spec file and runs docker container with the generated raw chain spec file.
+1. `make build_runtime` to build the runtime
+2. `make run-node` to run the node with the freshly built runtime
+
+Those commans build the Subsembly runtime, copy the generated wasm code to a raw chain spec file and run a docker container with the generated raw chain spec file.
 The only thing left to do is add your Aura keys to get the block production started:
 
 ```
