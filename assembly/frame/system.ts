@@ -13,7 +13,6 @@ import {
  * @description Provides low-level types, storage, and functions for your blockchain. 
  * All other pallets depend on the System library as the basis of your Subsembly runtime.
  */
-
 export class System {
     // execution phases
     static readonly EXTRINSIC_INDEX: string = ":extrinsic_index";

@@ -23,18 +23,58 @@ subsembly
 
 Main types and API entries are defined in `runtime` folder. `runtime.ts` file in `runtime` folder defines types and constants for the frame modules and pallets.
 
-### Adding pallets
+### Developing Subsembly Runtimes
 
-This starter project comes with `Aura`, `Balances` and `Timestamp` pallets. The minimal requirements for building and running account-based runtime on Substrate node is to have those three pallets.
+#### Runtime configuration
 
-In order to add pallets to your runtime, place your implementation of pallet inside `/pallets` folder and implement runtime API entries for the pallet.
+Top-level runtime folder consists of Runtime API entries that are exposed to the Host. There is also, `runtime.ts` file, where types and constants for the frame modules and pallets are defined. We define general types that are used across the runtime and also pallet specific constants and types. 
 
-### Runtime file
+There are some requirements for Runtime types, such as:
 
-In the runtime folder, there is `runtime.ts` file where you define types and constants to be used in the Subsembly runtime. 
+- Type should implement `Codec` interface from `as-scale-codec`. It makes sure that every type in the Runtime can be SCALE encoded and decoded. 
+- Make sure to avoid possible `IntegerOverflow` exceptions. For example, it does not make sense to use 8-bit unsigned integer as `Timestamp` `Moment` type, since the value of timestamp is way out of range of what 8-bit unsigned integer can hold.
+
+#### Essential components 
+
+There are couple of essential modules and components that every runtime should have. 
+
+- `Executive`  
+    Acts as the orchestration layer for the runtime.
+    It dispatches incoming extrinsic calls to the respective pallets in the runtime.
+
+- `System`  
+    Provides low-level types, storage, and functions for your blockchain. 
+    All other pallets depend on the System library as the basis of your Subsembly runtime.
+
+#### Core modules
+Some other important modules for the runtime are imported from `subsembly-core`:  
+
+- `Storage`  
+    Provides access to the storage of the Host.
+
+- `Crypto`  
+    Contains various cryptographic utility functions, such as, signature verification.
+
+- `Log`  
+    Contains logging module used to print debug, info or error messages to the Host. 
+
+
+#### Configurable pallets
+
+- `pallets` folder  
+    Contains all the pallets used in the runtime, except for `system` and `executive`. 
+
+    This starter project comes with `Aura`, `Balances` and `Timestamp` pallets. The minimal requirements for building and running account-based runtime on Substrate node is to have those three pallets.
+
+    In order to add pallets to your runtime, place the implementation of the pallet inside `/pallets` folder, similar to other pallets, and implement runtime API entries for the pallet.
+
+    For example, in order to add `BABE` pallet to the runtime, place your code inside pallets folder and export necessary modules.
+
+    Then in the `./runtime/api/others.ts` implement the method `BabeApi_configuration`. Add corresponding types and constants used in the pallet inside the `runtime.ts` and you are good to go.
 
 ## Building and running
 ### Build runtime
+
 1. `yarn install`
 2. `yarn run build`
 
@@ -64,4 +104,3 @@ Root folder consists of Makefile that eases the building and running the Subsemb
 make run-node
 ```
 This command builds the Subsembly runtime, copies generated wasm code to a raw chain spec file and runs docker container with the generated raw chain spec file.
-
