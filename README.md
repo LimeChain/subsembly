@@ -72,8 +72,28 @@ Some other important modules for the runtime are imported from `subsembly-core`:
 
     Then in the `./runtime/api/others.ts` implement the method `BabeApi_configuration`. Add corresponding types and constants used in the pallet inside the `runtime.ts` and you are good to go.
 
-## Building and running
-### Build runtime
+## Building and Running
+### Makefile
+Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
+
+```
+make run-node
+```
+This command builds the Subsembly runtime, copies generated wasm code to a raw chain spec file and runs docker container with the generated raw chain spec file.
+The only thing left to do is add your Aura keys to get the block production started:
+
+```
+curl --location --request POST 'localhost:9933' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "jsonrpc": "2.0",
+    "method": "author_insertKey",
+    "params": ["aura","dice height enter anger ahead chronic easily wave curious banana era happy","0xdcc1461cba689c60dcae053ef09bc9e9524cdceb696ce39c7ed43bf3a5fa9659"],
+    "id": 1
+}'
+```
+
+### Build runtime (Manual)
 
 1. `yarn install`
 2. `yarn run build`
@@ -85,22 +105,5 @@ In order to run Substrate node with generated runtime, use Docker image of node 
 1. `docker pull limechain/as-substrate:stable`
 2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpec.json":/customSpecRaw.json -d limechain/as-substrate`
 
-Next, insert Aura keys to get started with block production:
-```
-curl --location --request POST 'localhost:5000' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "jsonrpc": "2.0",
-    "method": "author_insertKey",
-    "params": ["aura","dice height enter anger ahead chronic easily wave curious banana era happy","0xdcc1461cba689c60dcae053ef09bc9e9524cdceb696ce39c7ed43bf3a5fa9659"],
-    "id": 1
-}'
-```
+In order for you to start block production, you will have to instert your Aura keys as described above.
 
-### Makefile
-Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
-
-```
-make run-node
-```
-This command builds the Subsembly runtime, copies generated wasm code to a raw chain spec file and runs docker container with the generated raw chain spec file.
