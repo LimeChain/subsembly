@@ -31,11 +31,11 @@ export class Aura {
     /**
      * @description Sets the list of AccountIds to the storage
      * @param auths SCALE encoded list of authorities
-     */ 
+     */
     static setAuthorities(auths: u8[]): void {
         Storage.set(Aura.AURA_AUTHORITIES, auths);
     }
-    
+
     /**
      * @description Creates Aura inherent
      * NOTE: Draft implementation
@@ -56,7 +56,7 @@ export class Aura {
         if (timestampBasedSlot == auraSlot) {
             return true;
         }
-        else{
+        else {
             return false;
         }
     }
