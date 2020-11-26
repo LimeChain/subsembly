@@ -45,14 +45,19 @@ There are couple of essential modules and components that every runtime should h
 - `System`  
     Provides low-level types, storage, and functions for your blockchain. 
     All other pallets depend on the System library as the basis of your Subsembly runtime.
+
+#### Core modules
+Some other important modules for the runtime are imported from `subsembly-core`:  
+
 - `Storage`  
-    Imported from `subsembly-core` library, it provides access to the storage of the Host.
+    Provides access to the storage of the Host.
 
 - `Crypto`  
     Contains various cryptographic utility functions, such as, signature verification.
 
 - `Log`  
     Contains logging module used to print debug, info or error messages to the Host. 
+
 
 #### Configurable pallets
 
