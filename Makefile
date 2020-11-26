@@ -1,4 +1,4 @@
-all: run-node-demo run-node
+all: build run-node-demo run-node
 
 # Name of our Docker image
 DOCKER_IMAGE=limechain/as-substrate:latest
@@ -6,12 +6,12 @@ DOCKER_IMAGE=limechain/as-substrate:latest
 DOCKER_CONTAINER=as-substrate-node
 
 # build the runtime wasm code
-build_runtime:
+build:
 	@echo "Building runtime"
-	@cd runtime && yarn install 1> /dev/null && yarn build 1> /dev/null
+	@yarn install 1> /dev/null && yarn build 1> /dev/null
 
 # generate raw chain spec for the node
-generate_chain_spec: build_runtime
+generate_chain_spec: build
 	@echo "Generating raw chain spec file"
 	@yarn --cwd=./runtime build-spec -f ../spec-files/customSpec.json -o ../spec-files/customSpecRaw.json -c ./wasm-code > /dev/null
 
