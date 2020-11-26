@@ -27,7 +27,7 @@ Main types and API entries are defined in `runtime` folder. `runtime.ts` file in
 
 #### Runtime configuration
 
-Top-level runtime folder consists of Runtime API entries that should be exposed according to Polkadot Host Specification. There is also, `runtime.ts` file, where types and constants for the frame modules and pallets are defined. We define general types that are used across the runtime and also pallet specific constants and types. 
+Top-level runtime folder consists of Runtime API entries that are exposed to the Host. There is also, `runtime.ts` file, where types and constants for the frame modules and pallets are defined. We define general types that are used across the runtime and also pallet specific constants and types. 
 
 There are some requirements for Runtime types, such as:
 
@@ -48,6 +48,12 @@ There are couple of essential modules and components that every runtime should h
 - `Storage`  
     Imported from `subsembly-core` library, it provides access to the storage of the Host.
 
+- `Crypto`  
+    Contains various cryptographic utility functions, such as, signature verification.
+
+- `Log`  
+    Contains logging module used to print debug, info or error messages to the Host. 
+
 #### Configurable pallets
 
 - `pallets` folder  
@@ -62,18 +68,10 @@ There are couple of essential modules and components that every runtime should h
     Then in the `./runtime/api/others.ts` implement the method `BabeApi_configuration`. Add corresponding types and constants used in the pallet inside the `runtime.ts` and you are good to go.
 
 ## Building and running
-### subsembly-core
-In a separate folder, clone the `subsembly-core` repo and create a symlink of the project.
-
-1. `git clone https://github.com/limechain/subsembly-core`
-2. `yarn install`
-3. `yarn link`
-
 ### Build runtime
 
 1. `yarn install`
-2. `yarn link subsembly-core`
-3. `yarn run build`
+2. `yarn run build`
 
 The above command generates `wasm-code` file in the root folder.
 
