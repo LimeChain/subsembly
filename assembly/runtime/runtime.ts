@@ -1,7 +1,7 @@
 import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
     AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
-    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
+    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs, Utils
 } from "subsembly-core";
 
 /**
@@ -33,7 +33,9 @@ export namespace Runtime{
      */
     export function metadata(): u8[]{
         // returns hard-coded value, currently
-        return [0x6d, 0x65, 0x74, 0x61, 9];
+        let metadata: u8[] = [24]
+        metadata = metadata.concat(Utils.stringsToBytes(["meta"], false));
+        return metadata.concat([12]).concat([0]);
     }
 }
 
