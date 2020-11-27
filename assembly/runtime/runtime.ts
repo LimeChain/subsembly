@@ -27,11 +27,11 @@ export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndex, ByteArray>;
 /**
  * @description Runtime specific methods
  */
-export namespace Runtime{
+export namespace Runtime {
     /**
      * @description Metadata of the runtime
      */
-    export function metadata(): u8[]{
+    export function metadata(): u8[] {
         // returns hard-coded value, currently
         let metadata: u8[] = [24]
         metadata = metadata.concat(Utils.stringsToBytes(["meta"], false));
@@ -46,7 +46,7 @@ export class RuntimeConstants {
     /**
      * @description Instanciates new RuntimeVersion Configration
     */
-    static runtimeVersion(): RuntimeVersion{
+    static runtimeVersion(): RuntimeVersion {
         const SPEC_NAME: string = "node-template";
         const IMPL_NAME: string = "AssemblyScript"
         const AUTHORING_VERSION: u32 = 1;
@@ -55,7 +55,7 @@ export class RuntimeConstants {
 
         const APIS_VEC: SupportedAPIs = new SupportedAPIs();
         APIS_VEC.addAPI([1, 1, 1, 1, 1, 1, 1, 1], 10);
-        
+
         const TRANSACTION_VERSION: u32 = 1;
 
         return new RuntimeVersion(
@@ -68,11 +68,11 @@ export class RuntimeConstants {
             TRANSACTION_VERSION
         );
     };
-        
+
     /**
      * @description Number of block hashes to store in the storage, pruning starts with the oldest block 
     */
-    static blockHashCount(): BlockNumber{
+    static blockHashCount(): BlockNumber {
         return instantiate<BlockNumber>(1000);
     }
 }
@@ -80,11 +80,11 @@ export class RuntimeConstants {
 /**
  * @description Types and constants used in Timestamp pallet
  */
-export class TimestampConfig{
+export class TimestampConfig {
     /**
      * @description Minimum period between timestamps
      */
-    static minimumPeriod(): Moment{
+    static minimumPeriod(): Moment {
         return instantiate<Moment>(5000);
     }
 }

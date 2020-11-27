@@ -61,11 +61,11 @@ export class Balances {
      * @description Apply extrinsic for the module
      * @param extrinsic SignedTransaction instance
      */
-    static applyExtrinsic(extrinsic: SignedTransactionType): u8[]{
+    static applyExtrinsic(extrinsic: SignedTransactionType): u8[] {
         const sender: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const receiver: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getTo().toU8a());
         const validated = this.validateTransaction(extrinsic);
-        if(!validated.valid){
+        if (!validated.valid) {
             Log.error(validated.message);
             return validated.error;
         }
@@ -77,11 +77,11 @@ export class Balances {
      * @description Validate transaction before applying it 
      * @param extrinsic SignedTransaction instance
      */
-    static validateTransaction(extrinsic: SignedTransactionType): TransactionValidity{
+    static validateTransaction(extrinsic: SignedTransactionType): TransactionValidity {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const fromBalance = Balances.getAccountData(from);
         const balance: Balance = fromBalance.getFree();
-        if(balance.unwrap() < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).unwrap()){
+        if (balance.unwrap() < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).unwrap()) {
             return new TransactionValidity(
                 false,
                 ResponseCodes.INSUFFICIENT_BALANCE,

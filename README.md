@@ -72,22 +72,28 @@ Some other important modules for the runtime are imported from `subsembly-core`:
 
     Then in the `./runtime/api/others.ts` implement the method `BabeApi_configuration`. Add corresponding types and constants used in the pallet inside the `runtime.ts` and you are good to go.
 
-## Building and running
-### Build runtime
+## Building and Running
+### Makefile
 
-1. `yarn install`
-2. `yarn run build`
+Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
 
-The above command generates `wasm-code` file in the root folder.
+#### Prerequisite:  
+Install `jq` library with your favorite package manager:
 
-In order to run Substrate node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
-
-1. `docker pull limechain/as-substrate:stable`
-2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpec.json":/customSpecRaw.json -d limechain/as-substrate`
-
-Next, insert Aura keys to get started with block production:
+For example:
 ```
-curl --location --request POST 'localhost:5000' \
+brew install jq
+```
+Then: 
+
+1. `make build` to build the runtime
+2. `make run-node` to run the node with the freshly built runtime
+
+Those commands build the Subsembly runtime, copy the generated wasm code to a raw chain spec file and run a docker container with the generated raw chain spec file.
+The only thing left to do is add your Aura keys to get the block production started:
+
+```
+curl --location --request POST 'localhost:9933' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "jsonrpc": "2.0",
@@ -97,10 +103,17 @@ curl --location --request POST 'localhost:5000' \
 }'
 ```
 
-### Makefile
-Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
+### Build runtime (Manual)
 
-```
-make run-node
-```
-This command builds the Subsembly runtime, copies generated wasm code to a raw chain spec file and runs docker container with the generated raw chain spec file.
+1. `yarn install`
+2. `yarn run build`
+
+The above command generates `wasm-code` file in the root folder. You need to copy the content of the file and paste it as the value of the `0x3a636f6465` property in the `customSpecRaw.json` file.
+
+In order to run Substrate node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
+
+1. `docker pull limechain/as-substrate:stable`
+2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(pwd)/spec-files/customSpecRaw.json":/customSpecRaw.json -d limechain/as-substrate`
+
+In order for you to start block production, you will have to instert your Aura keys as described above.
+
