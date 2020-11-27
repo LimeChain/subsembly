@@ -74,7 +74,17 @@ Some other important modules for the runtime are imported from `subsembly-core`:
 
 ## Building and Running
 ### Makefile
+
 Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
+
+#### Prerequisite:  
+Install `jq` library with your favorite package manager:
+
+For example:
+```
+brew install jq
+```
+Then: 
 
 1. `make build` to build the runtime
 2. `make run-node` to run the node with the freshly built runtime
@@ -98,7 +108,7 @@ curl --location --request POST 'localhost:9933' \
 1. `yarn install`
 2. `yarn run build`
 
-The above command generates `wasm-code` file in the root folder.
+The above command generates `wasm-code` file in the root folder. You need to copy the content of the file and paste it as the value of the `0x3a636f6465` property in the `customSpecRaw.json` file.
 
 In order to run Substrate node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
 
