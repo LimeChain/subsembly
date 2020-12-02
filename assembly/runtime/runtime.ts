@@ -1,28 +1,53 @@
-import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import { ByteArray, CompactInt, Hash, ScaleMap, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
+    AccountData,
     AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
     RuntimeVersion, Signature, SignedTransaction, SupportedAPIs, Utils
 } from "subsembly-core";
 
-/**
- * General Runtime types
- */
+export type HashType = Hash;
+export type Moment = UInt64;
+export type NonceType = UInt64;
+export type ExtrinsicIndex = UInt32;
+export type AmountType = UInt64;
+export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;
 export type BlockNumber = CompactInt;
 export type AccountIdType = AccountId;
 export type SignatureType = Signature;
-export type HashType = Hash;
 export type DigestItemType = DigestItem;
 export type Balance = UInt128;
 export type HeaderType = Header<BlockNumber, HashType>;
 export type UncheckedExtrinsic = Extrinsic;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
-export type Moment = UInt64;
-export type NonceType = UInt64;
-export type AmountType = UInt64;
-export type ExtrinsicIndex = UInt32;
-export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;
 export type InherentType = Inherent<Moment>;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndex, ByteArray>;
+
+export namespace TimestampStorageEntries{
+    /**
+     * Current time for the current block.
+     */
+    export type Now = Moment;
+    
+    /**
+     * Did the timestamp get updated in this block?
+     */
+    export type DidUpdate = bool;
+};
+
+export namespace AuraStorageEntries{};
+
+export namespace BalancesStorageEntries{
+    /**
+     * The total units issued in the system.
+     */
+    export type TotalIssuance = Balance;
+
+    /**
+     *  The balance of an account.,
+        NOTE: This is only used in the case that this module is used to store balances.
+     */
+    export type Account = ScaleMap<AccountId, AccountData<Balance>>;    
+};
 
 /**
  * @description Runtime specific methods
@@ -68,12 +93,21 @@ export class RuntimeConstants {
             TRANSACTION_VERSION
         );
     };
+}
 
+export class SystemConstants{
     /**
      * @description Number of block hashes to store in the storage, pruning starts with the oldest block 
     */
-    static blockHashCount(): BlockNumber {
+    static BlockHashCount(): BlockNumber {
         return instantiate<BlockNumber>(1000);
+    }
+
+    /**
+     * @description The maximum length of a block (in bytes).
+     */
+    static MaximumBlockLength(): UInt32 {
+        return new UInt32(5000);
     }
 }
 

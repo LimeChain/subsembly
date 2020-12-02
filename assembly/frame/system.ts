@@ -1,13 +1,57 @@
-import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
+import { ByteArray, BytesReader, CompactInt, Hash, ScaleMap, UInt32 } from 'as-scale-codec';
 import {
+    DigestItem,
     ExtrinsicData, ext_trie_blake2_256_ordered_root_version_1,
     Serialiser, Storage, Utils
 } from 'subsembly-core';
-import {
-    AccountIdType,
-    BlockNumber, ExtrinsicDataType, ExtrinsicIndex,
-    HashType, HeaderType, NonceType, RuntimeConstants
-} from '../runtime/runtime';
+import { AccountIdType, BlockNumber, ExtrinsicDataType, ExtrinsicIndex, HashType, HeaderType, NonceType, SystemConstants } from '../runtime/runtime';
+import { StorageEntry } from './models/storageEntry';
+/**
+ * @description Storage entries for System module
+ */
+
+export namespace StorageEntries{
+    /**
+     * Total extrinsics count for the current block.
+     */
+    export function ExtrinsicCount(): StorageEntry<UInt32>{
+        return new StorageEntry("System", "ExtrinsicCount");
+    }
+    /**
+     * Total length (in bytes) for all extrinsics put together, for the current block.
+     */
+    export type AllExtrinsicsLen = UInt32;
+
+    /**
+     * Hash of the previous block.
+     */
+    export type ParentHash = Hash;
+
+    /**
+     * Extrinsics root of the current block, also part of the block header.
+     */
+    export type ExtrinsicsRoot = Hash;
+
+    /**
+     * Digest of the current block, also part of the block header.
+     */
+    export type Digest = DigestItem;
+
+    /**
+     * Extrinsics data for the current block (maps an extrinsic's index to its data).
+     */
+    export type ExtrinsicData = ScaleMap<ExtrinsicIndex, ByteArray>;
+
+    /**
+     * Map of block numbers to block hashes.
+     */
+    export type BlockHash = ScaleMap<BlockNumber, Hash>;
+
+    /**
+     * The current block number being processed. Set by `execute_block`.
+     */
+    export type Number = BlockNumber;
+};
 
 /**
  * @description Provides low-level types, storage, and functions for your blockchain. 
@@ -80,7 +124,7 @@ export class System {
         let extrinsicsRoot = Storage.take(Utils.stringsToBytes(this.EXTCS_ROOT, true));
 
         // move block hash pruning window by one block
-        let blockHashCount = RuntimeConstants.blockHashCount();
+        let blockHashCount = SystemConstants.BlockHashCount();
         let blockNum = BytesReader.decodeInto<BlockNumber>(blockNumber);
         if (blockNum.unwrap() > blockHashCount.unwrap()) {
             let toRemove = blockNum.unwrap() - blockHashCount.unwrap() - 1;
@@ -194,8 +238,7 @@ export class System {
      * @description Sets the new extrinsicsCount and set execution phase to finalization
      */
     static noteFinishedExtrinsics(): void {
-        let extIndex = this.extrinsicIndex();
-        Storage.set(Utils.stringsToBytes(this.EXTCS_COUT, true), extIndex.toU8a());
+        StorageEntries.ExtrinsicCount().set(this.extrinsicIndex());
         Storage.set(Utils.stringsToBytes(this.EXEC_PHASE, true), Utils.stringsToBytes([System.FINALIZATION], true));
     }
 

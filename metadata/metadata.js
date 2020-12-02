@@ -2,7 +2,7 @@ const ts = require('typescript');
 const fs = require("fs");
 const node = ts.createSourceFile(
     'test.ts',
-    fs.readFileSync('../assembly/pallets/aura/assembly/aura.ts', 'utf-8'),
+    fs.readFileSync('../assembly/frame/system.ts', 'utf-8'),
     ts.ScriptTarget.Latest
 );
 
@@ -35,18 +35,17 @@ node.statements[3]["members"].map(object => {
 });
 
 function renderNode(obj) {
-    console.log(obj.jsDoc);
     switch(obj.kind){
         // render property node objects
         case 163:
             return {
                 name: obj.name.escapedText,
-                comment: extractComment(obj.jsDoc[0]),
+                comment: extractComment(obj.jsDoc),
             };
         case 165:
             return {
                 name: obj.name.escapedText,
-                comment: extractComment(obj.jsDoc[0]),
+                comment: extractComment(obj.jsDoc),
                 type: extractType(obj.type),
                 params: extractParams(obj.parameters)
             }
@@ -78,13 +77,16 @@ function extractParams(params){
 }
 
 function extractComment(jsDoc){
-    if(jsDoc.comment && !jsDoc.tags){
-        return jsDoc.comment;
+    if(!jsDoc || !jsDoc[0]){
+        return "";
     }
-    return jsDoc.tags[0].comment;
+    if(jsDoc[0].comment && !jsDoc[0].tags){
+        return jsDoc[0].comment;
+    }
+    return jsDoc[0].tags[0].comment;
 }
 
-console.log(moduleMetadata.calls[6].params);
+console.log(moduleMetadata.calls[17].params);
 
 // node.statements[3]["members"].map(object => {
 //     console.log(object)

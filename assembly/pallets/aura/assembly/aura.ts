@@ -17,7 +17,7 @@ export class Aura {
     /**
      * @description Calls the TimeStamp module and returns configured min period.
      */
-    static getSlotDuration(): Moment {
+    static _getSlotDuration(): Moment {
         return TimestampConfig.minimumPeriod();
     }
 
@@ -25,14 +25,14 @@ export class Aura {
      * @description Reads from the Storage the authorities that 
      * were set on genesis, creates a vector of AccountIds and return it
      */
-    static getAuthorities(): Option<ByteArray> {
+    static _getAuthorities(): Option<ByteArray> {
         return Storage.get(Aura.AURA_AUTHORITIES);
     }
     /**
      * @description Sets the list of AccountIds to the storage
      * @param auths SCALE encoded list of authorities
      */
-    static setAuthorities(auths: u8[]): void {
+    static _setAuthorities(auths: u8[]): void {
         Storage.set(Aura.AURA_AUTHORITIES, auths);
     }
 
@@ -41,7 +41,7 @@ export class Aura {
      * NOTE: Draft implementation
      * @param data Inherent data
      */
-    static createInherent(data: InherentData<ByteArray>): u8[] {
+    static _createInherent(data: InherentData<ByteArray>): u8[] {
         return [];
     }
 
@@ -50,9 +50,9 @@ export class Aura {
      * @param t new value for the timestamp inherent data
      * @param data inherent data to extract aura inherent data from
      */
-    static checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
-        const auraSlot = Aura.extracAuraInherentData(data);
-        const timestampBasedSlot: Moment = instantiate<Moment>(t.unwrap() / Aura.getSlotDuration().unwrap());
+    static _checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
+        const auraSlot = Aura._extracAuraInherentData(data);
+        const timestampBasedSlot: Moment = instantiate<Moment>(t.unwrap() / Aura._getSlotDuration().unwrap());
         if (timestampBasedSlot == auraSlot) {
             return true;
         }
@@ -64,7 +64,7 @@ export class Aura {
      * @description Gets timestamp inherent data
      * @param inhData 
      */
-    static extracAuraInherentData(inhData: InherentData<ByteArray>): Moment {
+    static _extracAuraInherentData(inhData: InherentData<ByteArray>): Moment {
         const value = inhData.getData().get(Aura.INHERENT_IDENTIFIER);
         return BytesReader.decodeInto<Moment>(value.unwrap());
     }

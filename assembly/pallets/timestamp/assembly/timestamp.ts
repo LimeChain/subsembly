@@ -35,7 +35,7 @@ export class Timestamp {
     /**
      * @description Toggles the current value of didUpdate
      */
-    static toggleUpdate(): void {
+    static _toggleUpdate(): void {
         const didUpdate = Storage.get(Timestamp.SCALE_TIMESTAMP_DID_UPDATE);
         const didUpdateValue: Bool = didUpdate.isSome() ? BytesReader.decodeInto<Bool>((<ByteArray>didUpdate.unwrap()).unwrap()) : new Bool(false);
         if (didUpdateValue.unwrap()) {
@@ -60,7 +60,7 @@ export class Timestamp {
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        let minValue = Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
+        let minValue = Timestamp._get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
         if (now.unwrap() < minValue) {
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
@@ -76,7 +76,7 @@ export class Timestamp {
      *  @description Gets the current time that was set. If this function is called prior 
      *  to setting the timestamp, it will return the timestamp of the previous block.
      */
-    static get(): Moment {
+    static _get(): Moment {
         const now = Storage.get(Timestamp.SCALE_TIMESTAMP_NOW);
         return now.isSome() ? BytesReader.decodeInto<Moment>((<ByteArray>now.unwrap()).unwrap()) : instantiate<Moment>(0);
     }
@@ -85,13 +85,13 @@ export class Timestamp {
      * @description Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static createInherent(data: InherentData<ByteArray>): InherentType {
-        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).unwrap());
+    static _createInherent(data: InherentData<ByteArray>): InherentType {
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(this._extractInherentData(data).unwrap());
         let nextTime = timestampData;
 
-        if (Timestamp.get().unwrap()) {
-            let nextTimeValue = timestampData.unwrap() > Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap()
-                ? timestampData.unwrap() : Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
+        if (Timestamp._get().unwrap()) {
+            let nextTimeValue = timestampData.unwrap() > Timestamp._get().unwrap() + TimestampConfig.minimumPeriod().unwrap()
+                ? timestampData.unwrap() : Timestamp._get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
 
             nextTime = instantiate<Moment>(nextTimeValue);
         }
@@ -109,10 +109,10 @@ export class Timestamp {
      * @param t new value of the timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
+    static _checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: Moment = instantiate<Moment>(30 * 1000);
-        const timestampData: Moment = BytesReader.decodeInto<Moment>(this.extractInherentData(data).unwrap());
-        const minimum: Moment = instantiate<Moment>(Timestamp.get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
+        const timestampData: Moment = BytesReader.decodeInto<Moment>(this._extractInherentData(data).unwrap());
+        const minimum: Moment = instantiate<Moment>(Timestamp._get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
         if (t.unwrap() > timestampData.unwrap() + MAX_TIMESTAMP_DRIFT_MILLS.unwrap()) {
             return false;
         }
@@ -128,10 +128,10 @@ export class Timestamp {
      * @description Applies given inherent
      * @param inherent 
      */
-    static applyInherent(inherent: InherentType): u8[] {
+    static _applyInherent(inherent: InherentType): u8[] {
         const resCode = Timestamp.set((<Moment>inherent.getArgument()));
         if (Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)) {
-            Timestamp.toggleUpdate();
+            Timestamp._toggleUpdate();
         }
         return resCode;
     }
@@ -154,7 +154,7 @@ export class Timestamp {
      * @description Gets timestamp inherent data
      * @param inhData inherentData instance provided 
      */
-    static extractInherentData(inhData: InherentData<ByteArray>): ByteArray {
+    static _extractInherentData(inhData: InherentData<ByteArray>): ByteArray {
         return inhData.getData().get(Timestamp.INHERENT_IDENTIFIER);
     }
 }

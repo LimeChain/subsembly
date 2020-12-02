@@ -14,7 +14,7 @@ export class Balances {
      * @description Returns AccountData for a given AccountId
      * If the account does not exist, Default AccountData is returned.
      */
-    static getAccountData(accountId: AccountIdType): AccountData<Balance> {
+    static _getAccountData(accountId: AccountIdType): AccountData<Balance> {
         const accDataBytes = Storage.get(accountId.getAddress());
         if (accDataBytes.isSome()) {
             return BytesReader.decodeInto<AccountData<Balance>>((<ByteArray>accDataBytes.unwrap()).unwrap());
@@ -28,7 +28,7 @@ export class Balances {
      * Alters the Free balance and Reserved balances in Storage.
      */
     static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData<Balance> {
-        const currentAccountData = this.getAccountData(accountId);
+        const currentAccountData = this._getAccountData(accountId);
 
         currentAccountData.setFree(freeBalance);
         currentAccountData.setReserved(reservedBalance);
@@ -45,8 +45,8 @@ export class Balances {
      * @param amount amount of the transfer
      */
     static transfer(sender: AccountIdType, receiver: AccountIdType, amount: Balance): void {
-        const senderAccData = this.getAccountData(sender);
-        const receiverAccData = this.getAccountData(receiver);
+        const senderAccData = this._getAccountData(sender);
+        const receiverAccData = this._getAccountData(receiver);
         const senderNewBalance = senderAccData.getFree().unwrap() - amount.unwrap();
         const receiverNewBalance = receiverAccData.getFree().unwrap() + amount.unwrap();
 
@@ -61,10 +61,10 @@ export class Balances {
      * @description Apply extrinsic for the module
      * @param extrinsic SignedTransaction instance
      */
-    static applyExtrinsic(extrinsic: SignedTransactionType): u8[] {
+    static _applyExtrinsic(extrinsic: SignedTransactionType): u8[] {
         const sender: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
         const receiver: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getTo().toU8a());
-        const validated = this.validateTransaction(extrinsic);
+        const validated = this._validateTransaction(extrinsic);
         if (!validated.valid) {
             Log.error(validated.message);
             return validated.error;
@@ -77,9 +77,9 @@ export class Balances {
      * @description Validate transaction before applying it 
      * @param extrinsic SignedTransaction instance
      */
-    static validateTransaction(extrinsic: SignedTransactionType): TransactionValidity {
+    static _validateTransaction(extrinsic: SignedTransactionType): TransactionValidity {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
-        const fromBalance = Balances.getAccountData(from);
+        const fromBalance = Balances._getAccountData(from);
         const balance: Balance = fromBalance.getFree();
         if (balance.unwrap() < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).unwrap()) {
             return new TransactionValidity(
