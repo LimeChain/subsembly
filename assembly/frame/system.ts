@@ -1,10 +1,13 @@
-import { ByteArray, BytesReader, CompactInt, Hash, ScaleString, UInt32 } from 'as-scale-codec';
+import { ByteArray, BytesReader, CompactInt, ScaleString } from 'as-scale-codec';
 import {
     ext_trie_blake2_256_ordered_root_version_1,
     Header,
     Serialiser, Storage
 } from 'subsembly-core';
-import { BlockNumber, ExtrinsicDataType, ExtrinsicIndexType, HashType, HeaderType, NonceType, SystemConfig } from '../runtime/runtime';
+import {
+    BlockNumber, ExtrinsicDataType, ExtrinsicIndexType,
+    HashType, HeaderType, NonceType, SystemConfig
+} from '../runtime/runtime';
 import { StorageEntry } from './models/storageEntry';
 
 /**
@@ -21,29 +24,29 @@ export namespace SystemStorageEntries{
     /**
      * Total extrinsics count for the current block.
      */
-    export function ExtrinsicCount(): StorageEntry<UInt32>{
-        return new StorageEntry<UInt32>("System", "ExtrinsicCount");
+    export function ExtrinsicCount(): StorageEntry<ExtrinsicIndexType>{
+        return new StorageEntry<ExtrinsicIndexType>("System", "ExtrinsicCount");
     };
 
     /**
      * Total length (in bytes) for all extrinsics put together, for the current block.
      */
-    export function AllExtrinsicsLen(): StorageEntry<UInt32>{
-        return new StorageEntry<UInt32>("System", "AllExtrinsicsLen");
+    export function AllExtrinsicsLen(): StorageEntry<ExtrinsicIndexType>{
+        return new StorageEntry<ExtrinsicIndexType>("System", "AllExtrinsicsLen");
     };
 
     /**
      * Hash of the previous block.
      */
-    export function ParentHash(): StorageEntry<Hash>{
-        return new StorageEntry<Hash>("System", "ParentHash");
+    export function ParentHash(): StorageEntry<HashType>{
+        return new StorageEntry<HashType>("System", "ParentHash");
     };
 
     /**
      * Extrinsics root of the current block, also part of the block header.
      */
-    export function ExtrinsicsRoot(): StorageEntry<Hash>{
-        return new StorageEntry<Hash>("System", "ExtrinsicsRoot");
+    export function ExtrinsicsRoot(): StorageEntry<HashType>{
+        return new StorageEntry<HashType>("System", "ExtrinsicsRoot");
     };
     /**
      * Digest of the current block, also part of the block header.
@@ -61,8 +64,8 @@ export namespace SystemStorageEntries{
     /**
      * Map of block numbers to block hashes.
      */
-    export function BlockHash(): StorageEntry<Hash>{
-        return new StorageEntry<Hash>("System", "BlockHash");
+    export function BlockHash(): StorageEntry<HashType>{
+        return new StorageEntry<HashType>("System", "BlockHash");
     };
     /**
      * The current block number being processed. Set by `execute_block`.
@@ -108,7 +111,7 @@ export class System {
      * @param header Header instance
     */
     static initialize(header: HeaderType): void {
-        SystemStorageEntries.ExtrinsicIndex().set(new UInt32(0));
+        SystemStorageEntries.ExtrinsicIndex().set(instantiate<ExtrinsicIndexType>(0));
         SystemStorageEntries.ExecutionPhase().set(new ScaleString(this.INITIALIZATION));
         SystemStorageEntries.ParentHash().set(header.getParentHash());
         SystemStorageEntries.Number().set(header.getNumber());
@@ -145,7 +148,7 @@ export class System {
                 SystemStorageEntries.BlockHash().clear(instantiate<BlockNumber>(toRemove));
             }
         }
-        const root = BytesReader.decodeInto<Hash>(Storage.storageRoot());
+        const root = BytesReader.decodeInto<HashType>(Storage.storageRoot());
         const digest = Header.decodeOptionalDigest(digests.unwrap());
         return instantiate<HeaderType>(parentHash, blockNumber, root, extrinsicsRoot, digest.getResult());
     }
