@@ -4,7 +4,7 @@ import {
     Header,
     Serialiser, Storage
 } from 'subsembly-core';
-import { BlockNumber, ExtrinsicDataType, ExtrinsicIndexType, HashType, HeaderType, NonceType, SystemConstants } from '../runtime/runtime';
+import { BlockNumber, ExtrinsicDataType, ExtrinsicIndexType, HashType, HeaderType, NonceType, SystemConfig } from '../runtime/runtime';
 import { StorageEntry } from './models/storageEntry';
 
 /**
@@ -137,7 +137,7 @@ export class System {
         let extrinsicsRoot = SystemStorageEntries.ExtrinsicsRoot().take();
 
         // move block hash pruning window by one block
-        let blockHashCount = SystemConstants.BlockHashCount();
+        let blockHashCount = SystemConfig.BlockHashCount();
         if (blockNumber && blockNumber.unwrap() > blockHashCount.unwrap()) {
             let toRemove = blockNumber.unwrap() - blockHashCount.unwrap() - 1;
             // keep genesis hash

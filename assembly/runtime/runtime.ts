@@ -1,6 +1,5 @@
-import { ByteArray, CompactInt, Hash, ScaleMap, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
-    AccountData,
     AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
     RuntimeVersion, Signature, SignedTransaction, SupportedAPIs, Utils
 } from "subsembly-core";
@@ -22,33 +21,6 @@ export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type InherentType = Inherent<Moment>;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 
-export namespace TimestampStorageEntries{
-    /**
-     * Current time for the current block.
-     */
-    export type Now = Moment;
-    
-    /**
-     * Did the timestamp get updated in this block?
-     */
-    export type DidUpdate = bool;
-};
-
-export namespace AuraStorageEntries{};
-
-export namespace BalancesStorageEntries{
-    /**
-     * The total units issued in the system.
-     */
-    export type TotalIssuance = Balance;
-
-    /**
-     *  The balance of an account.,
-        NOTE: This is only used in the case that this module is used to store balances.
-     */
-    export type Account = ScaleMap<AccountId, AccountData<Balance>>;    
-};
-
 /**
  * @description Runtime specific methods
  */
@@ -67,7 +39,7 @@ export namespace Runtime {
 /**
  * @description Constants for runtime
  */
-export class RuntimeConstants {
+export class RuntimeConfig {
     /**
      * @description Instanciates new RuntimeVersion Configration
     */
@@ -95,7 +67,7 @@ export class RuntimeConstants {
     };
 }
 
-export class SystemConstants{
+export class SystemConfig{
     /**
      * @description Number of block hashes to store in the storage, pruning starts with the oldest block 
     */
