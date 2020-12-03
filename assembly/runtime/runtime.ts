@@ -8,7 +8,7 @@ import {
 export type HashType = Hash;
 export type Moment = UInt64;
 export type NonceType = UInt64;
-export type ExtrinsicIndex = UInt32;
+export type ExtrinsicIndexType = UInt32;
 export type AmountType = UInt64;
 export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;
 export type BlockNumber = CompactInt;
@@ -20,7 +20,7 @@ export type HeaderType = Header<BlockNumber, HashType>;
 export type UncheckedExtrinsic = Extrinsic;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type InherentType = Inherent<Moment>;
-export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndex, ByteArray>;
+export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 
 export namespace TimestampStorageEntries{
     /**

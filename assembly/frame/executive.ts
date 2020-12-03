@@ -8,7 +8,7 @@ import {
     AccountIdType, BlockNumber, BlockType, HeaderType,
     InherentType, NonceType, SignatureType, SignedTransactionType, UncheckedExtrinsic
 } from '../runtime/runtime';
-import { System } from './system';
+import { System, SystemStorageEntries } from './system';
 
 
 /**
@@ -33,7 +33,7 @@ export namespace Executive {
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
         const previousBlock: BlockNumber = instantiate<BlockNumber>(n.unwrap() - 1);
-        const parentHash: Hash = System.getHashAtBlock(previousBlock);
+        const parentHash: Hash = SystemStorageEntries.BlockHash().get(previousBlock);
 
         if (n == instantiate<BlockNumber>(0) && parentHash != header.getParentHash()) {
             Log.error("Initial checks: Parent hash should be valid.");
@@ -145,8 +145,8 @@ export namespace Executive {
             Log.error("Validation error: Invalid signature");
             return ResponseCodes.INVALID_SIGNATURE;
         }
-        const nonce = System.accountNonce(from);
-        if (nonce.unwrap() >= (<NonceType>utx.getNonce()).unwrap()) {
+        const nonce = SystemStorageEntries.AccountNonce().get(from);
+        if (nonce && nonce.unwrap() >= (<NonceType>utx.getNonce()).unwrap()) {
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }
