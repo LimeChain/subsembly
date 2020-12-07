@@ -2,11 +2,21 @@ import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
 import { InherentData, Log, ResponseCodes, Utils } from 'subsembly-core';
 import { StorageEntry } from '../../../frame';
 import { InherentType, Moment, TimestampConfig } from '../../../runtime/runtime';
-export namespace TimestampStorageEntries{
+
+/**
+ * Storage entries for Timestamp
+ */
+export namespace StorageEntries{
+    /**
+     * Current set Timestamp value
+     */
     export function Now(): StorageEntry<Moment>{
         return new StorageEntry<Moment>("Timestamp", "Now");
     };
     
+    /**
+     * Checks if Timestamp was updated for current slot
+     */
     export function DidUpdate(): StorageEntry<Bool>{
         return new StorageEntry<Bool>("Timestamp", "DidUpdate");  
     };
@@ -16,12 +26,6 @@ export namespace TimestampStorageEntries{
  * @description The Timestamp pallet provides functionality to get and set the on-chain time.
  */
 export class Timestamp {
-    /**
-     * Scale encoded key {scale("timestamp")}{scale("now")} 
-     * Scale encoded key {scale("timestamp")}{scale("didupdate")} 
-     */
-    public static readonly SCALE_TIMESTAMP_NOW: u8[] = [36, 116, 105, 109, 101, 115, 116, 97, 109, 112, 12, 110, 111, 119];
-    public static readonly SCALE_TIMESTAMP_DID_UPDATE: u8[] = [36, 116, 105, 109, 101, 115, 116, 97, 109, 112, 36, 100, 105, 100, 117, 112, 100, 97, 116, 101];
     public static readonly INHERENT_IDENTIFIER: string = "timstap0";
 
     /**
@@ -46,8 +50,8 @@ export class Timestamp {
      * @description Toggles the current value of didUpdate
      */
     static _toggleUpdate(): void {
-        const value = TimestampStorageEntries.DidUpdate().get();
-        TimestampStorageEntries.DidUpdate().set(new Bool(!(value.unwrap())));
+        const value = StorageEntries.DidUpdate().get();
+        StorageEntries.DidUpdate().set(new Bool(!(value.unwrap())));
     }
 
     /**
@@ -56,19 +60,19 @@ export class Timestamp {
      * @param now timestamp number
      */
     static set(now: Moment): u8[] {
-        const didUpdate = TimestampStorageEntries.DidUpdate().get();
+        const didUpdate = StorageEntries.DidUpdate().get();
         if (didUpdate.unwrap()) {
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        let minValue = TimestampStorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
+        let minValue = StorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
         if (now.unwrap() < minValue) {
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
 
-        TimestampStorageEntries.DidUpdate().set(new Bool(true));
-        TimestampStorageEntries.Now().set(now);
+        StorageEntries.DidUpdate().set(new Bool(true));
+        StorageEntries.Now().set(now);
 
         return ResponseCodes.SUCCESS;
     }
@@ -81,7 +85,7 @@ export class Timestamp {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this._extractInherentData(data).unwrap());
         let nextTime = timestampData;
 
-        const now = TimestampStorageEntries.Now().get();
+        const now = StorageEntries.Now().get();
         if (now.unwrap()) {
             let nextTimeValue = timestampData.unwrap() > now.unwrap() + TimestampConfig.minimumPeriod().unwrap()
                 ? timestampData.unwrap() : now.unwrap() + TimestampConfig.minimumPeriod().unwrap();
@@ -105,7 +109,7 @@ export class Timestamp {
     static _checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: Moment = instantiate<Moment>(30 * 1000);
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this._extractInherentData(data).unwrap());
-        const minimum: Moment = instantiate<Moment>(TimestampStorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
+        const minimum: Moment = instantiate<Moment>(StorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
         if (t.unwrap() > timestampData.unwrap() + MAX_TIMESTAMP_DRIFT_MILLS.unwrap()) {
             return false;
         }

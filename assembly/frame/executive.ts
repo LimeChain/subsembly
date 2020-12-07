@@ -8,7 +8,7 @@ import {
     AccountIdType, BlockNumber, BlockType, HeaderType,
     InherentType, NonceType, SignatureType, SignedTransactionType, UncheckedExtrinsic
 } from '../runtime/runtime';
-import { System, SystemStorageEntries } from './system';
+import { StorageEntries as SystemStorageEntries, System } from './system';
 
 
 /**
@@ -21,7 +21,7 @@ export namespace Executive {
      * @param header Header instance
      */
     export function initializeBlock(header: HeaderType): void {
-        System.initialize(header);
+        System._initialize(header);
     }
 
     /**
@@ -46,8 +46,8 @@ export namespace Executive {
      * @param header 
      */
     export function finalChecks(header: HeaderType): void {
-        System.computeExtrinsicsRoot();
-        let newHeader = System.finalize();
+        System._computeExtrinsicsRoot();
+        let newHeader = System._finalize();
         let storageRoot = newHeader.getStateRoot();
         if (header.getStateRoot() != storageRoot) {
             Log.error("Storage root must match that calculated");
@@ -71,9 +71,9 @@ export namespace Executive {
      * except state-root.
      */
     export function finalizeBlock(): HeaderType {
-        System.noteFinishedExtrinsics();
-        System.computeExtrinsicsRoot();
-        return System.finalize();
+        System._noteFinishedExtrinsics();
+        System._computeExtrinsicsRoot();
+        return System._finalize();
     }
     /**
      * @description creates inherents from internal modules
@@ -94,7 +94,7 @@ export namespace Executive {
         const result = Executive.applyExtrinsicWithLen(ext, encodedLen.unwrap() as u32);
         // if applying extrinsic succeeded, notify System about it
         if (Utils.areArraysEqual(result, ResponseCodes.SUCCESS)) {
-            System.noteAppliedExtrinsic(ext);
+            System._noteAppliedExtrinsic(ext);
         }
         return result;
     }
@@ -129,7 +129,7 @@ export namespace Executive {
         for (let i = 0; i < extrinsics.length; i++) {
             Executive.applyExtrinsic(extrinsics[i].toU8a());
         }
-        System.noteFinishedExtrinsics();
+        System._noteFinishedExtrinsics();
     }
 
     /**

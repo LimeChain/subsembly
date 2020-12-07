@@ -1,10 +1,10 @@
 import { BytesReader } from "as-scale-codec";
 import { AccountData, Log, ResponseCodes, TransactionValidity } from 'subsembly-core';
 import { StorageEntry } from "../../../frame/models/storageEntry";
-import { SystemStorageEntries } from '../../../frame/system';
+import { StorageEntries as SystemStorageEntries } from '../../../frame/system';
 import { AccountIdType, Balance, NonceType, SignedTransactionType } from "../../../runtime/runtime";
 
-export namespace BalancesStorageEntries{
+export namespace StorageEntries{
     /**
      * @description Stores information about accountId
      */
@@ -24,11 +24,11 @@ export class Balances {
      * Alters the Free balance and Reserved balances in Storage.
      */
     static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData<Balance> {
-        const currentAccountData = BalancesStorageEntries.Account().get(accountId);
+        const currentAccountData = StorageEntries.Account().get(accountId);
 
         currentAccountData.setFree(freeBalance);
         currentAccountData.setReserved(reservedBalance);
-        BalancesStorageEntries.Account().set(currentAccountData, accountId);
+        StorageEntries.Account().set(currentAccountData, accountId);
         return currentAccountData;
     }
 
@@ -39,8 +39,8 @@ export class Balances {
      * @param amount amount of the transfer
      */
     static transfer(sender: AccountIdType, receiver: AccountIdType, amount: Balance): void {
-        const senderAccData = BalancesStorageEntries.Account().get(sender);
-        const receiverAccData = BalancesStorageEntries.Account().get(receiver);
+        const senderAccData = StorageEntries.Account().get(sender);
+        const receiverAccData = StorageEntries.Account().get(receiver);
         const senderNewBalance = senderAccData.getFree().unwrap() - amount.unwrap();
         const receiverNewBalance = receiverAccData.getFree().unwrap() + amount.unwrap();
 
@@ -74,7 +74,7 @@ export class Balances {
      */
     static _validateTransaction(extrinsic: SignedTransactionType): TransactionValidity {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
-        const fromBalance = BalancesStorageEntries.Account().get(from);
+        const fromBalance = StorageEntries.Account().get(from);
         const balance: Balance = fromBalance.getFree();
         if (balance.unwrap() < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).unwrap()) {
             return new TransactionValidity(

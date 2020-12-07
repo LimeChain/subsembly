@@ -144,7 +144,7 @@ function extractComment(jsDoc){
 
 /**
  * 
- * @param index Generates metadata
+ * @param index Module index
  */
 module.exports = function generateMetadata(index, node){
     /**
