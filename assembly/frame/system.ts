@@ -13,7 +13,7 @@ import { StorageEntry } from './models/storageEntry';
 /**
  * @description Storage entries for System module
  */
-export namespace SystemStorageEntries{
+export namespace StorageEntries{
     /**
      * Stores nonce of the account 
      */
@@ -111,11 +111,11 @@ export class System {
      * @param header Header instance
     */
     static initialize(header: HeaderType): void {
-        SystemStorageEntries.ExtrinsicIndex().set(instantiate<ExtrinsicIndexType>(0));
-        SystemStorageEntries.ExecutionPhase().set(new ScaleString(this.INITIALIZATION));
-        SystemStorageEntries.ParentHash().set(header.getParentHash());
-        SystemStorageEntries.Number().set(header.getNumber());
-        SystemStorageEntries.ExtrinsicsRoot().set(header.getExtrinsicsRoot());
+        StorageEntries.ExtrinsicIndex().set(instantiate<ExtrinsicIndexType>(0));
+        StorageEntries.ExecutionPhase().set(new ScaleString(this.INITIALIZATION));
+        StorageEntries.ParentHash().set(header.getParentHash());
+        StorageEntries.Number().set(header.getNumber());
+        StorageEntries.ExtrinsicsRoot().set(header.getExtrinsicsRoot());
 
         let digestsArr = header.getDigests();
         let digests: u8[] = (new CompactInt(digestsArr.length)).toU8a();
@@ -124,20 +124,20 @@ export class System {
             digests = digests.concat(digestsArr[i].toU8a());
         }
 
-        SystemStorageEntries.Digest().set(new ByteArray(digests));
+        StorageEntries.Digest().set(new ByteArray(digests));
         const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).unwrap() - 1);
-        SystemStorageEntries.BlockHash().set(header.getParentHash(), blockNumber);
+        StorageEntries.BlockHash().set(header.getParentHash(), blockNumber);
     }
     /**
      * @description Removes temporary "environment" entries in storage and finalize block
      */
     static finalize(): HeaderType {
-        SystemStorageEntries.ExecutionPhase().clear();
-        SystemStorageEntries.ExtrinsicCount().clear();
-        let blockNumber = SystemStorageEntries.Number().take();
-        let parentHash = SystemStorageEntries.ParentHash().take();
-        let digests = SystemStorageEntries.Digest().take();
-        let extrinsicsRoot = SystemStorageEntries.ExtrinsicsRoot().take();
+        StorageEntries.ExecutionPhase().clear();
+        StorageEntries.ExtrinsicCount().clear();
+        let blockNumber = StorageEntries.Number().take();
+        let parentHash = StorageEntries.ParentHash().take();
+        let digests = StorageEntries.Digest().take();
+        let extrinsicsRoot = StorageEntries.ExtrinsicsRoot().take();
 
         // move block hash pruning window by one block
         let blockHashCount = SystemConfig.BlockHashCount();
@@ -145,7 +145,7 @@ export class System {
             let toRemove = blockNumber.unwrap() - blockHashCount.unwrap() - 1;
             // keep genesis hash
             if (toRemove != 0) {
-                SystemStorageEntries.BlockHash().clear(instantiate<BlockNumber>(toRemove));
+                StorageEntries.BlockHash().clear(instantiate<BlockNumber>(toRemove));
             }
         }
         const root = BytesReader.decodeInto<HashType>(Storage.storageRoot());
@@ -158,10 +158,10 @@ export class System {
      * @param data 
      */
     static computeExtrinsicsRoot(): void {
-        const extcsData = SystemStorageEntries.ExtrinsicData().get();
-        SystemStorageEntries.ExecutionPhase().set(new ScaleString(this.APPLY_EXTRINSIC));
+        const extcsData = StorageEntries.ExtrinsicData().get();
+        StorageEntries.ExecutionPhase().set(new ScaleString(this.APPLY_EXTRINSIC));
         const extcsRoot = this.extrinsicsDataRoot(extcsData.toEnumeratedValues());
-        SystemStorageEntries.ExtrinsicsRoot().set(extcsRoot);
+        StorageEntries.ExtrinsicsRoot().set(extcsRoot);
     }
 
     /**
@@ -183,19 +183,19 @@ export class System {
      * @param ext extrinsic as bytes
      */
     static noteAppliedExtrinsic(ext: u8[]): void {
-        const extrinsics = SystemStorageEntries.ExtrinsicData().get();
-        const extIndex = SystemStorageEntries.ExtrinsicIndex().get();
+        const extrinsics = StorageEntries.ExtrinsicData().get();
+        const extIndex = StorageEntries.ExtrinsicIndex().get();
         const extValue = BytesReader.decodeInto<ByteArray>(ext);
         extrinsics.insert(extIndex, extValue);
-        SystemStorageEntries.ExtrinsicData().set(extrinsics);
-        SystemStorageEntries.ExtrinsicIndex().set(instantiate<ExtrinsicIndexType>(extIndex.unwrap() + 1));
+        StorageEntries.ExtrinsicData().set(extrinsics);
+        StorageEntries.ExtrinsicIndex().set(instantiate<ExtrinsicIndexType>(extIndex.unwrap() + 1));
     }
 
     /**
      * @description Sets the new extrinsicsCount and set execution phase to finalization
      */
     static noteFinishedExtrinsics(): void {
-        SystemStorageEntries.ExtrinsicCount().set(SystemStorageEntries.ExtrinsicIndex().get());
-        SystemStorageEntries.ExecutionPhase().set(new ScaleString(this.APPLY_EXTRINSIC));
+        StorageEntries.ExtrinsicCount().set(StorageEntries.ExtrinsicIndex().get());
+        StorageEntries.ExecutionPhase().set(new ScaleString(this.APPLY_EXTRINSIC));
     }
 }

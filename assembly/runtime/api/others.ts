@@ -1,6 +1,6 @@
 import { BytesReader } from "as-scale-codec";
 import { Log, Serialiser } from "subsembly-core";
-import { Executive, SystemStorageEntries } from "../../frame";
+import { Executive, StorageEntries as SystemStorageEntries } from "../../frame";
 import { AccountIdType, Runtime, SignedTransactionType } from "../runtime";
 /**
  * @description The rest of runtime entries for the Polkadot Host

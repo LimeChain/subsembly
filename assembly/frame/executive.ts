@@ -8,7 +8,7 @@ import {
     AccountIdType, BlockNumber, BlockType, HeaderType,
     InherentType, NonceType, SignatureType, SignedTransactionType, UncheckedExtrinsic
 } from '../runtime/runtime';
-import { System, SystemStorageEntries } from './system';
+import { StorageEntries as SystemStorageEntries, System } from './system';
 
 
 /**
