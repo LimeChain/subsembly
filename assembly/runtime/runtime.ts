@@ -1,28 +1,25 @@
 import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
     AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
-    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
+    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs, Utils
 } from "subsembly-core";
 
-/**
- * General Runtime types
- */
+export type HashType = Hash;
+export type Moment = UInt64;
+export type NonceType = UInt64;
+export type ExtrinsicIndexType = UInt32;
+export type AmountType = UInt64;
+export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;
 export type BlockNumber = CompactInt;
 export type AccountIdType = AccountId;
 export type SignatureType = Signature;
-export type HashType = Hash;
 export type DigestItemType = DigestItem;
 export type Balance = UInt128;
 export type HeaderType = Header<BlockNumber, HashType>;
 export type UncheckedExtrinsic = Extrinsic;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
-export type Moment = UInt64;
-export type NonceType = UInt64;
-export type AmountType = UInt64;
-export type ExtrinsicIndex = UInt32;
-export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;
 export type InherentType = Inherent<Moment>;
-export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndex, ByteArray>;
+export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 
 /**
  * @description Runtime specific methods
@@ -33,14 +30,16 @@ export namespace Runtime {
      */
     export function metadata(): u8[] {
         // returns hard-coded value, currently
-        return [0x6d, 0x65, 0x74, 0x61, 9];
+        let metadata: u8[] = [24]
+        metadata = metadata.concat(Utils.stringsToBytes(["meta"], false));
+        return metadata.concat([12]).concat([0]);
     }
 }
 
 /**
  * @description Constants for runtime
  */
-export class RuntimeConstants {
+export class RuntimeConfig {
     /**
      * @description Instanciates new RuntimeVersion Configration
     */
@@ -66,12 +65,21 @@ export class RuntimeConstants {
             TRANSACTION_VERSION
         );
     };
+}
 
+export class SystemConfig{
     /**
      * @description Number of block hashes to store in the storage, pruning starts with the oldest block 
     */
-    static blockHashCount(): BlockNumber {
+    static BlockHashCount(): BlockNumber {
         return instantiate<BlockNumber>(1000);
+    }
+
+    /**
+     * @description The maximum length of a block (in bytes).
+     */
+    static MaximumBlockLength(): UInt32 {
+        return new UInt32(5000);
     }
 }
 

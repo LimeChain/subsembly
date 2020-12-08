@@ -1,7 +1,7 @@
 import { Bool, BytesReader } from "as-scale-codec";
 import { Serialiser } from "subsembly-core";
 import { Executive } from '../../frame/executive';
-import { BlockType, HeaderType, RuntimeConstants } from '../runtime';
+import { BlockType, HeaderType, RuntimeConfig } from '../runtime';
 
 /**
  * @description Returns the version data encoded in ABI format as per the specification
@@ -9,7 +9,8 @@ import { BlockType, HeaderType, RuntimeConstants } from '../runtime';
  * @param len - i32 length (in bytes) of the arguments passed
  */
 export function Core_version(data: i32, len: i32): u64 {
-    const version = RuntimeConstants.runtimeVersion();
+    const version = RuntimeConfig.runtimeVersion();
+    // Log.info("name of: " + );
     return Serialiser.serialiseResult(version.toU8a());
 }
 

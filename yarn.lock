@@ -250,7 +250,7 @@ semver@^5.4.1:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
 
-subsembly-core@1.0.1:
+subsembly-core@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/subsembly-core/-/subsembly-core-1.0.1.tgz#ee3336ff927d78a89e24908301f5b0ddb84d8f8e"
   integrity sha512-Pp3Kiat0OsHWIAAgt1d/SUz+7YeDm9nGZuSdA0Gsx5pNhst9/foI8d7uLptYS9ZfBGsH7gKx4MKIZX+vlhZmrw==

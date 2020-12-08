@@ -8,7 +8,7 @@ import {
     AccountIdType, BlockNumber, BlockType, HeaderType,
     InherentType, NonceType, SignatureType, SignedTransactionType, UncheckedExtrinsic
 } from '../runtime/runtime';
-import { System } from './system';
+import { StorageEntries as SystemStorageEntries, System } from './system';
 
 
 /**
@@ -33,7 +33,7 @@ export namespace Executive {
         let n: BlockNumber = <BlockNumber>header.getNumber();
         // check that parentHash is valid
         const previousBlock: BlockNumber = instantiate<BlockNumber>(n.unwrap() - 1);
-        const parentHash: Hash = System.getHashAtBlock(previousBlock);
+        const parentHash: Hash = SystemStorageEntries.BlockHash().get(previousBlock);
 
         if (n == instantiate<BlockNumber>(0) && parentHash != header.getParentHash()) {
             Log.error("Initial checks: Parent hash should be valid.");
@@ -80,8 +80,8 @@ export namespace Executive {
      * @param data inherents
      */
     export function createExtrinsics(data: InherentData<ByteArray>): u8[] {
-        const timestamp: InherentType = Timestamp.createInherent(data);
-        const aura = Aura.createInherent(data);
+        const timestamp: InherentType = Timestamp._createInherent(data);
+        const aura = Aura._createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
     }
 
@@ -109,11 +109,11 @@ export namespace Executive {
         switch (encodedLen) {
             case ExtrinsicType.Inherent: {
                 const inherent: InherentType = BytesReader.decodeInto<InherentType>(ext);
-                return Timestamp.applyInherent(<InherentType>inherent)
+                return Timestamp._applyInherent(<InherentType>inherent)
             }
             case ExtrinsicType.SignedTransaction: {
                 const signedTransaction: UncheckedExtrinsic = BytesReader.decodeInto<SignedTransactionType>(ext);
-                return Balances.applyExtrinsic(<SignedTransactionType>signedTransaction);
+                return Balances._applyExtrinsic(<SignedTransactionType>signedTransaction);
             }
             default: {
                 return ResponseCodes.CALL_ERROR;
@@ -145,12 +145,12 @@ export namespace Executive {
             Log.error("Validation error: Invalid signature");
             return ResponseCodes.INVALID_SIGNATURE;
         }
-        const nonce = System.accountNonce(from);
-        if (nonce.unwrap() >= (<NonceType>utx.getNonce()).unwrap()) {
+        const nonce = SystemStorageEntries.AccountNonce().get(from);
+        if (nonce && nonce.unwrap() >= (<NonceType>utx.getNonce()).unwrap()) {
             Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
             return ResponseCodes.NONCE_TOO_LOW;
         }
-        const validated = Balances.validateTransaction(utx);
+        const validated = Balances._validateTransaction(utx);
         if (!validated.valid) {
             Log.error(validated.message);
             return validated.error;
