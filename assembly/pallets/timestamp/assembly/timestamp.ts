@@ -59,7 +59,7 @@ export class Timestamp {
      * it must be greater than the last one (set into storage) with at least a MinimumPeriod
      * @param now timestamp number
      */
-    static set(now: Moment): u8[] {
+    static _set(now: Moment): u8[] {
         const didUpdate = StorageEntries.DidUpdate().get();
         if (didUpdate.unwrap()) {
             Log.error('Validation error: Timestamp must be updated only once in the block');
