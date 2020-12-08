@@ -32,19 +32,20 @@ metadata.metadata.V12.modules.push(generateMedata(metadata.metadata.V12.modules.
 
 
 fs.readdirSync(pathname).forEach(module => {
-    const assemblyPath = path.join(pathname, module, "assembly")
+    const assemblyPath = path.join(pathname, module, "assembly");
     if(!module.includes("index.ts") && !module.includes("json")){
-        fs.readdirSync(assemblyPath).forEach((file, i) => {
+        fs.readdirSync(assemblyPath).forEach(file => {
             if(file.includes(module)){
                 const moduleNode = ts.createSourceFile(
                     module,
                     fs.readFileSync(path.join(assemblyPath, file), "utf-8"),
                     ts.ScriptTarget.Latest,
                 );
-                metadata.metadata.V12.modules.push(generateMedata(i, moduleNode));
+                metadata.metadata.V12.modules.push(generateMedata(metadata.metadata.V12.modules.length, moduleNode));
             }
         });
     }
 }
 );
-console.log(metadata.metadata.V12.modules);
+
+fs.writeFileSync("./metadata.json", JSON.stringify(metadata, null, 4));
