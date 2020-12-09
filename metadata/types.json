@@ -1,0 +1,14 @@
+{
+    "Bool": "bool",
+    "UInt64": "u64",
+    "UInt32": "u32",
+    "UInt16": "u16",
+    "UInt8": "u8",
+    "Int64": "i64",
+    "Int32": "i32",
+    "Int16": "i16",
+    "Int8": "i8",
+    "ScaleString": "String",
+    "ExtrinsicIndex": "Index",
+    "CompactInt": "Compact<u64>"
+}

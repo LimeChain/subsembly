@@ -22,7 +22,7 @@ function renderStorage(obj){
             storageItems.push(renderNode(node));
         }
     });
-    return storageItems;
+    return storageItems.length ? storageItems : null;
 
 }
 
@@ -152,22 +152,22 @@ module.exports = function generateMetadata(index, node){
      */
     let moduleMetadata = {
         name: "",
+        storage: null,
         calls: [],
-        storage: {
-            prefix: "",
-            items: []
-        },
+        events: null,
         constants: [],
-        events: [],
         errors: [],
         index: null
     };
 
-    moduleMetadata.storage.prefix = node.fileName;
     moduleMetadata.index = index;
     node.statements.map(obj => {
         if(obj.kind === ts.SyntaxKind.ModuleDeclaration){
-            moduleMetadata.storage.items = renderStorage(obj);
+            const storage = renderStorage(obj);
+            moduleMetadata.storage = storage ? {
+                prefix: node.fileName,
+                items: storage
+            } : null;
         }
         else if(obj.kind === ts.SyntaxKind.ClassDeclaration){
             moduleMetadata.name = obj.name.escapedText;
