@@ -10,5 +10,25 @@
     "Int8": "i8",
     "ScaleString": "String",
     "ExtrinsicIndex": "Index",
-    "CompactInt": "Compact<u64>"
+    "CompactInt": "Compact<u64>",
+    "AccountId": "AccountId",
+    "SignedTransaction": "Extrinsic",
+    "Inherent": "Extrinsic",
+    "Extrinsic": "Extrinsic",
+    "Block": "Block",
+    "Balance": "Balance",
+    "AccountData": "Account",
+    "BlockNumber": "BlockNumber",
+    "ExtrinsicData": {
+        "hasher": "Twox64Concat",
+        "key": "u32",
+        "value": "Bytes",
+        "linked": false
+    },
+    "Signature": "Hash512",
+    "Hash": "Hash",
+    "Nonce": "Nonce",
+    "Amount": "Amount",
+    "Moment": "Moment",
+    "ByteArray": "Bytes"
 }

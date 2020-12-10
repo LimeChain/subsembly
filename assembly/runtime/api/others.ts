@@ -1,5 +1,5 @@
-import { BytesReader } from "as-scale-codec";
-import { Log, Serialiser } from "subsembly-core";
+import { BytesReader, CompactInt } from "as-scale-codec";
+import { Serialiser } from "subsembly-core";
 import { Executive, StorageEntries as SystemStorageEntries } from "../../frame";
 import { AccountIdType, Runtime, SignedTransactionType } from "../runtime";
 /**
@@ -54,8 +54,9 @@ export function OffchainWorkerApi_offchain_worker(data: i32, len: i32): u64 {
  * @param len i32 length (in bytes) of the arguments passed
  */
 export function Metadata_metadata(data: i32, len: i32): u64 {
-    Log.info("metadata is called: " + Runtime.metadata().toString());
-    return Serialiser.serialiseResult(Runtime.metadata());
+    const encodedLen = new CompactInt(Runtime.metadata().length);
+
+    return Serialiser.serialiseResult(encodedLen.toU8a().concat(Runtime.metadata()));
 }
 
 /**

@@ -126,7 +126,7 @@ export class Timestamp {
      * @param inherent 
      */
     static _applyInherent(inherent: InherentType): u8[] {
-        const resCode = Timestamp.set((<Moment>inherent.getArgument()));
+        const resCode = Timestamp._set((<Moment>inherent.getArgument()));
         if (Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)) {
             Timestamp._toggleUpdate();
         }

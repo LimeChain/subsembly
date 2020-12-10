@@ -12,6 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "@assemblyscript/loader": "^0.17.5",
+    "@polkadot/metadata": "^2.10.1",
+    "@polkadot/types": "^2.10.1",
+    "@polkadot/util": "^4.2.1",
     "as-scale-codec": "^0.2.1",
     "typescript": "^4.1.2"
   },

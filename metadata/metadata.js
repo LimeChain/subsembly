@@ -1,7 +1,43 @@
 const ts = require('typescript');
 const fs = require("fs");
+const { TypeRegistry } = require("@polkadot/types");
 const { pathToFileURL } = require('url');
-const {pathname} = pathToFileURL("../assembly/runtime/runtime.ts");
+const { pathname } = pathToFileURL("../assembly/runtime/runtime.ts");
+const polkadotTypes = require("./types.json");
+
+/**
+ * Returns fallback for the type
+ * @param {*} type 
+ */
+function getFallback(type){
+    switch(type){
+        case polkadotTypes.Hash:
+        case polkadotTypes.AccountId:
+            return "0x".concat("00".repeat(32));
+        case polkadotTypes.BlockNumber:
+        case polkadotTypes.Amount:
+        case polkadotTypes.Int64:
+        case polkadotTypes.Moment:
+        case polkadotTypes.Nonce:
+        case polkadotTypes.UInt64:
+            return "0x".concat("00".repeat(8));
+        case polkadotTypes.ExtrinsicIndex:
+        case polkadotTypes.Int32:
+        case polkadotTypes.UInt32:
+            return "0x".concat("00".repeat(4));
+        case polkadotTypes.Int16:
+        case polkadotTypes.UInt16:
+            return "0x".concat("00".repeat(2));
+        default:
+            return "0x00";
+    }
+}
+
+function _convertValue(type, value){
+    const registry = new TypeRegistry();
+    return registry.createType(type, value).toHex(true);
+}
+
 /**
  * Runtime instance to get constants for the modules
  */
@@ -37,17 +73,22 @@ function renderCalls(obj){
             calls.push(renderNode(node));
         }
     })
-    return calls;
+    return calls.length ? calls : null;
 }
 
+/**
+ * Render constants
+ * @param obj 
+ */
 function renderConstants(obj){
     let constants = [];
     obj.members.forEach(node => {
         if(node.kind === ts.SyntaxKind.MethodDeclaration){
+            const type = extractType(node.type)
             constants.push({
                 name: node.name.escapedText,
-                type: extractType(node.type),
-                value: extractValue(node.body),
+                type,
+                value: _convertValue(type, extractValue(node.body)),
                 documentation: extractComment(node.jsDoc),
             })
         }
@@ -66,15 +107,18 @@ function renderNode(obj) {
                 name: obj.name.escapedText,
                 documentation: extractComment(obj.jsDoc),
                 type: extractType(obj.type),
-                params: extractParams(obj.parameters)
+                args: extractParams(obj.parameters)
             }
         case ts.SyntaxKind.FunctionDeclaration:
+            const type = extractStorageType(obj.type.typeArguments[0])
             return {
                 name: obj.name.escapedText,
-                modifier: "Default",
+                modifier: {
+                    default: 1
+                },
                 documentation: extractComment(obj.jsDoc),
-                fallback: "",
-                type: extractStorageType(obj.type.typeArguments[0])
+                fallback: getFallback(type.Plain),
+                type
             };
     }
 }
@@ -84,8 +128,14 @@ function renderNode(obj) {
  * @param type 
  */
 function extractStorageType(type){
+    const extractedType = extractType(type);
+    if(typeof extractedType === 'object'){
+        return {
+            Map: extractedType
+        }
+    }
     return {
-        Plain: extractType(type)
+        Plain: extractedType
     };
 }
 
@@ -96,11 +146,11 @@ function extractStorageType(type){
 function extractType(type){
     switch(type.kind){
         case 178:
-            return "u8[]";
+            return "Bytes";
         case 113:
             return "void";
         default:
-            return type.typeName.escapedText.replace("Type", "");
+            return polkadotTypes[type.typeName.escapedText.replace("Type", "")];
         }
 }
 
@@ -134,12 +184,16 @@ function extractParams(params){
  */
 function extractComment(jsDoc){
     if(!jsDoc || !jsDoc[0]){
-        return "";
+        return [
+            ""
+        ];
     }
     if(jsDoc[0].comment && !jsDoc[0].tags){
-        return jsDoc[0].comment;
+        return [
+            jsDoc[0].comment
+        ];
     }
-    return jsDoc[0].tags[0].comment;
+    return [jsDoc[0].tags[0].comment];
 }
 
 /**
@@ -153,7 +207,7 @@ module.exports = function generateMetadata(index, node){
     let moduleMetadata = {
         name: "",
         storage: null,
-        calls: [],
+        calls: null,
         events: null,
         constants: [],
         errors: [],
