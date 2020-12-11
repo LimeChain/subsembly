@@ -4,9 +4,11 @@
   "version": "1.0.0",
   "author": "Dastan @dastanbeksamatov",
   "dependencies": {
+    "@assemblyscript/loader": "^0.17.5",
     "@polkadot/metadata": "^2.10.1",
     "@polkadot/types": "^2.10.1",
     "@polkadot/util": "^4.2.1",
+    "assemblyscript-json": "^0.3.3",
     "typescript": "^4.1.2"
   },
   "devDependencies": {
@@ -17,6 +19,10 @@
   "main": "src/index.js",
   "repository": "https://github.com/limechain/subsembly",
   "scripts": {
-    "metadata": "node ."
+    "metadata": "node .",
+    "asbuild:untouched": "asc assembly/index.ts --target debug",
+    "asbuild:optimized": "asc assembly/index.ts --target release",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
+    "test": "node tests"
   }
 }
