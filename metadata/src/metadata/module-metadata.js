@@ -1,15 +1,15 @@
 const ts = require('typescript');
 const fs = require("fs");
 const { TypeRegistry } = require("@polkadot/types");
-const { pathToFileURL } = require('url');
-const { pathname } = pathToFileURL("../assembly/runtime/runtime.ts");
+const path = require("path");
 const polkadotTypes = require("./types.json");
 
 /**
  * Returns fallback for the type
+ * Hex encoded default value for the type
  * @param {*} type 
  */
-function getFallback(type){
+function _getFallback(type){
     switch(type){
         case polkadotTypes.Hash:
         case polkadotTypes.AccountId:
@@ -33,6 +33,12 @@ function getFallback(type){
     }
 }
 
+/**
+ * Creates type instance with the given value
+ * Returns hex encoded value
+ * @param type 
+ * @param value 
+ */
 function _convertValue(type, value){
     const registry = new TypeRegistry();
     return registry.createType(type, value).toHex(true);
@@ -43,7 +49,7 @@ function _convertValue(type, value){
  */
 const runtime = ts.createSourceFile(
     'runtime.ts',
-    fs.readFileSync(pathname, 'utf-8'),
+    fs.readFileSync(path.join(__dirname, "../../../assembly/runtime/runtime.ts"), 'utf-8'),
     ts.ScriptTarget.Latest
 );
 
@@ -51,11 +57,11 @@ const runtime = ts.createSourceFile(
  * Render Storage items for the module metadata
  * @param obj node object
  */
-function renderStorage(obj){
+function _extractStorageEntries(obj){
     let storageItems = [];
-    obj.body.statements.forEach(node => {
+     obj.body.statements.forEach(node => {
         if(node.kind === ts.SyntaxKind.FunctionDeclaration){
-            storageItems.push(renderNode(node));
+            storageItems.push(_extractNode(node));
         }
     });
     return storageItems.length ? storageItems : null;
@@ -66,11 +72,12 @@ function renderStorage(obj){
  * Render calls for the module metadata
  * @param obj node object
  */
-function renderCalls(obj){
-    let calls = [];
+function _extractCalls(obj){
+    let calls  = [];
     obj.members.forEach(node => {
+        // Ignore calls with "_" prefix, since they are not exposed to outside
         if(node.kind === ts.SyntaxKind.MethodDeclaration && !node.name.escapedText.startsWith("_")){
-            calls.push(renderNode(node));
+            calls.push(_extractNode(node));
         }
     })
     return calls.length ? calls : null;
@@ -80,46 +87,50 @@ function renderCalls(obj){
  * Render constants
  * @param obj 
  */
-function renderConstants(obj){
-    let constants = [];
+function _extractConstants(obj){
+    let constants = []; 
     obj.members.forEach(node => {
         if(node.kind === ts.SyntaxKind.MethodDeclaration){
-            const type = extractType(node.type)
+            const type = _extractType(node.type);
             constants.push({
                 name: node.name.escapedText,
                 type,
-                value: _convertValue(type, extractValue(node.body)),
-                documentation: extractComment(node.jsDoc),
-            })
+                value: _convertValue(type, _extractValue(node.body)),
+                documentation: _extractComment(node.jsDoc),
+            });
         }
-    })
+    });
     return constants;
 }
 
 /**
- * Render a Node object, i.e get name, comment, parameters and types of the object
+ * Extract metadata node (call, storage item, etc.) 
  * @param obj 
  */
-function renderNode(obj) {
+function _extractNode(obj) {
     switch(obj.kind){
+        // Extracting call (static function)
         case ts.SyntaxKind.MethodDeclaration:
             return {
                 name: obj.name.escapedText,
-                documentation: extractComment(obj.jsDoc),
-                type: extractType(obj.type),
-                args: extractParams(obj.parameters)
+                documentation: _extractComment(obj.jsDoc),
+                type: _extractType(obj.type),
+                args: _extractParams(obj.parameters)
             }
+        // Extracting storage item (namespace funcion)
         case ts.SyntaxKind.FunctionDeclaration:
-            const type = extractStorageType(obj.type.typeArguments[0])
+            const type = _extractStorageType(obj.type.typeArguments[0])
             return {
                 name: obj.name.escapedText,
                 modifier: {
                     default: 1
                 },
-                documentation: extractComment(obj.jsDoc),
-                fallback: getFallback(type.Plain),
+                documentation: _extractComment(obj.jsDoc),
+                fallback: _getFallback(type.Plain),
                 type
             };
+        default:
+            return null;
     }
 }
 
@@ -127,8 +138,8 @@ function renderNode(obj) {
  * Extract type of the storage item
  * @param type 
  */
-function extractStorageType(type){
-    const extractedType = extractType(type);
+function _extractStorageType(type){
+    const extractedType = _extractType(type);
     if(typeof extractedType === 'object'){
         return {
             Map: extractedType
@@ -143,21 +154,29 @@ function extractStorageType(type){
  * Extract type from type object
  * @param type type object
  */
-function extractType(type){
+function _extractType(type){
     switch(type.kind){
-        case 178:
-            return "Bytes";
-        case 113:
+        // u8[] type alias
+        case ts.SyntaxKind.ArrayType:
+            return "Vec<u8>";
+        case ts.SyntaxKind.VoidKeyword:
             return "void";
+        // Strip "Type" suffix from the runtime types
         default:
             return polkadotTypes[type.typeName.escapedText.replace("Type", "")];
         }
 }
 
-function extractValue(body){
+/**
+ * Extract value of the constant
+ * @param body body of the function
+ */
+function _extractValue(body){
     switch(body.kind){
         case 230:
-            return body.statements[0].expression.arguments[0].text
+            return body.statements[0].expression.arguments[0].text;
+        default:
+            return "0x00";
     }
 }
 
@@ -165,42 +184,42 @@ function extractValue(body){
  * Extract parameters of the object
  * @param params list of parameter objects
  */
-function extractParams(params){
-    let args = [];
+function _extractParams(params){
     if(params){
-        params.forEach((param) => {
-            args.push({
+        return params.map((param) => {
+            return{
                 name: param.name.escapedText,
-                type: extractType(param.type)
-            })
+                type: _extractType(param.type)
+            };
         })
     }
-    return args;
+    return [];
 }
 
 /**
  * Extract comment of the object
  * @param jsDoc jsDoc object 
  */
-function extractComment(jsDoc){
+function _extractComment(jsDoc){
     if(!jsDoc || !jsDoc[0]){
         return [
             ""
         ];
     }
-    if(jsDoc[0].comment && !jsDoc[0].tags){
+    else if(jsDoc[0].comment && !jsDoc[0].tags){
         return [
             jsDoc[0].comment
         ];
     }
-    return [jsDoc[0].tags[0].comment];
+    return jsDoc[0].tags.map(tag => tag.comment);
 }
 
 /**
  * 
  * @param index Module index
+ * @param node Loaded Module file
  */
-module.exports = function generateMetadata(index, node){
+module.exports = function generateModuleMetadata(index, node){
     /**
      * Template for Metadata of the module
      */
@@ -215,22 +234,31 @@ module.exports = function generateMetadata(index, node){
     };
 
     moduleMetadata.index = index;
-    node.statements.map(obj => {
+
+    /**
+     * Goes through the statements inside the file and extracts storage entries and calls
+     */
+    node.statements.forEach(obj => {
+        // Storage entries are defined inside a namespace with a corresponding name
         if(obj.kind === ts.SyntaxKind.ModuleDeclaration){
-            const storage = renderStorage(obj);
+            const storage = _extractStorageEntries(obj);
             moduleMetadata.storage = storage ? {
                 prefix: node.fileName,
                 items: storage
             } : null;
         }
+        // Calls are defined as static functions inside a class with the same name as the name of the pallet
         else if(obj.kind === ts.SyntaxKind.ClassDeclaration){
             moduleMetadata.name = obj.name.escapedText;
-            moduleMetadata.calls = renderCalls(obj);
+            moduleMetadata.calls = _extractCalls(obj);
         }
     });
+    /**
+     * Constants for each pallet is defined in runtime directory with name pattern moduleName + prefix
+     */
     runtime.statements.forEach(obj => {
         if(obj.kind === ts.SyntaxKind.ClassDeclaration && obj.name.escapedText.toLowerCase().includes(node.fileName.toLowerCase())){
-            moduleMetadata.constants = renderConstants(obj);
+            moduleMetadata.constants = _extractConstants(obj);
         }
     });
     return moduleMetadata;

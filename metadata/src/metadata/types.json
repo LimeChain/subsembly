@@ -27,8 +27,9 @@
     },
     "Signature": "Hash512",
     "Hash": "Hash",
-    "Nonce": "Nonce",
+    "Nonce": "u64",
     "Amount": "Amount",
     "Moment": "Moment",
-    "ByteArray": "Bytes"
+    "ByteArray": "Bytes",
+    "Header": "Header"
 }

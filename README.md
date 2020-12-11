@@ -117,3 +117,16 @@ In order to run Substrate node with generated runtime, use Docker image of node 
 
 In order for you to start block production, you will have to instert your Aura keys as described above.
 
+### Generate Metadata of the runtime
+
+`metadata` folder consists of a tool that generates and hex encodes the metadata of the runtime. In order to generate the metadata:
+
+1. `cd metadata`
+2. `yarn install`
+3. `yarn run metadata -- -g`
+
+The above command generates metadata of the runtime and writes it in json file located in `metadata` directory. To hex encode the generated json file:
+
+4. `yarn run metadata -- -h`
+
+Also, you can run the `yarn run metadata` command from the top directory.
