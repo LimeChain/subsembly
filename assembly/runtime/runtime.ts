@@ -1,7 +1,7 @@
 import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
     AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
-    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs, Utils
+    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
 } from "subsembly-core";
 
 export type HashType = Hash;
@@ -20,21 +20,6 @@ export type UncheckedExtrinsic = Extrinsic;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type InherentType = Inherent<Moment>;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
-
-/**
- * @description Runtime specific methods
- */
-export namespace Runtime {
-    /**
-     * @description Metadata of the runtime
-     */
-    export function metadata(): u8[] {
-        // returns hard-coded value, currently
-        let metadata: u8[] = [24]
-        metadata = metadata.concat(Utils.stringsToBytes(["meta"], false));
-        return metadata.concat([12]).concat([0]);
-    }
-}
 
 /**
  * @description Constants for runtime

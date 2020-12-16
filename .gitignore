@@ -4,3 +4,5 @@ wasm-code
 # Logs
 *.log
 yarn-error.log
+metadata.json
+metadata.ts

@@ -110,7 +110,7 @@ export class System {
      * @description Sets up the environment necessary for block production
      * @param header Header instance
     */
-    static initialize(header: HeaderType): void {
+    static _initialize(header: HeaderType): void {
         StorageEntries.ExtrinsicIndex().set(instantiate<ExtrinsicIndexType>(0));
         StorageEntries.ExecutionPhase().set(new ScaleString(this.INITIALIZATION));
         StorageEntries.ParentHash().set(header.getParentHash());
@@ -131,7 +131,7 @@ export class System {
     /**
      * @description Removes temporary "environment" entries in storage and finalize block
      */
-    static finalize(): HeaderType {
+    static _finalize(): HeaderType {
         StorageEntries.ExecutionPhase().clear();
         StorageEntries.ExtrinsicCount().clear();
         let blockNumber = StorageEntries.Number().take();
@@ -157,10 +157,10 @@ export class System {
      * @description Computes the extrinsicsRoot for the given data and populates storage
      * @param data 
      */
-    static computeExtrinsicsRoot(): void {
+    static _computeExtrinsicsRoot(): void {
         const extcsData = StorageEntries.ExtrinsicData().get();
         StorageEntries.ExecutionPhase().set(new ScaleString(this.APPLY_EXTRINSIC));
-        const extcsRoot = this.extrinsicsDataRoot(extcsData.toEnumeratedValues());
+        const extcsRoot = this._extrinsicsDataRoot(extcsData.toEnumeratedValues());
         StorageEntries.ExtrinsicsRoot().set(extcsRoot);
     }
 
@@ -168,7 +168,7 @@ export class System {
      * @description Computes the ordered trie root hash of the extrinsics data
      * @param data enumerated values
      */
-    static extrinsicsDataRoot(data: u8[]): HashType {
+    static _extrinsicsDataRoot(data: u8[]): HashType {
         let dataPtr = data.dataStart;
         let dataLen = data.length;
         __retain(dataPtr);
@@ -182,7 +182,7 @@ export class System {
      * @description Adds applied extrinsic to the current ExtrinsicData
      * @param ext extrinsic as bytes
      */
-    static noteAppliedExtrinsic(ext: u8[]): void {
+    static _noteAppliedExtrinsic(ext: u8[]): void {
         const extrinsics = StorageEntries.ExtrinsicData().get();
         const extIndex = StorageEntries.ExtrinsicIndex().get();
         const extValue = BytesReader.decodeInto<ByteArray>(ext);
@@ -194,7 +194,7 @@ export class System {
     /**
      * @description Sets the new extrinsicsCount and set execution phase to finalization
      */
-    static noteFinishedExtrinsics(): void {
+    static _noteFinishedExtrinsics(): void {
         StorageEntries.ExtrinsicCount().set(StorageEntries.ExtrinsicIndex().get());
         StorageEntries.ExecutionPhase().set(new ScaleString(this.APPLY_EXTRINSIC));
     }

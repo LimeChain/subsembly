@@ -1,0 +1,265 @@
+const ts = require('typescript');
+const fs = require("fs");
+const { TypeRegistry } = require("@polkadot/types");
+const path = require("path");
+const polkadotTypes = require("./types.json");
+
+/**
+ * Returns fallback for the type
+ * Hex encoded default value for the type
+ * @param {*} type 
+ */
+function _getFallback(type){
+    switch(type){
+        case polkadotTypes.Hash:
+        case polkadotTypes.AccountId:
+            return "0x".concat("00".repeat(32));
+        case polkadotTypes.BlockNumber:
+        case polkadotTypes.Amount:
+        case polkadotTypes.Int64:
+        case polkadotTypes.Moment:
+        case polkadotTypes.Nonce:
+        case polkadotTypes.UInt64:
+            return "0x".concat("00".repeat(8));
+        case polkadotTypes.ExtrinsicIndex:
+        case polkadotTypes.Int32:
+        case polkadotTypes.UInt32:
+            return "0x".concat("00".repeat(4));
+        case polkadotTypes.Int16:
+        case polkadotTypes.UInt16:
+            return "0x".concat("00".repeat(2));
+        default:
+            return "0x00";
+    }
+}
+
+/**
+ * Creates type instance with the given value
+ * Returns hex encoded value
+ * @param type 
+ * @param value 
+ */
+function _convertValue(type, value){
+    const registry = new TypeRegistry();
+    return registry.createType(type, value).toHex(true);
+}
+
+/**
+ * Runtime instance to get constants for the modules
+ */
+const runtime = ts.createSourceFile(
+    'runtime.ts',
+    fs.readFileSync(path.join(__dirname, "../../../assembly/runtime/runtime.ts"), 'utf-8'),
+    ts.ScriptTarget.Latest
+);
+
+/**
+ * Render Storage items for the module metadata
+ * @param obj node object
+ */
+function _extractStorageEntries(obj){
+    let storageItems = [];
+     obj.body.statements.forEach(node => {
+        if(node.kind === ts.SyntaxKind.FunctionDeclaration){
+            storageItems.push(_extractNode(node));
+        }
+    });
+    return storageItems.length ? storageItems : null;
+
+}
+
+/**
+ * Render calls for the module metadata
+ * @param obj node object
+ */
+function _extractCalls(obj){
+    let calls  = [];
+    obj.members.forEach(node => {
+        // Ignore calls with "_" prefix, since they are not exposed to outside
+        if(node.kind === ts.SyntaxKind.MethodDeclaration && !node.name.escapedText.startsWith("_")){
+            calls.push(_extractNode(node));
+        }
+    })
+    return calls.length ? calls : null;
+}
+
+/**
+ * Render constants
+ * @param obj 
+ */
+function _extractConstants(obj){
+    let constants = []; 
+    obj.members.forEach(node => {
+        if(node.kind === ts.SyntaxKind.MethodDeclaration){
+            const type = _extractType(node.type);
+            constants.push({
+                name: node.name.escapedText,
+                type,
+                value: _convertValue(type, _extractValue(node.body)),
+                documentation: _extractComment(node.jsDoc),
+            });
+        }
+    });
+    return constants;
+}
+
+/**
+ * Extract metadata node (call, storage item, etc.) 
+ * @param obj 
+ */
+function _extractNode(obj) {
+    switch(obj.kind){
+        // Extracting call (static function)
+        case ts.SyntaxKind.MethodDeclaration:
+            return {
+                name: obj.name.escapedText,
+                documentation: _extractComment(obj.jsDoc),
+                type: _extractType(obj.type),
+                args: _extractParams(obj.parameters)
+            }
+        // Extracting storage item (namespace funcion)
+        case ts.SyntaxKind.FunctionDeclaration:
+            const type = _extractStorageType(obj.type.typeArguments[0])
+            return {
+                name: obj.name.escapedText,
+                modifier: {
+                    default: 1
+                },
+                documentation: _extractComment(obj.jsDoc),
+                fallback: _getFallback(type.Plain),
+                type
+            };
+        default:
+            return null;
+    }
+}
+
+/**
+ * Extract type of the storage item
+ * @param type 
+ */
+function _extractStorageType(type){
+    const extractedType = _extractType(type);
+    if(typeof extractedType === 'object'){
+        return {
+            Map: extractedType
+        }
+    }
+    return {
+        Plain: extractedType
+    };
+}
+
+/**
+ * Extract type from type object
+ * @param type type object
+ */
+function _extractType(type){
+    switch(type.kind){
+        // u8[] type alias
+        case ts.SyntaxKind.ArrayType:
+            return "Vec<u8>";
+        case ts.SyntaxKind.VoidKeyword:
+            return "void";
+        // Strip "Type" suffix from the runtime types
+        default:
+            return polkadotTypes[type.typeName.escapedText.replace("Type", "")];
+        }
+}
+
+/**
+ * Extract value of the constant
+ * @param body body of the function
+ */
+function _extractValue(body){
+    switch(body.kind){
+        case 230:
+            return body.statements[0].expression.arguments[0].text;
+        default:
+            return "0x00";
+    }
+}
+
+/**
+ * Extract parameters of the object
+ * @param params list of parameter objects
+ */
+function _extractParams(params){
+    if(params){
+        return params.map((param) => {
+            return{
+                name: param.name.escapedText,
+                type: _extractType(param.type)
+            };
+        })
+    }
+    return [];
+}
+
+/**
+ * Extract comment of the object
+ * @param jsDoc jsDoc object 
+ */
+function _extractComment(jsDoc){
+    if(!jsDoc || !jsDoc[0]){
+        return [
+            ""
+        ];
+    }
+    else if(jsDoc[0].comment && !jsDoc[0].tags){
+        return [
+            jsDoc[0].comment
+        ];
+    }
+    return jsDoc[0].tags.map(tag => tag.comment);
+}
+
+/**
+ * 
+ * @param index Module index
+ * @param node Loaded Module file
+ */
+module.exports = function generateModuleMetadata(index, node){
+    /**
+     * Template for Metadata of the module
+     */
+    let moduleMetadata = {
+        name: "",
+        storage: null,
+        calls: null,
+        events: null,
+        constants: [],
+        errors: [],
+        index: null
+    };
+
+    moduleMetadata.index = index;
+
+    /**
+     * Goes through the statements inside the file and extracts storage entries and calls
+     */
+    node.statements.forEach(obj => {
+        // Storage entries are defined inside a namespace with a corresponding name
+        if(obj.kind === ts.SyntaxKind.ModuleDeclaration){
+            const storage = _extractStorageEntries(obj);
+            moduleMetadata.storage = storage ? {
+                prefix: node.fileName,
+                items: storage
+            } : null;
+        }
+        // Calls are defined as static functions inside a class with the same name as the name of the pallet
+        else if(obj.kind === ts.SyntaxKind.ClassDeclaration){
+            moduleMetadata.name = obj.name.escapedText;
+            moduleMetadata.calls = _extractCalls(obj);
+        }
+    });
+    /**
+     * Constants for each pallet are defined in runtime directory with name pattern moduleName + prefix
+     */
+    runtime.statements.forEach(obj => {
+        if(obj.kind === ts.SyntaxKind.ClassDeclaration && obj.name.escapedText.toLowerCase().includes(node.fileName.toLowerCase())){
+            moduleMetadata.constants = _extractConstants(obj);
+        }
+    });
+    return moduleMetadata;
+}
