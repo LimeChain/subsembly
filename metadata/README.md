@@ -6,12 +6,12 @@ It consists of a tool that generates and hex encodes the metadata of the runtime
 
 In order to generate metadata, certain rules are enforced for the pallets and runtime:
 
-- Pallet constancts are defined in `runtime.ts` file
+- Pallet constants are defined in `runtime.ts` file
 - Each pallets constants are defined in a class with a name format `{pallet_name}{config}`, for example, `TimestampConfig`
 - Each constant is a static function
 - Each pallet should be represented by a class
 - Pallet calls are defined as static functions and functions that are denoted with '_' prefix are not exposed outside of runtime, i.e not included in module calls
-- Storage entries for the pallet is represented by a namespace called `StorageEntries`
+- Storage entries for the pallet are represented by a namespace called `StorageEntries`
 - Each Storage entry is a function
 
 The command for generating metadata is included in runtime build command. In order to debug metadata file, you can use `--json or -j` flag to generate json file of the metadata.
