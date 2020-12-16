@@ -5,3 +5,4 @@ wasm-code
 *.log
 yarn-error.log
 metadata.json
+metadata.ts

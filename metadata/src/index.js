@@ -1,11 +1,18 @@
-const generateMetadata = require("./metadata");
-const metadataToHex = require("./metadata/convert");
+const { generateMetadata, generateFile } = require("./metadata");
+const fs = require('fs');
 
-process.argv.forEach(arg => {
-  if (arg === '-g'){
-    generateMetadata();
-  }
-  else if(arg === '-h'){
-    metadataToHex();
-  }
-})
+run();
+function run() {
+  const metadata = generateMetadata();
+  let debug = false;
+  process.argv.forEach(arg => {
+    if (arg === '--debug' || arg === '-d') {
+      debug = true;
+    }
+  });
+  if(debug){
+    fs.writeFileSync("./metadata.json", JSON.stringify(metadata, null, 4));
+    return ;
+  };
+  generateFile(metadata);
+}

@@ -254,7 +254,7 @@ module.exports = function generateModuleMetadata(index, node){
         }
     });
     /**
-     * Constants for each pallet is defined in runtime directory with name pattern moduleName + prefix
+     * Constants for each pallet are defined in runtime directory with name pattern moduleName + prefix
      */
     runtime.statements.forEach(obj => {
         if(obj.kind === ts.SyntaxKind.ClassDeclaration && obj.name.escapedText.toLowerCase().includes(node.fileName.toLowerCase())){

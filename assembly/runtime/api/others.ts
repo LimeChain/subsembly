@@ -1,7 +1,7 @@
 import { BytesReader, CompactInt } from "as-scale-codec";
 import { Serialiser } from "subsembly-core";
-import { Executive, StorageEntries as SystemStorageEntries } from "../../frame";
-import { AccountIdType, Runtime, SignedTransactionType } from "../runtime";
+import { Executive, Metadata, StorageEntries as SystemStorageEntries } from "../../frame";
+import { AccountIdType, SignedTransactionType } from "../runtime";
 /**
  * @description The rest of runtime entries for the Polkadot Host
  * These methods are mocked for this iteration and they return an empty u8 array by default
@@ -54,9 +54,8 @@ export function OffchainWorkerApi_offchain_worker(data: i32, len: i32): u64 {
  * @param len i32 length (in bytes) of the arguments passed
  */
 export function Metadata_metadata(data: i32, len: i32): u64 {
-    const encodedLen = new CompactInt(Runtime.metadata().length);
-
-    return Serialiser.serialiseResult(encodedLen.toU8a().concat(Runtime.metadata()));
+    const encodedLen = new CompactInt(Metadata.metadata().length);
+    return Serialiser.serialiseResult(encodedLen.toU8a().concat(Metadata.metadata()));
 }
 
 /**

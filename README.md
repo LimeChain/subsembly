@@ -72,6 +72,14 @@ Some other important modules for the runtime are imported from `subsembly-core`:
 
     Then in the `./runtime/api/others.ts` implement the method `BabeApi_configuration`. Add corresponding types and constants used in the pallet inside the `runtime.ts` and you are good to go.
 
+#### Other tools
+
+##### Metadata
+
+`metadata` folder consists of a tool that generates and hex encodes the metadata of the runtime. Under the hood, it reads all pallets, gets declared calls, types, storage entries, events and generate a metadata of the runtime. Then it generates a new `metadata.ts` file inside `frame` folder, that contains a function that returns the metadata of the runtime.
+
+The command for generating metadata is included in runtime build command. In order to debug metadata file, you can use `--json or -j` flag to generate json file of the metadata.
+
 ## Building and Running
 ### Makefile
 
@@ -116,17 +124,3 @@ In order to run Substrate node with generated runtime, use Docker image of node 
 2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(pwd)/spec-files/customSpecRaw.json":/customSpecRaw.json -d limechain/as-substrate`
 
 In order for you to start block production, you will have to instert your Aura keys as described above.
-
-### Generate Metadata of the runtime
-
-`metadata` folder consists of a tool that generates and hex encodes the metadata of the runtime. In order to generate the metadata:
-
-1. `cd metadata`
-2. `yarn install`
-3. `yarn run metadata -- -g`
-
-The above command generates metadata of the runtime and writes it in json file located in `metadata` directory. To hex encode the generated json file:
-
-4. `yarn run metadata -- -h`
-
-Also, you can run the `yarn run metadata` command from the top directory.
