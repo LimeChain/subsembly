@@ -51,7 +51,7 @@ function generateMetadata() {
      */
     fs.readdirSync(palletsPath).forEach(module => {
         // path to the top AS project folder
-        const assemblyPath = path.join(palletsPath, module, "assembly");
+        const assemblyPath = path.join(palletsPath, module);
         // we ignore index.ts and json files
         if (!module.includes("index.ts") && !module.includes("json")) {
             // Go through the files inside the pallet

@@ -20,6 +20,9 @@ export type UncheckedExtrinsic = Extrinsic;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type InherentType = Inherent<Moment>;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
+export type Multiplier = UInt128;
+export type TransactionByteFee = Balance;
+export type Weight = UInt64;
 
 /**
  * @description Constants for runtime
@@ -52,7 +55,13 @@ export class RuntimeConfig {
     };
 }
 
+/**
+ * System config
+ */
 export class SystemConfig{
+    static readonly WEIGHT_PER_SECOND: u64 = 1_000_000_000_000;
+    static readonly WEIGHT_PER_MILLIS: u64 = SystemConfig.WEIGHT_PER_SECOND / 1_000;
+    static readonly WEIGHT_PER_MICROS: u64 = SystemConfig.WEIGHT_PER_MILLIS / 1_000;
     /**
      * @description Number of block hashes to store in the storage, pruning starts with the oldest block 
     */
@@ -65,6 +74,27 @@ export class SystemConfig{
      */
     static MaximumBlockLength(): UInt32 {
         return new UInt32(5000);
+    }
+    
+    /**
+     * @description The maximum weight of a block.
+     */
+    static MaximumBlockWeight(): Weight {
+        return instantiate<Weight>(2 * this.WEIGHT_PER_SECOND);
+    }
+
+    /**
+     * @description The base weight of an Extrinsic in the block, independent of the of extrinsic being executed.
+     */
+    static ExtrinsicBaseWeight(): Weight {
+        return instantiate<Weight>(125 * this.WEIGHT_PER_MICROS);
+    }
+
+    /**
+     * @description Importing a block with 0 txs takes ~5 ms
+     */
+    static BlockExecutionWeight(): Weight {
+        return instantiate<Weight>(5 * this.WEIGHT_PER_MILLIS);
     }
 }
 

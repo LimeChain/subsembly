@@ -1,7 +1,7 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
 import { InherentData, Log, ResponseCodes, Utils } from 'subsembly-core';
-import { StorageEntry } from '../../../frame';
-import { InherentType, Moment, TimestampConfig } from '../../../runtime/runtime';
+import { StorageEntry } from '../../frame';
+import { InherentType, Moment, TimestampConfig } from '../../runtime/runtime';
 
 /**
  * Storage entries for Timestamp

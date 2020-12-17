@@ -1,8 +1,8 @@
 import { BytesReader } from "as-scale-codec";
 import { AccountData, Log, ResponseCodes, TransactionValidity } from 'subsembly-core';
-import { StorageEntry } from "../../../frame/models/storageEntry";
-import { StorageEntries as SystemStorageEntries } from '../../../frame/system';
-import { AccountIdType, Balance, NonceType, SignedTransactionType } from "../../../runtime/runtime";
+import { StorageEntry } from "../../frame/models/storage-entry";
+import { StorageEntries as SystemStorageEntries } from '../../frame/system';
+import { AccountIdType, Balance, NonceType, SignedTransactionType } from "../../runtime/runtime";
 
 export namespace StorageEntries{
     /**
