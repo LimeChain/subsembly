@@ -20,7 +20,7 @@ export type UncheckedExtrinsic = Extrinsic;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type InherentType = Inherent<Moment>;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
-export type Multiplier = UInt128;
+export type Multiplier = UInt64;
 export type TransactionByteFee = Balance;
 export type Weight = UInt64;
 
@@ -107,5 +107,13 @@ export class TimestampConfig {
      */
     static minimumPeriod(): Moment {
         return instantiate<Moment>(5000);
+    }
+}
+/**
+ * @description Constants used in Balances module
+ */
+export class BalancesConfig {
+    static existentialDeposit(): Balance {
+        return instantiate<Balance>(100);
     }
 }
