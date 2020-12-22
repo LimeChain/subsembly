@@ -1,0 +1,19 @@
+name: Compile Runtime
+
+on: [push]
+jobs:
+    install-deps:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        - name: Install jq
+        run: apt-get update && apt-get install jq
+        - name: Install AS dependencies
+        run: yarn install
+    compile-run-node:
+        needs: install-deps
+        steps:
+        - uses: actions/checkout@v2
+        - name: compile and run the node
+        run: make run-node 
+        timeout-minutes: 1
