@@ -17,7 +17,9 @@ export class Payment {
         if(fee.eq(instantiate<Balance>(0))) {
             return ;
         }
-        const withdrawReason = tip.eq(instantiate<Balance>(0)) ? WithdrawReasons.TRANSACTION_PAYMENT : WithdrawReasons.TRANSACTION_PAYMENT | WithdrawReasons.TIP;
+        const withdrawReason = tip.eq(instantiate<Balance>(0)) 
+            ? WithdrawReasons.TRANSACTION_PAYMENT 
+            : WithdrawReasons.TRANSACTION_PAYMENT | WithdrawReasons.TIP;
         Balances.withdraw(who, fee, withdrawReason, ExistenceRequirement.KeepAlive);
     }
 }
