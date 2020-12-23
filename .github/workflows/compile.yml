@@ -1,0 +1,31 @@
+name: Compile Runtime
+
+on: [push]
+jobs:
+    compile-run-node:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        - name: Install jq
+          run: sudo apt-get update && sudo apt-get install jq
+        - name: Cache node modules
+          uses: actions/cache@v2
+          env:
+            cache-name: cache-node-modules
+          with:
+            path: |
+              '**/node_modules'
+              '**/metadata/node_modules'
+            key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+            restore-keys: |
+              ${{ runner.os }}-build-${{ env.cache-name }}-
+              ${{ runner.os }}-build-
+              ${{ runner.os }}-
+        - name: Use Node.js
+          uses: actions/setup-node@v1
+          with: 
+            node-version: '12.x'
+        - name: Install AS dependencies and metadata dependencies
+          run: yarn install && cd ./metadata && yarn install
+        - name: Compile and run the node, make sure it works and exit gracefully after 15s
+          run: make run-node test=2
