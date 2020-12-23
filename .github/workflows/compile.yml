@@ -28,4 +28,4 @@ jobs:
         - name: Install AS dependencies and metadata dependencies
           run: yarn install && cd ./metadata && yarn install
         - name: Compile and run the node, make sure it works and exit gracefully after 15s
-          run: make run-node test=1
+          run: make run-node test=2
