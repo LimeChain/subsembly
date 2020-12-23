@@ -19,7 +19,12 @@ generate_chain_spec: build
 run-node:
 	@echo "Running the container in detached mode"
 	@bash compile.sh
+	# WARNING: Target with test option works only on Ubuntu latest
+ifdef test
+	@timeout 15s docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpecRaw.json":/customSpecRaw.json $(DOCKER_IMAGE); exit 0
+else
 	@docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpecRaw.json":/customSpecRaw.json $(DOCKER_IMAGE)
+endif
 
 # Insert the Aura keys and re-attach the container to the shell
 # for some reason, if I don't do lsof, curl returns `empty reply from server` error

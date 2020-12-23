@@ -13,8 +13,10 @@ jobs:
           env:
             cache-name: cache-node-modules
           with:
-            path: ~/.npm
-            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            path: |
+              '**/node_modules'
+              '**/metadata/node_modules'
+            key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
             restore-keys: |
               ${{ runner.os }}-build-${{ env.cache-name }}-
               ${{ runner.os }}-build-
@@ -25,8 +27,5 @@ jobs:
             node-version: '12.x'
         - name: Install AS dependencies and metadata dependencies
           run: yarn install && cd ./metadata && yarn install
-        - name: compile and run the node
-          run: make run-node 
-          timeout-minutes: 1
-        - name: Fail successfully
-          run: exit 0
+        - name: Compile and run the node, make sure it works and exit gracefully after 15s
+          run: make run-node test=1
