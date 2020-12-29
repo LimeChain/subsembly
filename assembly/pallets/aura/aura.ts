@@ -5,7 +5,7 @@ import { Moment, TimestampConfig } from '../../runtime/runtime';
 /**
  * Storage entries for Aura module
  */
-export namespace StorageEntries{
+export namespace AuraStorageEntries {
 };
 
 /**

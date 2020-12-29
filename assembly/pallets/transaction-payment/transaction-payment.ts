@@ -6,11 +6,17 @@ import { Payment } from './payment';
 /**
  * Storage entries for TransactionPayment module
  */
-export namespace StorageEntries {
+export namespace TPaymentStorageEntries {
+    /**
+     * @description Multiplier value for the next fee
+     */
     export function NextFeeMultiplier(): StorageEntry<Multiplier> {
         return new StorageEntry<Multiplier>("TransactionPayment", "Multiplier");
     }
 
+    /**
+     * @description Fee for each byte
+     */
     export function TransactionByteFee(): StorageEntry<TransactionByteFee> {
         return new StorageEntry<TransactionByteFee>("TransactionPayment", "ByteFee");
     }
@@ -22,7 +28,7 @@ export class TransactionPayment {
 	 *
 	 * The final fee is composed of:
 	 *   - `base_fee`: This is the minimum amount a user pays for a transaction. It is declared
-	 *     as a base _weight_ in the runtime and converted to a fee using `WeightToFee`.
+	 *     as a base _weight_ in the runtime and converted to a fee using `_WeightToFee`.
 	 *   - `len_fee`: The length fee, the amount paid for the encoded length (in bytes) of the
 	 *     transaction.
 	 *   - `weight_fee`: This amount is computed based on the weight of the transaction. Weight
@@ -42,7 +48,7 @@ export class TransactionPayment {
      * @param tip tip to be included
      */
     static computeFee(len: u32, info: DispatchInfo<Weight>, tip: Balance): Balance {
-        return this.computeFeeRaw(len, info.weight, tip, info.paysFee);
+        return this._computeFeeRaw(len, info.weight, tip, info.paysFee);
     };
 
     /**
@@ -56,7 +62,7 @@ export class TransactionPayment {
      * @param tip tip to be included
      */
     static computeActualFee(len: u32, info: DispatchInfo<Weight>, postInfo: PostDispatchInfo<Weight>, tip: Balance): Balance {
-        return this.computeFeeRaw(len, postInfo.calcActualWeight(info), tip, postInfo.paysFee);
+        return this._computeFeeRaw(len, postInfo.calcActualWeight(info), tip, postInfo.paysFee);
     };
 
     /**
@@ -66,21 +72,21 @@ export class TransactionPayment {
      * @param tip tip to be included 
      * @param paysFee simple boolean indicating whether initiator pays transaction fees
      */
-    static computeFeeRaw(len: u32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
+    static _computeFeeRaw(len: u32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
         if (paysFee == Pays.Yes) {
             let length: Balance = instantiate<Balance>(len);
-            let perByte: TransactionByteFee = StorageEntries.TransactionByteFee().get();
+            let perByte: TransactionByteFee = TPaymentStorageEntries.TransactionByteFee().get();
 
             // length fee. not adjusted
             let fixedLenFee =<u64>length.unwrap() * <u64>perByte.unwrap();
 
             // the adjustable part of the fee
-            let unadjustedWeightFee = this.weightToFee(weight);
-            let multiplier = StorageEntries.NextFeeMultiplier().get();
+            let unadjustedWeightFee = this._weightToFee(weight);
+            let multiplier = TPaymentStorageEntries.NextFeeMultiplier().get();
 
             // final adjusted part of the fee
             const adjustedWeightFee = <u64>multiplier.unwrap() * <u64>unadjustedWeightFee.unwrap();   
-            let baseFee = this.weightToFee(SystemConfig.ExtrinsicBaseWeight());
+            let baseFee = this._weightToFee(SystemConfig.ExtrinsicBaseWeight());
 
             baseFee += <u64>fixedLenFee + <u64>adjustedWeightFee + <u64>tip.unwrap();
             return instantiate<Balance>(baseFee);
@@ -94,7 +100,7 @@ export class TransactionPayment {
      * @description Convert passed weight to balance
      * @param weight 
      */
-    static weightToFee(weight: Weight): Balance {
+    static _weightToFee(weight: Weight): Balance {
         // cap the weight to the maximum defined in runtime, otherwise it will be the
         // `Bounded` maximum of its data type, which is not desired. 
         let cappedWeight = weight.unwrap() < SystemConfig.MaximumBlockWeight().unwrap() ? weight : SystemConfig.MaximumBlockWeight();
@@ -111,7 +117,7 @@ export class TransactionPayment {
      * @param info 
      * @param len 
      */
-    static withdrawFee(who: AccountIdType, tip: Balance, info: DispatchInfo<Weight>, len: i32): void {
+    static _withdrawFee(who: AccountIdType, tip: Balance, info: DispatchInfo<Weight>, len: i32): void {
         const fee = this.computeFee(len, info, tip);
         Payment.withdrawFee(who, info, fee, tip);
     };

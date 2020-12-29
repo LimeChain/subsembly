@@ -4,7 +4,7 @@ import { StorageEntry } from "../../frame/models/storage-entry";
 import { StorageEntries as SystemStorageEntries } from '../../frame/system';
 import { AccountIdType, Balance, BalancesConfig, NonceType, SignedTransactionType } from "../../runtime/runtime";
 
-export namespace StorageEntries{
+export namespace BalancesStorageEntries{
     /**
      * @description Stores information about accountId
      */
@@ -24,11 +24,11 @@ export class Balances {
      * Alters the Free balance and Reserved balances in Storage.
      */
     static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData<Balance> {
-        const currentAccountData = StorageEntries.Account().get(accountId);
+        const currentAccountData = BalancesStorageEntries.Account().get(accountId);
 
         currentAccountData.setFree(freeBalance);
         currentAccountData.setReserved(reservedBalance);
-        StorageEntries.Account().set(currentAccountData, accountId);
+        BalancesStorageEntries.Account().set(currentAccountData, accountId);
         return currentAccountData;
     }
 
@@ -39,8 +39,8 @@ export class Balances {
      * @param value value of the transfer
      */
     static transfer(source: AccountIdType, dest: AccountIdType, value: Balance, existenceRequirement: ExistenceRequirement): void {
-        const senderAccData = StorageEntries.Account().get(source);
-        const receiverAccData = StorageEntries.Account().get(dest);
+        const senderAccData = BalancesStorageEntries.Account().get(source);
+        const receiverAccData = BalancesStorageEntries.Account().get(dest);
         const senderNewBalance = senderAccData.getFree().unwrap() - value.unwrap();
         const receiverNewBalance = receiverAccData.getFree().unwrap() + value.unwrap();
 
@@ -74,7 +74,7 @@ export class Balances {
      */
     static _validateTransaction(extrinsic: SignedTransactionType): TransactionValidity {
         const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
-        const fromBalance = StorageEntries.Account().get(from);
+        const fromBalance = BalancesStorageEntries.Account().get(from);
         const balance: Balance = fromBalance.getFree();
         if (balance.unwrap() < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).unwrap()) {
             return new TransactionValidity(
@@ -107,7 +107,7 @@ export class Balances {
         if (value.eq(instantiate<Balance>(0))) {
             return ;
         }
-        const account = StorageEntries.Account().get(who);
+        const account = BalancesStorageEntries.Account().get(who);
         let newFreeAccount = new AccountData(account.getFree().unwrap() - value.unwrap());
         const ed = BalancesConfig.existentialDeposit();
         const wouldBeDead = newFreeAccount.getFree().unwrap() + account.getReserved().unwrap() < ed.unwrap();
@@ -116,6 +116,6 @@ export class Balances {
         assert(liveness != ExistenceRequirement.AllowDeath || !wouldKill, "Error: Error withdrawing: balance less than existential deposit after withdrawal");
 
         account.setFree(<Balance>newFreeAccount.getFree());
-        StorageEntries.Account().set(account, who);
+        BalancesStorageEntries.Account().set(account, who);
     }
 }

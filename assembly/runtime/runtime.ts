@@ -113,6 +113,9 @@ export class TimestampConfig {
  * @description Constants used in Balances module
  */
 export class BalancesConfig {
+    /**
+     * @description Existential deposit
+     */
     static existentialDeposit(): Balance {
         return instantiate<Balance>(100);
     }

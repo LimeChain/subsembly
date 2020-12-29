@@ -8,7 +8,7 @@
     "asbuild:untouched": "asc assembly/index.ts -b build/runtime-untouched.wasm -t build/runtime-untouched.wat --runtime half --memoryBase=16777216 --importMemory --noAssert --use abort=",
     "asbuild:optimized": "asc assembly/index.ts -b build/runtime-optimized.wasm -t build/runtime-optimized.wat --runtime half --memoryBase=16777216 --importMemory --noAssert --optimize --use abort=",
     "build": "yarn run metadata && yarn run asbuild:optimized && node build.js",
-    "metadata": "node metadata"
+    "metadata": "node ./metadata"
   },
   "repository": {
     "type": "git",
@@ -25,12 +25,12 @@
   },
   "homepage": "https://github.com/limechain/subsembly#readme",
   "dependencies": {
-    "@assemblyscript/loader": "^0.16.1",
+    "@assemblyscript/loader": "^0.17.1",
     "as-bignum": "^0.2.6",
     "as-scale-codec": "^0.2.1",
     "subsembly-core": "^1.0.1"
   },
   "devDependencies": {
-    "assemblyscript": "^0.16.1"
+    "assemblyscript": "^0.17.1"
   }
 }

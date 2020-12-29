@@ -1,6 +1,6 @@
 import { DispatchInfo, ExistenceRequirement, WithdrawReasons } from "subsembly-core";
 import { AccountIdType, Balance, Weight } from "../../runtime/runtime";
-import { Balances } from "../balances";
+import { Balances } from "../balances/balances";
 
 /**
  * @description Handle withdrawing, refunding and depositing of transaction fees.
