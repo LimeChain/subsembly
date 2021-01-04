@@ -6,6 +6,11 @@ The project is funded by [Web3 Foundation](https://web3.foundation/) via their [
 
 This is the starter project for the Subsembly framework used for developing Substrate runtimes in AssemblyScript. The project is work in progress.
 
+## High-Level Components Diagram
+<p align="center">
+  <img src="./components_diagram.png">
+</p>
+
 ## Folder Structure
 Subsembly starter project consists of following folders:
 ```
