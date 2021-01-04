@@ -11,6 +11,12 @@ This is the starter project for the Subsembly framework used for developing Subs
   <img src="./components_diagram.png">
 </p>
 
+:soon: ## Subsembly CLI
+CLI for Development ease will be implemented soon.
+<p align="center">
+  <img src="./cli.png">
+</p>
+
 ## Folder Structure
 Subsembly starter project consists of following folders:
 ```
