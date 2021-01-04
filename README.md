@@ -28,7 +28,7 @@ subsembly
 
 Main types and API entries are defined in `runtime` folder. `runtime.ts` file in `runtime` folder defines types and constants for the frame modules and pallets.
 
-### Developing Subsembly Runtimes
+## Developing Subsembly Runtimes
 
 #### Runtime configuration
 
