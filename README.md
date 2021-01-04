@@ -11,8 +11,7 @@ This is the starter project for the Subsembly framework used for developing Subs
   <img src="./components_diagram.png">
 </p>
 
-:soon: Subsembly CLI
-CLI for Development ease will be implemented.
+:soon: Subsembly CLI for Development ease will be implemented.
 <p align="center">
   <img src="./cli.png">
 </p>
