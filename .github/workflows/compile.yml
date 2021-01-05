@@ -33,12 +33,16 @@ jobs:
           run: bash scripts/insert-aura.sh
         - name: Send transaction
           id: submit-tx
-          run: bash scripts/submit-tx.sh 
-        - name: Check extrinsic submission
-          env: 
-            TX_RESULT: ${{steps.submit-tx.outputs.*}}
           run: |
-            if [[ $TX_RESULT == *"error" || $TX_RESULT == "1001" ]]; then \
+            echo "::set-output name=tx-output::$(bash scripts/submit-tx.sh)\n" 
+        - name: |
+            Check extrinsic submission, 
+            if response contains the word "error" 
+            or error code 1001 workflow fails
+          env: 
+            TX_RESULT: ${{steps.submit-tx.outputs.tx-output}}
+          run: |
+            if [[ $TX_RESULT == *"error"* || $TX_RESULT == *"1001"* ]]; then \
               exit 1; \
             else \
               exit 0; \
