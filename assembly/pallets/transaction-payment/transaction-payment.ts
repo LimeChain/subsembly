@@ -47,7 +47,7 @@ export class TransactionPayment {
      * @param info information about dispatch
      * @param tip tip to be included
      */
-    static computeFee(len: u32, info: DispatchInfo<Weight>, tip: Balance): Balance {
+    static _computeFee(len: u32, info: DispatchInfo<Weight>, tip: Balance): Balance {
         return this._computeFeeRaw(len, info.weight, tip, info.paysFee);
     };
 
@@ -61,7 +61,7 @@ export class TransactionPayment {
      * @param postInfo information about what happens after dispatch
      * @param tip tip to be included
      */
-    static computeActualFee(len: u32, info: DispatchInfo<Weight>, postInfo: PostDispatchInfo<Weight>, tip: Balance): Balance {
+    static _computeActualFee(len: u32, info: DispatchInfo<Weight>, postInfo: PostDispatchInfo<Weight>, tip: Balance): Balance {
         return this._computeFeeRaw(len, postInfo.calcActualWeight(info), tip, postInfo.paysFee);
     };
 

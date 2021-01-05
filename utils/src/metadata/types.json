@@ -42,5 +42,7 @@
     "Multiplier": "Multiplier",
     "TransactionByteFee": "Balance",
     "DispatchInfo": "DispatchInfo",
-    "PostDispatchInfo": "DispatchInfo"
+    "PostDispatchInfo": "DispatchInfo",
+    "WithdrawReasons": "WithdrawReasons",
+    "ExistenceRequirement": "bool"
 }

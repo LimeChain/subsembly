@@ -59,7 +59,7 @@ export class Timestamp {
      * it must be greater than the last one (set into storage) with at least a MinimumPeriod
      * @param now timestamp number
      */
-    static _set(now: Moment): u8[] {
+    static set(now: Moment): u8[] {
         const didUpdate = TimestampStorageEntries.DidUpdate().get();
         if (didUpdate.unwrap()) {
             Log.error('Validation error: Timestamp must be updated only once in the block');
@@ -126,7 +126,7 @@ export class Timestamp {
      * @param inherent 
      */
     static _applyInherent(inherent: InherentType): u8[] {
-        const resCode = Timestamp._set((<Moment>inherent.getArgument()));
+        const resCode = Timestamp.set((<Moment>inherent.getArgument()));
         if (Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)) {
             Timestamp._toggleUpdate();
         }

@@ -38,7 +38,7 @@ export class Balances {
      * @param dest dest account
      * @param value value of the transfer
      */
-    static transfer(source: AccountIdType, dest: AccountIdType, value: Balance, existenceRequirement: ExistenceRequirement): void {
+    static transfer(source: AccountIdType, dest: AccountIdType, value: Balance): void {
         const senderAccData = BalancesStorageEntries.Account().get(source);
         const receiverAccData = BalancesStorageEntries.Account().get(dest);
         const senderNewBalance = senderAccData.getFree().unwrap() - value.unwrap();
@@ -64,7 +64,7 @@ export class Balances {
             Log.error(validated.message);
             return validated.error;
         }
-        this.transfer(source, dest, BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()), ExistenceRequirement.KeepAlive);
+        this.transfer(source, dest, BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()));
         return ResponseCodes.SUCCESS;
     }
 
@@ -91,7 +91,7 @@ export class Balances {
     }
 
     /**
-     * Removes some free balance from `who` account for `reason` if possible. If `liveness` is
+     * @description Removes some free balance from `who` account for `reason` if possible. If `liveness` is
 	 * `KeepAlive`, then no less than `ExistentialDeposit` must be left remaining.
 	 * This checks any locks, vesting, and liquidity requirements. If the removal is not possible,
 	 * then it returns `Err`.

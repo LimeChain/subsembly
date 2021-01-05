@@ -1,3 +1,15 @@
+const INDENTATION = " ".repeat(4);
+
+class ReturnType {
+    constructor(value) {
+        this.value = value;
+    }
+    
+    toString() {
+        return `return ${this.value};`;
+    }
+}
+
 /**
  * Class for variables
  */
@@ -69,6 +81,49 @@ class Namespace {
 }
 
 /**
+ * Class that represents Enum in AS
+ */
+class EnumType {
+    constructor(name, members, isExport) {
+        this.name = name;
+        this.members = members;
+        this.isExport = isExport;
+    }
+    
+    toString() {
+        return `
+${this.isExport ? 'export ' : ''}enum ${this.name} {
+${this.members.map(([name, value]) => `${INDENTATION}${name} = ${value}`).join(', \n')
+}
+}`
+    };
+
+    toSwitchCase() {
+        return switchCase(`${this.name.toLowerCase()}Type`, this.members.map(([name, value]) => [name, returnType(value).toString()])).toString();
+    }
+
+    addMember(member) {
+        this.members.push(member);
+    }
+}
+
+class SwitchCase {
+    constructor (type, members){
+        this.type = type;
+        this.members = members;
+    }
+
+    toString() {
+        return `switch(${this.type}) {
+${this.members.map(([name, value]) => {
+    return `${INDENTATION}case ${name}:
+${INDENTATION.repeat(2)}${value.toString()}`;
+}).join('\n')}
+}`;
+}
+}
+
+/**
  * Array value
  */
 class ArrayType {
@@ -81,16 +136,42 @@ class ArrayType {
     }
 }
 
+class Call {
+    constructor(method, call, args) {
+        this.method = method;
+        this.call = call;
+        this.args = args;
+    }
+
+    toString() {
+        return `${this.method}.${this.call}(${this.args.map(arg => arg).join(', ')});`
+    }
+}
+
+class BytesReader {
+    constructor(bytes, index, type){
+        this.bytes = bytes;
+        this.index = index;
+        this.type = type;
+    }
+
+    toString() {
+        return `BytesReader.decodeInto<${this.index}>(${this.bytes}, ${this.index});`;
+    }
+}
+
 const namespace = (name, methods, isExport) => new Namespace(name, methods, isExport);
 const method = (name, params, returnType, body, isExport) => new Method(name, params, returnType, body, isExport);
 const param = (name, type) => new Parameter(name, type);
 const variable = (name, value, type, constant) => new Variable(name, value, type, constant);
 const arrayType = (value) => new ArrayType(value);
+const eNum = (name, members, isExport) => new EnumType(name, members, isExport);
+const call = (method, call, args) => new Call(method, call, args);
+const bytesReader = (bytes, index, type) => new BytesReader(bytes, index, type);
+const switchCase = (type, members) => new SwitchCase(type, members);
+const returnType = (value) => new ReturnType(value);
 
 module.exports = {
-    namespace,
-    method,
-    param,
-    variable,
-    arrayType
+    namespace, method, param, variable, switchCase,
+    arrayType, eNum, call, bytesReader
 };

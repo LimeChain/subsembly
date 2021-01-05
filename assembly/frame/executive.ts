@@ -160,11 +160,11 @@ export namespace Executive {
          * If all the validations are passed, construct validTransaction instance
          */
         const priority: UInt64 = new UInt64(<u64>ExtrinsicType.SignedTransaction);
-        const requires: TransactionTag<AccountIdType>[] = [];
-        const provides: TransactionTag<AccountIdType>[] = [new TransactionTag(from, <UInt64>utx.getNonce())];
+        const requires: TransactionTag<AccountIdType, NonceType>[] = [];
+        const provides: TransactionTag<AccountIdType, NonceType>[] = [new TransactionTag(from, <NonceType>utx.getNonce())];
         const longevity: UInt64 = new UInt64(64);
         const propogate: Bool = new Bool(true);
-        const validTransaction = new ValidTransaction<AccountIdType>(
+        const validTransaction = new ValidTransaction<AccountIdType, NonceType>(
             priority,
             requires,
             provides,

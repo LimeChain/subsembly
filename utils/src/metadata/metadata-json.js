@@ -57,12 +57,13 @@ function generateMetadata() {
             // Go through the files inside the pallet
             fs.readdirSync(assemblyPath).forEach(file => {
                 // Name of the file should be same as the name of the pallet/module
-                if (file.includes("index.ts")) {
+                if (file.includes(`${module}.ts`)) {
                     const moduleNode = ts.createSourceFile(
                         module,
                         fs.readFileSync(path.join(assemblyPath, file), "utf-8"),
                         ts.ScriptTarget.Latest
                     );
+                    console.log("here: " + module);
                     metadata.metadata.V12.modules.push(generateModuleMetadata(metadata.metadata.V12.modules.length, moduleNode));
                 }
             });

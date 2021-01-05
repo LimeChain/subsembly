@@ -6,7 +6,7 @@ import {
 
 export type HashType = Hash;
 export type Moment = UInt64;
-export type NonceType = UInt64;
+export type NonceType = UInt32;
 export type ExtrinsicIndexType = UInt32;
 export type AmountType = UInt64;
 export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;

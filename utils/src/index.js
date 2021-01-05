@@ -12,7 +12,7 @@ function run() {
     }
   });
   if(debug){
-    fs.writeFileSync(path.join(__dirname, "./metadata.json"), JSON.stringify(metadata, null, 4));
+    fs.writeFileSync(path.join(__dirname, "../metadata.json"), JSON.stringify(metadata, null, 4));
     return ;
   };
   generateFile(metadata);
