@@ -1,14 +1,17 @@
-# Subsembly
+<p align="center">
+  <img src="./images/logo.svg">
+</p>
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 The project is funded by [Web3 Foundation](https://web3.foundation/) via their [General Grants Program](https://github.com/w3f/General-Grants-Program) 🙏
-![WEB3 Badge](./web3_badge_black.png)
+![WEB3 Badge](./images/web3_badge_black.png)
 
 This is the starter project for the Subsembly framework used for developing Substrate runtimes in AssemblyScript. The project is work in progress.
 
 ## High-Level Overview
 <p align="center">
-  <img src="./components_diagram.png">
+  <img src="./images/components_diagram.png">
 </p>
 
 - **Runtime API** - Implementation of Node <> Runtime Entries
