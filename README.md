@@ -4,9 +4,6 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-The project is funded by [Web3 Foundation](https://web3.foundation/) via their [General Grants Program](https://github.com/w3f/General-Grants-Program) 🙏
-![WEB3 Badge](./images/web3_badge_black.png)
-
 This is the starter project for the Subsembly framework used for developing Substrate runtimes in AssemblyScript. The project is work in progress.
 
 ## High-Level Overview
@@ -138,3 +135,8 @@ In order to run Substrate node with generated runtime, use Docker image of node 
 2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(pwd)/spec-files/customSpecRaw.json":/customSpecRaw.json -d limechain/as-substrate`
 
 In order for you to start block production, you will have to instert your Aura keys as described above.
+
+### Funding
+
+The project is funded by [Web3 Foundation](https://web3.foundation/) via their [General Grants Program](https://github.com/w3f/General-Grants-Program) 🙏
+![WEB3 Badge](./images/web3_badge_black.png)
