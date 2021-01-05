@@ -11,6 +11,12 @@ This is the starter project for the Subsembly framework used for developing Subs
   <img src="./components_diagram.png">
 </p>
 
+- **Runtime API** - Implementation of Node <> Runtime Entries
+- **Runtime Configuration** - Configurable runtime similar to Substrate Runtimes
+- **FRAME** - Runtime components that handle the administrative functionalities
+- **Pallets** - Packages that deliver common functionality, reused in different chains
+- **Core** - Runtime components that provide low-level functionality
+
 ### Folder Structure
 Subsembly starter project consists of following folders:
 ```
