@@ -20,7 +20,7 @@ run-node:
 	@echo "Running the container in detached mode"
 	@bash scripts/compile.sh
 ifdef test
-	@docker run --name=$(DOCKER_CONTAINER) -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpecRaw.json":/customSpecRaw.json -d $(DOCKER_IMAGE)
+	@docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpecRaw.json":/customSpecRaw.json -d $(DOCKER_IMAGE)
 else
 	@docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(CURDIR)/spec-files/customSpecRaw.json":/customSpecRaw.json $(DOCKER_IMAGE)
 endif

@@ -1,4 +1,5 @@
-curl --location --request POST 'localhost:9933' \
+lsof -n | grep LISTEN > /dev/null
+curl --location --request POST '0.0.0.0:9933' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "jsonrpc": "2.0",

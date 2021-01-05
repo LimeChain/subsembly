@@ -1,3 +1,4 @@
+lsof -n | grep LISTEN > /dev/null
 curl --location --request POST 'localhost:9933' \
 --header 'Content-Type: application/json' \
 --data-raw '{

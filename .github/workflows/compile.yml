@@ -28,14 +28,7 @@ jobs:
         - name: Install AS dependencies and metadata dependencies
           run: yarn install && cd ./metadata && yarn install
         - name: Compile and run the node in a detached mode
-          run: |
-            make run-node test=2 && \
-            TX_RESULT=$(bash scripts/insert-aura.sh) && \
-            if [[ $TX_RESULT == *"error" | $TX_RESULT == "1001" ]]; then \
-              exit 1; \
-            else \
-              exit 0; \
-            fi \
+          run: make run-node test=1
         - name: Insert aura keys
           run: bash scripts/insert-aura.sh
         - name: Send transaction
@@ -45,7 +38,7 @@ jobs:
           env: 
             TX_RESULT: ${{steps.submit-tx.outputs.*}}
           run: |
-            if [[ $TX_RESULT == *"error" | $TX_RESULT == "1001" ]]; then \
+            if [[ $TX_RESULT == *"error" || $TX_RESULT == "1001" ]]; then \
               exit 1; \
             else \
               exit 0; \
