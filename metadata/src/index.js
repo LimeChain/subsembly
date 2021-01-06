@@ -1,5 +1,6 @@
 const { generateMetadata, generateFile } = require("./metadata");
 const fs = require('fs');
+const path = require("path");
 
 run();
 function run() {
@@ -11,7 +12,7 @@ function run() {
     }
   });
   if(debug){
-    fs.writeFileSync("./metadata.json", JSON.stringify(metadata, null, 4));
+    fs.writeFileSync(path.join(__dirname, "./metadata.json"), JSON.stringify(metadata, null, 4));
     return ;
   };
   generateFile(metadata);

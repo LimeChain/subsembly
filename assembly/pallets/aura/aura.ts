@@ -1,11 +1,11 @@
 import { ByteArray, BytesReader } from 'as-scale-codec';
 import { InherentData, Storage } from "subsembly-core";
-import { Moment, TimestampConfig } from '../../../runtime/runtime';
+import { Moment, TimestampConfig } from '../../runtime/runtime';
 
 /**
  * Storage entries for Aura module
  */
-export namespace StorageEntries{
+export namespace AuraStorageEntries {
 };
 
 /**

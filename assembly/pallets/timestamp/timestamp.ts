@@ -1,12 +1,12 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
 import { InherentData, Log, ResponseCodes, Utils } from 'subsembly-core';
-import { StorageEntry } from '../../../frame';
-import { InherentType, Moment, TimestampConfig } from '../../../runtime/runtime';
+import { StorageEntry } from '../../frame';
+import { InherentType, Moment, TimestampConfig } from '../../runtime/runtime';
 
 /**
  * Storage entries for Timestamp
  */
-export namespace StorageEntries{
+export namespace TimestampStorageEntries{
     /**
      * Current set Timestamp value
      */
@@ -50,8 +50,8 @@ export class Timestamp {
      * @description Toggles the current value of didUpdate
      */
     static _toggleUpdate(): void {
-        const value = StorageEntries.DidUpdate().get();
-        StorageEntries.DidUpdate().set(new Bool(!(value.unwrap())));
+        const value = TimestampStorageEntries.DidUpdate().get();
+        TimestampStorageEntries.DidUpdate().set(new Bool(!(value.unwrap())));
     }
 
     /**
@@ -60,19 +60,19 @@ export class Timestamp {
      * @param now timestamp number
      */
     static _set(now: Moment): u8[] {
-        const didUpdate = StorageEntries.DidUpdate().get();
+        const didUpdate = TimestampStorageEntries.DidUpdate().get();
         if (didUpdate.unwrap()) {
             Log.error('Validation error: Timestamp must be updated only once in the block');
             return this._tooFrequentResponseCode();
         }
-        let minValue = StorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
+        let minValue = TimestampStorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap();
         if (now.unwrap() < minValue) {
             Log.error('Validation error: Timestamp must increment by at least <MinimumPeriod> between sequential blocks');
             return this._timeframeTooLowResponceCode();
         }
 
-        StorageEntries.DidUpdate().set(new Bool(true));
-        StorageEntries.Now().set(now);
+        TimestampStorageEntries.DidUpdate().set(new Bool(true));
+        TimestampStorageEntries.Now().set(now);
 
         return ResponseCodes.SUCCESS;
     }
@@ -85,7 +85,7 @@ export class Timestamp {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this._extractInherentData(data).unwrap());
         let nextTime = timestampData;
 
-        const now = StorageEntries.Now().get();
+        const now = TimestampStorageEntries.Now().get();
         if (now.unwrap()) {
             let nextTimeValue = timestampData.unwrap() > now.unwrap() + TimestampConfig.minimumPeriod().unwrap()
                 ? timestampData.unwrap() : now.unwrap() + TimestampConfig.minimumPeriod().unwrap();
@@ -109,7 +109,7 @@ export class Timestamp {
     static _checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
         const MAX_TIMESTAMP_DRIFT_MILLS: Moment = instantiate<Moment>(30 * 1000);
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this._extractInherentData(data).unwrap());
-        const minimum: Moment = instantiate<Moment>(StorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
+        const minimum: Moment = instantiate<Moment>(TimestampStorageEntries.Now().get().unwrap() + TimestampConfig.minimumPeriod().unwrap());
         if (t.unwrap() > timestampData.unwrap() + MAX_TIMESTAMP_DRIFT_MILLS.unwrap()) {
             return false;
         }

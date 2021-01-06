@@ -8,7 +8,7 @@ import {
     BlockNumber, ExtrinsicDataType, ExtrinsicIndexType,
     HashType, HeaderType, NonceType, SystemConfig
 } from '../runtime/runtime';
-import { StorageEntry } from './models/storageEntry';
+import { StorageEntry } from './models/storage-entry';
 
 /**
  * @description Storage entries for System module
