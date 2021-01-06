@@ -28,7 +28,7 @@ jobs:
         - name: Install AS dependencies and metadata dependencies
           run: yarn install && cd ./metadata && yarn install
         - name: Compile and run the node in a detached mode
-          run: make run-node test=1
+          run: make run-node detached=1
         - name: Insert aura keys
           run: bash scripts/insert-aura.sh
         - name: Send transaction
