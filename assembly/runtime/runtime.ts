@@ -1,7 +1,7 @@
 import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
-    AccountId, Block, DigestItem, Extrinsic, ExtrinsicData, Header, Inherent,
-    RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
+    AccountId, Block, DigestItem, ExtrinsicData, GenericExtrinsic, Header,
+    Inherent, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
 } from "subsembly-core";
 
 export type HashType = Hash;
@@ -16,13 +16,13 @@ export type SignatureType = Signature;
 export type DigestItemType = DigestItem;
 export type Balance = UInt128;
 export type HeaderType = Header<BlockNumber, HashType>;
-export type UncheckedExtrinsic = Extrinsic;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type InherentType = Inherent<Moment>;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 export type Multiplier = UInt64;
 export type TransactionByteFee = Balance;
 export type Weight = UInt64;
+export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceType, SignatureType>;
 
 /**
  * @description Constants for runtime

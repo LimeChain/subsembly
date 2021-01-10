@@ -1,8 +1,8 @@
 import { BytesReader } from "as-scale-codec";
-import { AccountData, ExistenceRequirement, Log, ResponseCodes, TransactionValidity, WithdrawReasons } from 'subsembly-core';
+import { AccountData, ExistenceRequirement, Log, ResponseCodes, TransactionValidity, Transfer, WithdrawReasons } from 'subsembly-core';
 import { StorageEntry } from "../../frame/models/storage-entry";
 import { StorageEntries as SystemStorageEntries } from '../../frame/system';
-import { AccountIdType, Balance, BalancesConfig, NonceType, SignedTransactionType } from "../../runtime/runtime";
+import { AccountIdType, Balance, BalancesConfig, NonceType } from "../../runtime/runtime";
 
 export namespace BalancesStorageEntries{
     /**
@@ -38,7 +38,7 @@ export class Balances {
      * @param dest dest account
      * @param value value of the transfer
      */
-    static transfer(source: AccountIdType, dest: AccountIdType, value: Balance, existenceRequirement: ExistenceRequirement): void {
+    static transfer(source: AccountIdType, dest: AccountIdType, value: Balance, existenceRequirement: ExistenceRequirement = ExistenceRequirement.KeepAlive): void {
         const senderAccData = BalancesStorageEntries.Account().get(source);
         const receiverAccData = BalancesStorageEntries.Account().get(dest);
         const senderNewBalance = senderAccData.getFree().unwrap() - value.unwrap();
@@ -53,30 +53,13 @@ export class Balances {
     }
 
     /**
-     * @description Apply extrinsic for the module
-     * @param extrinsic SignedTransaction instance
-     */
-    static _applyExtrinsic(extrinsic: SignedTransactionType): u8[] {
-        const source: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
-        const dest: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getTo().toU8a());
-        const validated = this._validateTransaction(extrinsic);
-        if (!validated.valid) {
-            Log.error(validated.message);
-            return validated.error;
-        }
-        this.transfer(source, dest, BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()), ExistenceRequirement.KeepAlive);
-        return ResponseCodes.SUCCESS;
-    }
-
-    /**
      * @description Validate transaction before applying it 
-     * @param extrinsic SignedTransaction instance
+     * @param transfer SignedTransaction instance
      */
-    static _validateTransaction(extrinsic: SignedTransactionType): TransactionValidity {
-        const from: AccountIdType = BytesReader.decodeInto<AccountIdType>(extrinsic.getFrom().toU8a());
-        const fromBalance = BalancesStorageEntries.Account().get(from);
+    static _validateTransaction(transfer: Transfer<AccountIdType, Balance, NonceType>): TransactionValidity {
+        const fromBalance = BalancesStorageEntries.Account().get(transfer.from);
         const balance: Balance = fromBalance.getFree();
-        if (balance.unwrap() < BytesReader.decodeInto<Balance>(extrinsic.getAmount().toU8a()).unwrap()) {
+        if (balance.unwrap() < BytesReader.decodeInto<Balance>(transfer.amount.toU8a()).unwrap()) {
             return new TransactionValidity(
                 false,
                 ResponseCodes.INSUFFICIENT_BALANCE,

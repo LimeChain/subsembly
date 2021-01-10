@@ -1,7 +1,7 @@
 import { BytesReader, CompactInt } from "as-scale-codec";
 import { Serialiser } from "subsembly-core";
 import { Executive, Metadata, StorageEntries as SystemStorageEntries } from "../../frame";
-import { AccountIdType, SignedTransactionType } from "../runtime";
+import { AccountIdType, UncheckedExtrinsic } from "../runtime";
 /**
  * @description The rest of runtime entries for the Polkadot Host
  * These methods are mocked for this iteration and they return an empty u8 array by default
@@ -34,7 +34,7 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
     let input = Serialiser.deserialiseInput(data, len);
-    const uxt = BytesReader.decodeInto<SignedTransactionType>(input);
+    const uxt = BytesReader.decodeInto<UncheckedExtrinsic>(input);
     const result = Executive.validateTransaction(uxt);
     return Serialiser.serialiseResult(result);
 }
