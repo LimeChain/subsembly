@@ -1,6 +1,7 @@
-const { generateMetadata, generateFile } = require("./metadata");
 const fs = require('fs');
 const path = require("path");
+const generateMetadata = require('./metadata/metadata-json');
+const generateFile = require('./metadata/metadata-ts');
 
 run();
 function run() {

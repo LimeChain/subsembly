@@ -8,6 +8,7 @@ const palletsPath = path.join(__dirname, "../../../assembly/pallets/")
  * Generates the metadata of the Subsembly runtime
  */
 function generateMetadata() {
+    console.log("gets called?");
     /**
      * Template metadata object to be populated
      */
@@ -57,7 +58,7 @@ function generateMetadata() {
             // Go through the files inside the pallet
             fs.readdirSync(assemblyPath).forEach(file => {
                 // Name of the file should be same as the name of the pallet/module
-                if (file.includes("index.ts")) {
+                if (file.includes(module)) {
                     const moduleNode = ts.createSourceFile(
                         module,
                         fs.readFileSync(path.join(assemblyPath, file), "utf-8"),
