@@ -1,7 +1,7 @@
 import { BytesReader, CompactInt } from "as-scale-codec";
 import { Log, Serialiser } from "subsembly-core";
 import { Executive, Metadata, StorageEntries as SystemStorageEntries } from "../../frame";
-import { AccountIdType, SignedTransactionType } from "../runtime";
+import { AccountIdType, UncheckedExtrinsic } from "../runtime";
 /**
  * @description The rest of runtime entries for the Polkadot Host
  * These methods are mocked for this iteration and they return an empty u8 array by default
@@ -34,9 +34,11 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
     let input = Serialiser.deserialiseInput(data, len);
-    Log.info("received extrinsic: " + input.toString());
-    const uxt = BytesReader.decodeInto<SignedTransactionType>(input);
+    const uxt = BytesReader.decodeInto<UncheckedExtrinsic>(input);
+    Log.info("Validate called: " + input.toString());
+    Log.info("Decoding: " + uxt.toU8a().toString());
     const result = Executive.validateTransaction(uxt);
+    Log.info("Validation result: " + result.toString());
     return Serialiser.serialiseResult(result);
 }
 

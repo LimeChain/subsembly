@@ -1,4 +1,4 @@
 module.exports = {
-    generateMetadata: require('./metadata-json'),
+    getMetadata: require('./metadata-json'),
     generateFile: require('./metadata-ts')
 };

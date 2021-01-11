@@ -4,25 +4,25 @@ import { AccountIdType, Balance, Multiplier, SystemConfig, TransactionByteFee, W
 import { Payment } from './payment';
 
 /**
- * Storage entries for TransactionPayment module
+ * Storage entries for FeeCalculator module
  */
-export namespace TPaymentStorageEntries {
+export namespace FeeCalculatorStorageEntries {
     /**
      * @description Multiplier value for the next fee
      */
     export function NextFeeMultiplier(): StorageEntry<Multiplier> {
-        return new StorageEntry<Multiplier>("TransactionPayment", "Multiplier");
+        return new StorageEntry<Multiplier>("FeeCalculator", "Multiplier");
     }
 
     /**
      * @description Fee for each byte
      */
     export function TransactionByteFee(): StorageEntry<TransactionByteFee> {
-        return new StorageEntry<TransactionByteFee>("TransactionPayment", "ByteFee");
+        return new StorageEntry<TransactionByteFee>("FeeCalculator", "ByteFee");
     }
 }
 
-export class TransactionPayment {
+export class FeeCalculator {
     /**
      * @description Compute the final fee value for a particular transaction.
 	 *
@@ -75,14 +75,14 @@ export class TransactionPayment {
     static _computeFeeRaw(len: u32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
         if (paysFee == Pays.Yes) {
             let length: Balance = instantiate<Balance>(len);
-            let perByte: TransactionByteFee = TPaymentStorageEntries.TransactionByteFee().get();
+            let perByte: TransactionByteFee = FeeCalculatorStorageEntries.TransactionByteFee().get();
 
             // length fee. not adjusted
             let fixedLenFee =<u64>length.unwrap() * <u64>perByte.unwrap();
 
             // the adjustable part of the fee
             let unadjustedWeightFee = this._weightToFee(weight);
-            let multiplier = TPaymentStorageEntries.NextFeeMultiplier().get();
+            let multiplier = FeeCalculatorStorageEntries.NextFeeMultiplier().get();
 
             // final adjusted part of the fee
             const adjustedWeightFee = <u64>multiplier.unwrap() * <u64>unadjustedWeightFee.unwrap();   
