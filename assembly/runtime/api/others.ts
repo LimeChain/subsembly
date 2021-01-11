@@ -1,5 +1,5 @@
 import { BytesReader, CompactInt } from "as-scale-codec";
-import { Serialiser } from "subsembly-core";
+import { Log, Serialiser } from "subsembly-core";
 import { Executive, Metadata, StorageEntries as SystemStorageEntries } from "../../frame";
 import { AccountIdType, UncheckedExtrinsic } from "../runtime";
 /**
@@ -35,7 +35,10 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
     let input = Serialiser.deserialiseInput(data, len);
     const uxt = BytesReader.decodeInto<UncheckedExtrinsic>(input);
+    Log.info("Validate called: " + input.toString());
+    Log.info("Decoding: " + uxt.toU8a().toString());
     const result = Executive.validateTransaction(uxt);
+    Log.info("Validation result: " + result.toString());
     return Serialiser.serialiseResult(result);
 }
 
@@ -63,7 +66,7 @@ export function Metadata_metadata(data: i32, len: i32): u64 {
  * @param data i32 pointer to the start of the argument passed
  * @param len i32 length (in bytes) of the arguments passed
  */
-export function System_account_nonce(data: i32, len: i32): u64 {
+export function AccountNonceApi_account_nonce(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
     const who = BytesReader.decodeInto<AccountIdType>(input);
     const nonce = SystemStorageEntries.AccountNonce().get(who);
