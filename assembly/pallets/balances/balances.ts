@@ -81,17 +81,16 @@ export class Balances {
 	 * is `value`.
      * @param who 
      * @param value 
-     * @param reasons 
-     * @param liveliness 
      */
     static withdraw(who: AccountIdType, value: Balance): void {
-        if (value.eq(instantiate<Balance>(0))) {
+        // check if value is zero
+        if (value.eq(BytesReader.decodeInto<Balance>([0]))) {
             return ;
         }
         const account = BalancesStorageEntries.Account().get(who);
-        let newFreeAccount = new AccountData(account.getFree().unwrap() - value.unwrap());
+        let newFreeAccount = instantiate<Balance>(account.getFree().unwrap() - value.unwrap());
 
-        account.setFree(<Balance>newFreeAccount.getFree());
+        account.setFree(<Balance>newFreeAccount);
         BalancesStorageEntries.Account().set(account, who);
     }
 }
