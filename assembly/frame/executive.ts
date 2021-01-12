@@ -129,7 +129,6 @@ export namespace Executive {
      * @param utx transaction
      */
     export function validateTransaction(utx: UncheckedExtrinsic): u8[] {
-       
         if(utx.isSigned()){
             const extSignature = utx.signature;
             const from = extSignature.signer;

@@ -1,8 +1,8 @@
 import { BytesReader } from "as-scale-codec";
-import { AccountData, ExistenceRequirement, Log, ResponseCodes, TransactionValidity, Transfer, WithdrawReasons } from 'subsembly-core';
+import { AccountData, Log, ResponseCodes, TransactionValidity, Transfer } from 'subsembly-core';
 import { StorageEntry } from "../../frame/models/storage-entry";
 import { StorageEntries as SystemStorageEntries } from '../../frame/system';
-import { AccountIdType, Balance, BalancesConfig, NonceType } from "../../runtime/runtime";
+import { AccountIdType, Balance, NonceType } from "../../runtime/runtime";
 
 export namespace BalancesStorageEntries{
     /**
@@ -23,13 +23,12 @@ export class Balances {
      * @description Sets the balances of a given AccountId
      * Alters the Free balance and Reserved balances in Storage.
      */
-    static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): AccountData<Balance> {
+    static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): void {
         const currentAccountData = BalancesStorageEntries.Account().get(accountId);
 
         currentAccountData.setFree(freeBalance);
         currentAccountData.setReserved(reservedBalance);
         BalancesStorageEntries.Account().set(currentAccountData, accountId);
-        return currentAccountData;
     }
 
     /**
@@ -38,7 +37,7 @@ export class Balances {
      * @param dest dest account
      * @param value value of the transfer
      */
-    static transfer(source: AccountIdType, dest: AccountIdType, value: Balance, existenceRequirement: ExistenceRequirement = ExistenceRequirement.KeepAlive): void {
+    static transfer(source: AccountIdType, dest: AccountIdType, value: Balance): void {
         const senderAccData = BalancesStorageEntries.Account().get(source);
         const receiverAccData = BalancesStorageEntries.Account().get(dest);
         const senderNewBalance = senderAccData.getFree().unwrap() - value.unwrap();
@@ -82,21 +81,15 @@ export class Balances {
 	 * is `value`.
      * @param who 
      * @param value 
-     * 
      * @param reasons 
      * @param liveliness 
      */
-    static withdraw(who: AccountIdType, value: Balance, reasons: WithdrawReasons, liveness: ExistenceRequirement): void {
+    static withdraw(who: AccountIdType, value: Balance): void {
         if (value.eq(instantiate<Balance>(0))) {
             return ;
         }
         const account = BalancesStorageEntries.Account().get(who);
         let newFreeAccount = new AccountData(account.getFree().unwrap() - value.unwrap());
-        const ed = BalancesConfig.existentialDeposit();
-        const wouldBeDead = newFreeAccount.getFree().unwrap() + account.getReserved().unwrap() < ed.unwrap();
-        const wouldKill = wouldBeDead && account.getFree().unwrap() + account.getReserved().unwrap() >= ed.unwrap();
-
-        assert(liveness != ExistenceRequirement.AllowDeath || !wouldKill, "Error: Error withdrawing: balance less than existential deposit after withdrawal");
 
         account.setFree(<Balance>newFreeAccount.getFree());
         BalancesStorageEntries.Account().set(account, who);

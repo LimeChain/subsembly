@@ -1,12 +1,24 @@
 const INDENTATION = " ".repeat(4);
 
+class Import {
+    constructor(from, types) {
+        this.from = from;
+        this.types = types;
+    }
+
+    toString() {
+        return `import { ${this.types.map(type => type.toString()).join(', ')} } from "${this.from}";`;
+    }
+}
+
 class ReturnType {
-    constructor(value) {
+    constructor(value, indent) {
         this.value = value;
+        this.indent = indent;
     }
     
     toString() {
-        return `return ${this.value};`;
+        return `${INDENTATION.repeat(this.indent)}return ${this.value.toString()}`;
     }
 }
 
@@ -22,7 +34,7 @@ class Variable {
     };
 
     toString(){
-        return `${this.constant ? 'const' : 'let'} ${this.name}: ${this.type} = ${this.value}`
+        return `${this.constant ? 'const' : 'let'} ${this.name}: ${this.type} = ${this.value.toString()}`
     };
 }
 
@@ -108,18 +120,18 @@ ${this.members.map(([name, value]) => `${INDENTATION}${name} = ${value}`).join('
 }
 
 class SwitchCase {
-    constructor (type, members){
+    constructor (type, members, indent){
         this.type = type;
         this.members = members;
+        this.indent = indent;
     }
 
     toString() {
         return `switch(${this.type}) {
 ${this.members.map(([name, value]) => {
-    return `${INDENTATION}case ${name}:
-${INDENTATION.repeat(2)}${value.toString()}`;
-}).join('\n')}
-}`;
+    return `${INDENTATION.repeat(this.indent)}case ${name}:
+${INDENTATION.repeat(this.indent + 1)}${value.toString()}`;}).join('\n')}
+${INDENTATION.repeat(this.indent - 1)}}`;
 }
 }
 
@@ -137,26 +149,29 @@ class ArrayType {
 }
 
 class Call {
-    constructor(method, call, args) {
-        this.method = method;
+    constructor(module, call, args, indent) {
+        this.module = module;
         this.call = call;
         this.args = args;
+        this.indent = indent;
     }
 
     toString() {
-        return `${this.method}.${this.call}(${this.args.map(arg => arg).join(', ')});`
+        return `${INDENTATION.repeat(this.indent)}${this.module}.${this.call}(${this.args.map(arg => arg).join(', ')});`
     }
 }
 
 class BytesReader {
-    constructor(bytes, index, type){
+    constructor(bytes, index, args, indent){
         this.bytes = bytes;
         this.index = index;
-        this.type = type;
+        this.args = args;
+        this.indent = indent;
     }
 
     toString() {
-        return `BytesReader.decodeInto<${this.index}>(${this.bytes}, ${this.index});`;
+            return this.args.length ? `const bytesReader = new BytesReader(${this.bytes}, index);
+${this.args.map((arg) => `${INDENTATION.repeat(this.indent)}const ${arg.name} = bytesReader.readInto<${arg.type}>();`).join('\n')}` : ``;
     }
 }
 
@@ -166,12 +181,13 @@ const param = (name, type) => new Parameter(name, type);
 const variable = (name, value, type, constant) => new Variable(name, value, type, constant);
 const arrayType = (value) => new ArrayType(value);
 const eNum = (name, members, isExport) => new EnumType(name, members, isExport);
-const call = (method, call, args) => new Call(method, call, args);
-const bytesReader = (bytes, index, type) => new BytesReader(bytes, index, type);
-const switchCase = (type, members) => new SwitchCase(type, members);
-const returnType = (value) => new ReturnType(value);
+const call = (module, call, args, indent) => new Call(module, call, args, indent);
+const bytesReader = (bytes, index, args, indent) => new BytesReader(bytes, index, args, indent);
+const switchCase = (type, members, indent) => new SwitchCase(type, members, indent);
+const returnType = (value, indent) => new ReturnType(value, indent);
+const importer = (from, types) => new Import(from, types);
 
 module.exports = {
     namespace, method, param, variable, switchCase,
-    arrayType, eNum, call, bytesReader
+    arrayType, eNum, call, bytesReader, returnType, importer
 };

@@ -8,7 +8,6 @@ const palletsPath = path.join(__dirname, "../../../assembly/pallets/")
  * Generates the metadata of the Subsembly runtime
  */
 function generateMetadata() {
-    console.log("gets called?");
     /**
      * Template metadata object to be populated
      */
@@ -64,7 +63,6 @@ function generateMetadata() {
                         fs.readFileSync(path.join(assemblyPath, file), "utf-8"),
                         ts.ScriptTarget.Latest
                     );
-                    console.log("here: " + module);
                     metadata.metadata.V12.modules.push(generateModuleMetadata(metadata.metadata.V12.modules.length, moduleNode));
                 }
             });

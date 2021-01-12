@@ -1,4 +1,5 @@
 {
+    "void": "void",
     "Bool": "bool",
     "UInt64": "u64",
     "UInt32": "u32",
