@@ -15,7 +15,7 @@
   "repository": "https://github.com/limechain/subsembly",
   "scripts": {
     "metadata": "node .",
-    "dispatcher": "node src/dispatcher",
+    "dispatcher": "node . --dispatcher",
     "test": "node tests"
   }
 }
