@@ -1,4 +1,6 @@
-## Metadata 
+## Metadata and Dispatcher
+
+### Metadata
 
 A tool used for generating metadata of the Subsembly runtime. It reads from files inside `pallets` directory and from `System` module.
 
@@ -22,8 +24,25 @@ The command for generating metadata is included in runtime build command. In ord
 1. `yarn install`
 
 #### Generate metadata json file
-2. `yarn run metadata - --json`
+2. `yarn run metadata - --debug`
 
 #### Hex encode metadata ts file
 3. `yarn run metadata`
 
+### Dispatcher
+
+A tool used for generating `Dispatcher` function that receiving incoming extrinsics, decodes bytes to arguments and calls the corresponding pallet calls. Function returns a `ResponseCode` to indicate whether extrinsic was succesfully applied or not.
+
+It uses previously generated metadata json file to parse pallet calls, therefore, before generating dispatcher class, it's always good to generate the latest metadata of your runtime.
+
+### Usage
+
+#### Pre-requisite
+
+1. Generate the latest metadata as a `json` file.
+
+#### Install dependencies
+1. `yarn install`
+   
+#### Run dispatcher code generation
+2. `yarn run dispatcher`

@@ -6,7 +6,7 @@
 ![Unit Tests](https://github.com/LimeChain/subsembly/workflows/Compile%20Runtime/badge.svg)
 
 
-This is the starter project for the Subsembly framework used for developing Substrate runtimes in AssemblyScript. The project is work in progress.
+This is the starter project for the Subsembly framework used for developing `Substrate` runtimes in AssemblyScript. The project is work in progress.
 
 ## High-Level Overview
 <p align="center">
@@ -14,7 +14,7 @@ This is the starter project for the Subsembly framework used for developing Subs
 </p>
 
 - **Runtime API** - Implementation of Node <> Runtime Entries
-- **Runtime Configuration** - Configurable runtime similar to Substrate Runtimes
+- **Runtime Configuration** - Configurable runtime similar to `Substrate` Runtimes
 - **FRAME** - Runtime components that handle the administrative functionalities
 - **Pallets** - Packages that deliver common functionality, reused in different chains
 - **Core** - Runtime components that provide low-level functionality
@@ -77,7 +77,7 @@ Some other important modules for the runtime are imported from `subsembly-core`:
 - `pallets` folder  
     Contains all the pallets used in the runtime, except for `system` and `executive`. 
 
-    This starter project comes with `Aura`, `Balances` and `Timestamp` pallets. The minimal requirements for building and running account-based runtime on Substrate node is to have those three pallets.
+    This starter project comes with `Aura`, `Balances` and `Timestamp` pallets. The minimal requirements for building and running account-based runtime on `Substrate` node is to have those three pallets.
 
     In order to add pallets to your runtime, place the implementation of the pallet inside `/pallets` folder, similar to other pallets, and implement runtime API entries for the pallet.
 
@@ -96,7 +96,7 @@ The command for generating metadata is included in runtime build command. In ord
 ## Building and Running
 ### Makefile
 
-Root folder consists of Makefile that eases the building and running the Subsembly runtime with a Substrate node.
+Root folder consists of Makefile that eases the building and running the Subsembly runtime with a `Substrate` node.
 
 #### Prerequisite:  
 Install `jq` library with your favorite package manager:
@@ -123,6 +123,11 @@ curl --location --request POST 'localhost:9933' \
     "id": 1
 }'
 ```
+#### Connecting to Polkadot Apps
+
+A `Substrate` node running `Subsembly` runtime can be connected to [Polkadot Apps interface](https://polkadot.js.org/apps/), which improves the communication with your runtime and outer world. You can submit extrinsics, query storage, monitor produced blocks, etc. For more information, refer to [polkadot-js](https://polkadot.js.org/)
+
+In order to connect to the Polkadot Apps, just build and run your node with your `Subsembly` runtime and go to the Polkadot Apps page. It should automatically connect to your node. Just make sure to choose `Development Network` on the left navigation tab.
 
 ### Build runtime (Manual)
 
@@ -131,7 +136,7 @@ curl --location --request POST 'localhost:9933' \
 
 The above command generates `wasm-code` file in the root folder. You need to copy the content of the file and paste it as the value of the `0x3a636f6465` property in the `customSpecRaw.json` file.
 
-In order to run Substrate node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
+In order to run `Substrate` node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
 
 1. `docker pull limechain/as-substrate:stable`
 2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(pwd)/spec-files/customSpecRaw.json":/customSpecRaw.json -d limechain/as-substrate`
