@@ -6,7 +6,7 @@ import {
 } from 'subsembly-core';
 import {
     BlockNumber, ExtrinsicDataType, ExtrinsicIndexType,
-    HashType, HeaderType, NonceType, SystemConfig
+    HashType, HeaderType, NonceType, SystemConfig, UncheckedExtrinsic
 } from '../runtime/runtime';
 import { StorageEntry } from './models/storage-entry';
 
@@ -182,11 +182,11 @@ export class System {
      * @description Adds applied extrinsic to the current ExtrinsicData
      * @param ext extrinsic as bytes
      */
-    static _noteAppliedExtrinsic(ext: u8[]): void {
+    static _noteAppliedExtrinsic(ext: UncheckedExtrinsic): void {
         const extrinsics = StorageEntries.ExtrinsicData().get();
         const extIndex = StorageEntries.ExtrinsicIndex().get();
-        const extValue = BytesReader.decodeInto<ByteArray>(ext);
-        extrinsics.insert(extIndex, extValue);
+        const extValue = ext.getPayload();
+        extrinsics.insert(extIndex, new ByteArray(extValue));
         StorageEntries.ExtrinsicData().set(extrinsics);
         StorageEntries.ExtrinsicIndex().set(instantiate<ExtrinsicIndexType>(extIndex.unwrap() + 1));
     }

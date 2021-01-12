@@ -1,4 +1,4 @@
-import { ByteArray, BytesReader, CompactInt, Hash } from 'as-scale-codec';
+import { ByteArray, Hash } from 'as-scale-codec';
 import {
     Crypto, InherentData,
     Log, ResponseCodes, TransactionSource, Utils
@@ -8,6 +8,7 @@ import {
     BlockNumber, BlockType, HeaderType,
     InherentType, SignatureType, UncheckedExtrinsic
 } from '../runtime/runtime';
+import { Dispatcher } from './dispatcher';
 import { StorageEntries as SystemStorageEntries, System } from './system';
 
 /**
@@ -88,9 +89,9 @@ export namespace Executive {
      * @description Apply Extrinsics
      * @param ext extrinsic
      */
-    export function applyExtrinsic(ext: u8[]): u8[] {
-        const encodedLen = BytesReader.decodeInto<CompactInt>(ext);
-        const result = Executive.applyExtrinsicWithLen(ext, encodedLen.unwrap() as u32);
+    export function applyExtrinsic(ext: UncheckedExtrinsic): u8[] {
+        const encodedLen = ext.encodedLength();
+        const result = Executive.applyExtrinsicWithLen(ext, encodedLen);
         // if applying extrinsic succeeded, notify System about it
         if (Utils.areArraysEqual(result, ResponseCodes.SUCCESS)) {
             System._noteAppliedExtrinsic(ext);
@@ -104,12 +105,8 @@ export namespace Executive {
      * @param encodedLen length
      * @param encoded encoded extrinsic
      */
-    export function applyExtrinsicWithLen(ext: u8[], encodedLen: u32): u8[] {
-        switch (encodedLen) {
-            default: {
-                return ResponseCodes.SUCCESS;
-            }
-        }
+    export function applyExtrinsicWithLen(ext: UncheckedExtrinsic, encodedLen: u32): u8[] {
+        return Dispatcher.dispatch(ext.method);
     }
 
     /**
@@ -118,7 +115,7 @@ export namespace Executive {
      */
     export function executeExtrinsicsWithBookKeeping(extrinsics: UncheckedExtrinsic[]): void {
         for (let i = 0; i < extrinsics.length; i++) {
-            Executive.applyExtrinsic(extrinsics[i].toU8a());
+            Executive.applyExtrinsic(extrinsics[i]);
         }
         System._noteFinishedExtrinsics();
     }
