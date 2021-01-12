@@ -120,18 +120,26 @@ ${this.members.map(([name, value]) => `${INDENTATION}${name} = ${value}`).join('
 }
 
 class SwitchCase {
-    constructor (type, members, indent){
+    constructor (type, members, indent, defaultReturn){
         this.type = type;
         this.members = members;
         this.indent = indent;
+        this.defaultReturn = defaultReturn;
+    }
+
+    closingBrace(indent){
+        return `${INDENTATION.repeat(indent)}}`
     }
 
     toString() {
         return `switch(${this.type}) {
 ${this.members.map(([name, value]) => {
-    return `${INDENTATION.repeat(this.indent)}case ${name}:
-${INDENTATION.repeat(this.indent + 1)}${value.toString()}`;}).join('\n')}
-${INDENTATION.repeat(this.indent - 1)}}`;
+    return `${INDENTATION.repeat(this.indent)}case ${name}: {
+${INDENTATION.repeat(this.indent + 1)}${value.toString()}\n${this.closingBrace(this.indent)}`;}).join('\n')}
+${INDENTATION.repeat(this.indent)}default: {
+${INDENTATION.repeat(this.indent + 1)}${this.defaultReturn.toString()}
+${this.closingBrace(this.indent)}
+${this.closingBrace(this.indent - 1)}`;
 }
 }
 
@@ -162,7 +170,7 @@ class Call {
 }
 
 class BytesReader {
-    constructor(bytes, index, args, indent){
+    constructor(bytes, index = 0, args, indent){
         this.bytes = bytes;
         this.index = index;
         this.args = args;
@@ -170,7 +178,7 @@ class BytesReader {
     }
 
     toString() {
-            return this.args.length ? `const bytesReader = new BytesReader(${this.bytes}, index);
+            return this.args.length ? `let bytesReader = new BytesReader(${this.bytes});
 ${this.args.map((arg) => `${INDENTATION.repeat(this.indent)}const ${arg.name} = bytesReader.readInto<${arg.type}>();`).join('\n')}` : ``;
     }
 }
@@ -183,7 +191,7 @@ const arrayType = (value) => new ArrayType(value);
 const eNum = (name, members, isExport) => new EnumType(name, members, isExport);
 const call = (module, call, args, indent) => new Call(module, call, args, indent);
 const bytesReader = (bytes, index, args, indent) => new BytesReader(bytes, index, args, indent);
-const switchCase = (type, members, indent) => new SwitchCase(type, members, indent);
+const switchCase = (type, members, indent, defaultReturn) => new SwitchCase(type, members, indent, defaultReturn);
 const returnType = (value, indent) => new ReturnType(value, indent);
 const importer = (from, types) => new Import(from, types);
 

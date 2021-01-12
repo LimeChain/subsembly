@@ -1,17 +1,23 @@
 const { eNum, namespace, call, returnType, switchCase, 
-    method, param, bytesReader, importer } = require("./codegen");
-const metadata = require('../metadata.json');
+    method, param, bytesReader, importer } = require("../codegen");
+const metadata = require('../../metadata.json');
 const { modules } = metadata.metadata.V12;
+const fs = require('fs');
+const path = require("path");
 
+/**
+ * Helper functions used for generating Dispatcher file
+ */
 class DispatcherHelpers {
+    /**
+     * Depth level of indentation
+     */
     static indentLevel = 1;
-    static typesToImport = [];
 
-    static getImports(pallets) {
-        console.log(pallets);
+    static _getImports(pallets) {
         const palletNames = pallets.members.map(([name, _value]) => name);
         const scaleCodecImports = importer('as-scale-codec', ['BytesReader']).toString();
-        const palletImports = importer('../pallets', palletNames).toString();
+        const palletImports = importer('../pallets', palletNames.filter(pallet => pallet !== 'System')).toString();
         const runtimeImports = importer('../runtime', ['Balance', 'Moment']).toString();
         const subsemblyCoreImports = importer('subsembly-core', ["AccountId", "Call", "ResponseCodes"]).toString();
 
@@ -23,14 +29,12 @@ class DispatcherHelpers {
      * @param call 
      */
     static _generateCallBody(call) {
-        const newTypes = call.args.filter(arg => !this.typesToImport.includes(arg.type));
-        this.typesToImport = this.typesToImport.concat(newTypes);
         return bytesReader('call.args', 0, call.args, this.indentLevel + 5).toString();
     }
     /**
      * Generate enums for modules and calls
      */
-    static generateEnums(modules) {
+    static _generateEnums(modules) {
         const pallets = eNum("Pallets", [], true);
         const moduleCalls = [];
 
@@ -65,7 +69,7 @@ class DispatcherHelpers {
             case 'Vec<u8>':
                 return returnType(call(module.replace("Call", ""), method.name, callArgs), this.indentLevel + 5).toString();
             default:
-                return returnType(call(module.replace("Call", ""), `${method.name}.toU8a`, callArgs), this.indentLevel + 5).toString();
+                return returnType(call(module.replace("Call", ""), `${method.name}().toU8a`, callArgs), this.indentLevel + 5).toString();
         }
     }
 
@@ -78,16 +82,16 @@ class DispatcherHelpers {
         const members = [];
         calls.forEach((method) => {
             const body = this._generateCallBody(method);
-            members.push([`${module}.${method.name}`, body + "\n" + this._getReturnStatement(module, method)]);
+            members.push([`${module}Calls.${method.name}`, body + "\n" + this._getReturnStatement(module, method)]);
         })
-        return switchCase("call.callIndex[1]", members, this.indentLevel + 4);
+        return switchCase("call.callIndex[1]", members, this.indentLevel + 4, returnType('ResponseCodes.CALL_ERROR'));
     }
 
     /**
      * Generate body of the dispatch() function
      * @param {} modules 
      */
-    static generateBody(pallets) {
+    static _generateBody(pallets) {
         const palletMembers = [];
 
         pallets.members.forEach(([name, value]) => {
@@ -96,27 +100,26 @@ class DispatcherHelpers {
                 palletMembers.push([`Pallets.${name}`, this._generateSwitchCall(name, module.calls)]);
             }
         })
-        return switchCase("call.callIndex[0]", palletMembers, this.indentLevel + 2).toString();
+        return switchCase("call.callIndex[0]", palletMembers, this.indentLevel + 2, returnType('ResponseCodes.CALL_ERROR')).toString();
     }
 
-    static generateNamespace(pallets) {
+    static _generateNamespace(pallets) {
         const callParam = param('call', 'Call');
-        const dispatch = method('dispatch', [callParam], 'u8[]', this.generateBody(pallets), true);
+        const dispatch = method('dispatch', [callParam], 'u8[]', this._generateBody(pallets), true);
         return namespace('Dispatcher', [dispatch], true).toString()
     }
 
-    static generateFile(modules) {
-        const { pallets, moduleCalls } = this.generateEnums(modules);
-        const imports = this.getImports(pallets);
+    static generateDispatcher(modules) {
+        const { pallets, moduleCalls } = this._generateEnums(modules);
+        const imports = this._getImports(pallets);
         const enums = pallets.toString().concat('\n', moduleCalls.map(module => module.toString()).join('\n'));
-        const dispatcher = this.generateNamespace(pallets);
+        const dispatcher = this._generateNamespace(pallets);
         return [imports, enums, dispatcher].join('\n');
     }
 }
 
-// console.log(DispatcherHelpers.generateNamespace(modules));
-console.log(DispatcherHelpers.generateFile(modules));
-
-// module.exports = function generateDispatcher() {
-
-// }
+module.exports = function generateDispatcher(metadata) {
+    const { modules, _extrinsic } = metadata.metadata.V12;
+    const dispatcher = DispatcherHelpers.generateDispatcher(modules);
+    fs.writeFileSync(path.join(__dirname, "../../../assembly/frame/dispatcher.ts"), dispatcher);
+}

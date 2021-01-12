@@ -219,7 +219,7 @@ function _extractComment(jsDoc){
  * @param index Module index
  * @param node Loaded Module file
  */
-module.exports = function generateModuleMetadata(index, node){
+module.exports = function generateModuleMetadata(index, node) {
     /**
      * Template for Metadata of the module
      */

@@ -6,3 +6,4 @@ wasm-code
 yarn-error.log
 metadata.json
 metadata.ts
+dispatcher.ts
