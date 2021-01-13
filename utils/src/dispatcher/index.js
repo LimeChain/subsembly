@@ -1,7 +1,5 @@
 const { eNum, namespace, call, returnType, switchCase, 
     method, param, bytesReader, importer } = require("../codegen");
-const metadata = require('../../metadata.json');
-const { modules } = metadata.metadata.V12;
 const fs = require('fs');
 const path = require("path");
 
@@ -14,6 +12,10 @@ class DispatcherHelpers {
      */
     static indentLevel = 1;
 
+    /**
+     * Gets necessary imports for the file
+     * @param {*} pallets 
+     */
     static _getImports(pallets) {
         const palletNames = pallets.members.map(([name, _value]) => name);
         const scaleCodecImports = importer('as-scale-codec', ['BytesReader']).toString();
@@ -31,8 +33,10 @@ class DispatcherHelpers {
     static _generateCallBody(call) {
         return bytesReader('call.args', 0, call.args, this.indentLevel + 5).toString();
     }
+
     /**
      * Generate enums for modules and calls
+     * @param modules metadata modules
      */
     static _generateEnums(modules) {
         const pallets = eNum("Pallets", [], true);
@@ -75,8 +79,8 @@ class DispatcherHelpers {
 
     /**
      * Generate the switch statement for calls of the module
-     * @param {*} module 
-     * @param {*} calls 
+     * @param {*} module module to generate calls for
+     * @param {*} calls calls of the module
      */
     static _generateSwitchCall(module, calls) {
         const members = [];
@@ -89,9 +93,10 @@ class DispatcherHelpers {
 
     /**
      * Generate body of the dispatch() function
-     * @param {} modules 
+     * @param {} pallets enum of pallets
+     * @param {} modules metadata modules
      */
-    static _generateBody(pallets) {
+    static _generateBody(pallets, modules) {
         const palletMembers = [];
 
         pallets.members.forEach(([name, value]) => {
@@ -103,17 +108,26 @@ class DispatcherHelpers {
         return switchCase("call.callIndex[0]", palletMembers, this.indentLevel + 2, returnType('ResponseCodes.CALL_ERROR')).toString();
     }
 
-    static _generateNamespace(pallets) {
+    /**
+     * Generate Dispatcher namespace that contains dispatcher function
+     * @param {*} pallets enum of pallets
+     * @param {*} modules metadata modules
+     */
+    static _generateNamespace(pallets, modules) {
         const callParam = param('call', 'Call');
-        const dispatch = method('dispatch', [callParam], 'u8[]', this._generateBody(pallets), true);
+        const dispatch = method('dispatch', [callParam], 'u8[]', this._generateBody(pallets, modules), true);
         return namespace('Dispatcher', [dispatch], true).toString()
     }
 
+    /**
+     * Combine file components and generate the file
+     * @param {*} modules metadata modules
+     */
     static generateDispatcher(modules) {
         const { pallets, moduleCalls } = this._generateEnums(modules);
         const imports = this._getImports(pallets);
         const enums = pallets.toString().concat('\n', moduleCalls.map(module => module.toString()).join('\n'));
-        const dispatcher = this._generateNamespace(pallets);
+        const dispatcher = this._generateNamespace(pallets, modules);
         return [imports, enums, dispatcher].join('\n');
     }
 }
