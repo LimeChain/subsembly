@@ -3,12 +3,12 @@ import {
     Crypto, InherentData,
     Log, ResponseCodes, TransactionSource, Utils
 } from 'subsembly-core';
+import { Dispatcher } from '../generated/dispatcher';
 import { Aura, Timestamp } from '../pallets';
 import {
     BlockNumber, BlockType, HeaderType,
     InherentType, SignatureType, UncheckedExtrinsic
 } from '../runtime/runtime';
-import { Dispatcher } from './dispatcher';
 import { StorageEntries as SystemStorageEntries, System } from './system';
 
 /**

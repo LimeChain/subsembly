@@ -135,5 +135,5 @@ class DispatcherHelpers {
 module.exports = function generateDispatcher(metadata) {
     const { modules, _extrinsic } = metadata.metadata.V12;
     const dispatcher = DispatcherHelpers.generateDispatcher(modules);
-    fs.writeFileSync(path.join(__dirname, "../../../assembly/frame/dispatcher.ts"), dispatcher);
+    fs.writeFileSync(path.join(__dirname, "../../../assembly/generated/dispatcher.ts"), dispatcher);
 }

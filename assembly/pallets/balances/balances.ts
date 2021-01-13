@@ -71,26 +71,4 @@ export class Balances {
             "Valid transaction"
         );
     }
-
-    /**
-     * Removes some free balance from `who` account for `reason` if possible. If `liveness` is
-	 * `KeepAlive`, then no less than `ExistentialDeposit` must be left remaining.
-	 * This checks any locks, vesting, and liquidity requirements. If the removal is not possible,
-	 * then it returns `Err`.
-	 * If the operation is successful, this will return `Ok` with a `NegativeImbalance` whose value
-	 * is `value`.
-     * @param who 
-     * @param value 
-     */
-    static withdraw(who: AccountIdType, value: Balance): void {
-        // check if value is zero
-        if (value.eq(BytesReader.decodeInto<Balance>([0]))) {
-            return ;
-        }
-        const account = BalancesStorageEntries.Account().get(who);
-        let newFreeAccount = instantiate<Balance>(account.getFree().unwrap() - value.unwrap());
-
-        account.setFree(<Balance>newFreeAccount);
-        BalancesStorageEntries.Account().set(account, who);
-    }
 }

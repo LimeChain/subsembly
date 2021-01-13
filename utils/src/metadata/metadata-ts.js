@@ -28,7 +28,7 @@ function generateFile(rawMetadata) {
     const version = registry.createType("u8", 12).toHex(true);
     // SCALE encode metadata
     const encodedData = Array.from(numberToU8a(magicNumber)).concat(Array.from(numberToU8a(version))).concat(Array.from(metadata.toU8a()));
-    fs.writeFileSync(path.join(__dirname, "../../../assembly/frame/metadata.ts"), _generateNamespace(encodedData));
+    fs.writeFileSync(path.join(__dirname, "../../../assembly/generated/metadata.ts"), _generateNamespace(encodedData));
 }
 
 module.exports = generateFile;
