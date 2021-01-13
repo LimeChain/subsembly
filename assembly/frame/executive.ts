@@ -129,15 +129,15 @@ export namespace Executive {
         if(utx.isSigned()){
             const extSignature = utx.signature;
             const from = extSignature.signer;
-            const transfer = utx.asTransfer();
+            const signedExt = utx.signature.signedExtension;
     
             const nonce = SystemStorageEntries.AccountNonce().get(from);
-            if (nonce && nonce.unwrap() >= transfer.nonce.unwrap()) {
+            if (nonce && nonce.unwrap() >= signedExt.nonce.unwrap()) {
                 Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
                 return ResponseCodes.NONCE_TOO_LOW;
             }
             
-            if (!Crypto.verifySignature(<SignatureType>utx.signature.signature, transfer.toU8a(), from)) {
+            if (!Crypto.verifySignature(<SignatureType>utx.signature.signature, utx.getPayload(), from)) {
                 Log.error("Validation error: Invalid signature");
                 return ResponseCodes.INVALID_SIGNATURE;
             }
