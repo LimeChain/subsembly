@@ -101,16 +101,16 @@ The command for generating metadata is included in runtime build command. In ord
 Root folder consists of Makefile that eases the building and running the Subsembly runtime with a `Substrate` node.
 
 #### Prerequisite:  
-Install `jq` library with your favorite package manager:
+Install `jq`, `make` libraries with your favorite package manager:
 
 For example:
 ```
 brew install jq
+brew install make
 ```
 Then: 
 
-1. `make build` to build the runtime
-2. `make run-node` to run the node with the freshly built runtime
+1. `make build` (or `make -B build` if you are getting "already up-to-date) to build the runtime
 
 Those commands build the Subsembly runtime, copy the generated wasm code to a raw chain spec file and run a docker container with the generated raw chain spec file.
 The only thing left to do is add your Aura keys to get the block production started:
