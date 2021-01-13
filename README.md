@@ -2,9 +2,11 @@
   <img src="./images/logo.svg">
 </p>
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![Unit Tests](https://github.com/LimeChain/subsembly/workflows/Compile%20Runtime/badge.svg)
+<div align="center">
+  
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Smoke Tests](https://github.com/LimeChain/subsembly/workflows/Smoke%20Tests/badge.svg)
 
+</div>
 
 This is the starter project for the Subsembly framework used for developing `Substrate` runtimes in AssemblyScript. The project is work in progress.
 
