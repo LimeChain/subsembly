@@ -111,6 +111,7 @@ brew install make
 Then: 
 
 1. `make build` (or `make -B build` if you are getting "already up-to-date) to build the runtime
+2. `make run-node` to run the node with the freshly built runtime
 
 Those commands build the Subsembly runtime, copy the generated wasm code to a raw chain spec file and run a docker container with the generated raw chain spec file.
 The only thing left to do is add your Aura keys to get the block production started:
