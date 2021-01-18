@@ -1,10 +1,11 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
-import { InherentData, Log, ResponseCodes, Utils } from 'subsembly-core';
+import { Call, InherentData, Log, ResponseCodes } from 'subsembly-core';
 import { StorageEntry } from '../../frame';
-import { InherentType, Moment, TimestampConfig } from '../../runtime/runtime';
+import { Pallets, TimestampCalls } from '../../generated/dispatcher';
+import { Inherent, Moment, TimestampConfig } from '../../runtime/runtime';
 
 /**
- * Storage entries for Timestamp
+ * @description Storage entries for Timestamp
  */
 export namespace TimestampStorageEntries{
     /**
@@ -27,25 +28,6 @@ export namespace TimestampStorageEntries{
  */
 export class Timestamp {
     public static readonly INHERENT_IDENTIFIER: string = "timstap0";
-
-    /**
-     * Call index for timestamp inherent
-     */
-    public static readonly CALL_INDEX: u8[] = [2, 0];
-    /**
-     * Runtime API version
-     */
-    public static readonly API_VERSION: u8 = 4;
-    /**
-     * Module prefix
-     */
-    public static readonly PREFIX: u8 = 11;
-
-    /**
-     * index of the timestamp module
-     */
-    public static readonly MODULE_INDEX: u8 = 1;
-
     /**
      * @description Toggles the current value of didUpdate
      */
@@ -73,7 +55,7 @@ export class Timestamp {
 
         TimestampStorageEntries.DidUpdate().set(new Bool(true));
         TimestampStorageEntries.Now().set(now);
-
+        Timestamp._toggleUpdate();
         return ResponseCodes.SUCCESS;
     }
 
@@ -81,7 +63,7 @@ export class Timestamp {
      * @description Creates timestamp inherent data
      * @param data inherent data to extract timestamp from
      */
-    static _createInherent(data: InherentData<ByteArray>): InherentType {
+    static _createInherent(data: InherentData<ByteArray>): Inherent {
         const timestampData: Moment = BytesReader.decodeInto<Moment>(this._extractInherentData(data).unwrap());
         let nextTime = timestampData;
 
@@ -92,13 +74,8 @@ export class Timestamp {
 
             nextTime = instantiate<Moment>(nextTimeValue);
         }
-        const inherent = instantiate<InherentType>(
-            Timestamp.CALL_INDEX,
-            Timestamp.API_VERSION,
-            Timestamp.PREFIX,
-            nextTime
-        );
-        return inherent;
+        const call = new Call([<u8>Pallets.Timestamp, <u8>TimestampCalls.set], nextTime.toU8a());
+        return instantiate<Inherent>(call);
     }
 
     /**
@@ -122,29 +99,17 @@ export class Timestamp {
     }
 
     /**
-     * @description Applies given inherent
-     * @param inherent 
-     */
-    static _applyInherent(inherent: InherentType): u8[] {
-        const resCode = Timestamp.set((<Moment>inherent.getArgument()));
-        if (Utils.areArraysEqual(resCode, ResponseCodes.SUCCESS)) {
-            Timestamp._toggleUpdate();
-        }
-        return resCode;
-    }
-
-    /**
      * @description Construct too frequent response error
      */
     static _tooFrequentResponseCode(): u8[] {
-        return ResponseCodes.dispatchError(this.MODULE_INDEX, 1);
+        return ResponseCodes.dispatchError(<u8>Pallets.Timestamp, 1);
     }
 
     /**
      * @description Construct too low response error
      */
     static _timeframeTooLowResponceCode(): u8[] {
-        return ResponseCodes.dispatchError(this.MODULE_INDEX, 2);
+        return ResponseCodes.dispatchError(<u8>Pallets.Timestamp, 2);
     }
 
     /**

@@ -14,9 +14,9 @@ import { UncheckedExtrinsic } from '../runtime';
  */
 export function BlockBuilder_apply_extrinsic(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
-    Log.info("received extrinsic: " + input.toString());
     const ext = BytesReader.decodeInto<UncheckedExtrinsic>(input);
     const result = Executive.applyExtrinsic(ext);
+    Log.info("applied: " + result.toString());
     return Serialiser.serialiseResult(result);
 }
 

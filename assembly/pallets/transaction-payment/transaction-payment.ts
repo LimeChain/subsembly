@@ -1,28 +1,29 @@
+import { BytesReader, UInt32 } from 'as-scale-codec';
 import { DispatchInfo, Pays, PostDispatchInfo, WeightToFeeCoefficient, WeightToFeePolynomial } from 'subsembly-core';
 import { StorageEntry } from '../../frame';
 import { AccountIdType, Balance, Multiplier, SystemConfig, TransactionByteFee, Weight } from '../../runtime/runtime';
 import { Payment } from './payment';
 
 /**
- * Storage entries for FeeCalculator module
+ * Storage entries for TransactionPayment module
  */
-export namespace FeeCalculatorStorageEntries {
+export namespace TransactionPaymentStorageEntries {
     /**
      * @description Multiplier value for the next fee
      */
     export function NextFeeMultiplier(): StorageEntry<Multiplier> {
-        return new StorageEntry<Multiplier>("FeeCalculator", "Multiplier");
+        return new StorageEntry<Multiplier>("TransactionPayment", "Multiplier");
     }
 
     /**
      * @description Fee for each byte
      */
     export function TransactionByteFee(): StorageEntry<TransactionByteFee> {
-        return new StorageEntry<TransactionByteFee>("FeeCalculator", "ByteFee");
+        return new StorageEntry<TransactionByteFee>("TransactionPayment", "ByteFee");
     }
 }
 
-export class FeeCalculator {
+export class TransactionPayment {
     /**
      * @description Compute the final fee value for a particular transaction.
 	 *
@@ -74,22 +75,22 @@ export class FeeCalculator {
      */
     static _computeFeeRaw(len: u32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
         if (paysFee == Pays.Yes) {
-            let length: Balance = instantiate<Balance>(len);
-            let perByte: TransactionByteFee = FeeCalculatorStorageEntries.TransactionByteFee().get();
+            let length: Balance = BytesReader.decodeInto<Balance>(new UInt32(len).toU8a());
+            let perByte: TransactionByteFee = TransactionPaymentStorageEntries.TransactionByteFee().get();
 
             // length fee. not adjusted
-            let fixedLenFee =<u64>length.unwrap() * <u64>perByte.unwrap();
+            let fixedLenFee =length.unwrap() * perByte.unwrap();
 
             // the adjustable part of the fee
             let unadjustedWeightFee = this._weightToFee(weight);
-            let multiplier = FeeCalculatorStorageEntries.NextFeeMultiplier().get();
+            let multiplier = BytesReader.decodeInto<Balance>(TransactionPaymentStorageEntries.NextFeeMultiplier().get().toU8a());
 
             // final adjusted part of the fee
-            const adjustedWeightFee = <u64>multiplier.unwrap() * <u64>unadjustedWeightFee.unwrap();   
+            const adjustedWeightFee = multiplier.unwrap() * unadjustedWeightFee.unwrap();   
             let baseFee = this._weightToFee(SystemConfig.ExtrinsicBaseWeight());
 
-            baseFee += <u64>fixedLenFee + <u64>adjustedWeightFee + <u64>tip.unwrap();
-            return instantiate<Balance>(baseFee);
+            let basedFee = baseFee.unwrap() +  fixedLenFee + adjustedWeightFee + tip.unwrap();
+            return instantiate<Balance>(basedFee);
         }
         else {
             return tip;
@@ -118,7 +119,18 @@ export class FeeCalculator {
      * @param len 
      */
     static _withdrawFee(who: AccountIdType, tip: Balance, info: DispatchInfo<Weight>, len: i32): void {
-        const fee = this.computeFee(len, info, tip);
+        const fee = this._computeFee(len, info, tip);
         Payment.withdrawFee(who, info, fee, tip);
     };
+
+    // /**
+    //  * @description Query the data that we know about the fee of a given call.
+    //  * @param ext 
+    //  * @param len 
+    //  */
+    // static _queryInfo(ext: UncheckedExtrinsic, len: UInt32): RuntimeDispatchInfo<Balance, Weight> {
+    //     const dispatchInfo = new DispatchInfo<Weight>(instantiate<Weight>(1), Pays.Yes, DispatchClass.Normal);
+    //     // const partialFee = this._computeFee(len.unwrap(), dispatchInfo, BytesReader.decodeInto<Balance>([<u8>0]));
+    //     return new RuntimeDispatchInfo<Balance, Weight>(dispatchInfo.weight, dispatchInfo.klass, BytesReader.decodeInto<Balance>([<u8>1]));
+    // }
 }

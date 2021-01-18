@@ -26,7 +26,7 @@ export class StorageEntry<T extends Codec>{
      * @param suffix suffix to append in the end of key (f.e, for storing balance of account, accountId is appended)
      */
     get(suffix: Codec | null = null): T{
-        const value = Storage.get(Utils.stringsToBytes([this.prefix, this.key]).concat(suffix ? suffix.toU8a() : []));
+        const value = Storage.get(Utils.getHashedKey(this.prefix, this.key, suffix));
         if(value.isSome()){
             return BytesReader.decodeInto<T>((<ByteArray>value.unwrap()).unwrap());
         }
@@ -38,7 +38,7 @@ export class StorageEntry<T extends Codec>{
      * @param append suffix to append in the end of key (f.e, for storing balance of account, accountId is appended)
      */
     set(value: T, suffix: Codec | null = null): void{
-        const key = Utils.stringsToBytes([this.prefix, this.key]).concat(suffix ? suffix.toU8a() : []);
+        const key = Utils.getHashedKey(this.prefix, this.key, suffix);
         Storage.set(key, value.toU8a());
     }
 
@@ -47,7 +47,7 @@ export class StorageEntry<T extends Codec>{
      * @param suffix suffix to append in the end of key (f.e, for storing balance of account, accountId is appended)
      */
     clear(suffix: Codec | null = null): void{
-        const key = Utils.stringsToBytes([this.prefix, this.key]).concat(suffix ? suffix.toU8a() : []);
+        const key = Utils.getHashedKey(this.prefix, this.key, suffix);
         Storage.clear(key);
     }
 
@@ -56,7 +56,7 @@ export class StorageEntry<T extends Codec>{
      * @param suffix suffix to append in the end of key (f.e, for storing balance of account, accountId is appended)
      */
     take(suffix: Codec | null = null): T{
-        const value = Storage.take(Utils.stringsToBytes([this.prefix, this.key]).concat(suffix ? suffix.toU8a() : []));
+        const value = Storage.take(Utils.getHashedKey(this.prefix, this.key, suffix));
         return value.length ? BytesReader.decodeInto<T>(value) : instantiate<T>();
     }
 }

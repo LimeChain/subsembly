@@ -49,7 +49,7 @@ class DispatcherHelpers {
                 module.calls.forEach((call, index) => {
                     calls.push([call.name, index]);
                 });
-                moduleCalls.push(eNum(`${module.name}Calls`, calls, false));
+                moduleCalls.push(eNum(`${module.name}Calls`, calls, true));
             };
         });
         return {
@@ -136,4 +136,5 @@ module.exports = function generateDispatcher(metadata) {
     const { modules, _extrinsic } = metadata.metadata.V12;
     const dispatcher = DispatcherHelpers.generateDispatcher(modules);
     fs.writeFileSync(path.join(__dirname, "../../../assembly/generated/dispatcher.ts"), dispatcher);
+    console.log("Successfully generated dispatcher.ts file in /assembly/generated/!");
 }

@@ -1,7 +1,7 @@
-import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import { ByteArray, BytesReader, CompactInt, Hash, UInt32, UInt64 } from "as-scale-codec";
 import {
-    AccountId, Block, DigestItem, ExtrinsicData, GenericExtrinsic, Header,
-    Inherent, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
+    AccountData, AccountId, AccountInfo, Block, DigestItem, ExtrinsicData,
+    GenericExtrinsic, Header, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
 } from "subsembly-core";
 
 export type HashType = Hash;
@@ -14,15 +14,17 @@ export type BlockNumber = CompactInt;
 export type AccountIdType = AccountId;
 export type SignatureType = Signature;
 export type DigestItemType = DigestItem;
-export type Balance = UInt128;
+export type Balance = UInt64;
 export type HeaderType = Header<BlockNumber, HashType>;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
-export type InherentType = Inherent<Moment>;
+export type Inherent = UncheckedExtrinsic;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 export type Multiplier = UInt64;
 export type TransactionByteFee = Balance;
 export type Weight = UInt64;
 export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceType, SignatureType>;
+export type AccountDataType = AccountData<Balance>;
+export type AccountInfoType = AccountInfo<NonceType, AccountDataType>;
 
 /**
  * @description Constants for runtime
@@ -117,6 +119,6 @@ export class BalancesConfig {
      * @description Existential deposit
      */
     static existentialDeposit(): Balance {
-        return instantiate<Balance>(100);
+        return BytesReader.decodeInto<Balance>([<u8>0xfd]);
     }
 }

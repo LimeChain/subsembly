@@ -1,13 +1,8 @@
 import { BytesReader, CompactInt } from "as-scale-codec";
 import { Log, Serialiser } from "subsembly-core";
-import { Executive, StorageEntries as SystemStorageEntries } from "../../frame";
+import { Executive, SystemStorageEntries } from "../../frame";
 import { Metadata } from "../../generated/metadata";
 import { AccountIdType, UncheckedExtrinsic } from "../runtime";
-/**
- * @description The rest of runtime entries for the Polkadot Host
- * These methods are mocked for this iteration and they return an empty u8 array by default
- */
-
 
 /**
  * @description Babe configuration
@@ -70,7 +65,15 @@ export function Metadata_metadata(data: i32, len: i32): u64 {
 export function AccountNonceApi_account_nonce(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
     const who = BytesReader.decodeInto<AccountIdType>(input);
-    const nonce = SystemStorageEntries.AccountNonce().get(who);
+    const nonce = SystemStorageEntries.Account().get(who).nonce;
     Log.info("Get nonce: " + nonce.unwrap().toString());
     return Serialiser.serialiseResult(nonce.toU8a());
 }
+
+// export function TransactionPaymentApi_query_info(data: i32, len: i32): u64 {
+//     const input = Serialiser.deserialiseInput(data, len);
+//     const bytesReader = new BytesReader(input);
+//     const ext = bytesReader.readInto<UncheckedExtrinsic>();
+//     const length = bytesReader.readInto<UInt32>();
+//     return Serialiser.serialiseResult(TransactionPayment._queryInfo(ext, length).toU8a());
+// }

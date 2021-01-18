@@ -96,7 +96,7 @@ function _extractConstants(obj){
                 name: node.name.escapedText,
                 type,
                 value: _convertValue(type, _extractValue(node.body)),
-                documentation: _extractComment(node.jsDoc),
+                documentation: _extractComments(node.jsDoc),
             });
         }
     });
@@ -113,19 +113,19 @@ function _extractNode(obj) {
         case ts.SyntaxKind.MethodDeclaration:
             return {
                 name: obj.name.escapedText,
-                documentation: _extractComment(obj.jsDoc),
+                documentation: _extractComments(obj.jsDoc),
                 type: _extractType(obj.type),
                 args: _extractParams(obj.parameters)
             }
         // Extracting storage item (namespace funcion)
         case ts.SyntaxKind.FunctionDeclaration:
-            const type = _extractStorageType(obj.type.typeArguments[0])
+            const type = _extractStorageType(obj.type.typeArguments[0], obj.jsDoc);
             return {
                 name: obj.name.escapedText,
                 modifier: {
                     default: 1
                 },
-                documentation: _extractComment(obj.jsDoc),
+                documentation: _extractComments(obj.jsDoc),
                 fallback: _getFallback(type.Plain),
                 type
             };
@@ -134,15 +134,35 @@ function _extractNode(obj) {
     }
 }
 
+function _extractMapTags(jsDoc) {
+    const tags = [];
+    jsDoc.forEach(doc => doc.tags?.forEach(tag => {
+        if(tag?.tagName?.escapedText.includes("storage_map")){
+            tags.push({
+                name: tag?.tagName?.escapedText,
+                type: tag.comment
+            });
+        }
+    }
+    ));
+    return tags;
+}
+
 /**
  * Extract type of the storage item
  * @param type 
  */
-function _extractStorageType(type){
+function _extractStorageType(type, jsDoc){
     const extractedType = _extractType(type);
-    if(typeof extractedType === 'object'){
+    const tags = _extractMapTags(jsDoc);
+    if(tags.length){
         return {
-            Map: extractedType
+            Map: {
+                hasher: "Twox128",
+                key: tags[0]?.type,
+                value: extractedType,
+                linked: false
+            }
         }
     }
     return {
@@ -200,18 +220,73 @@ function _extractParams(params){
  * Extract comment of the object
  * @param jsDoc jsDoc object 
  */
-function _extractComment(jsDoc){
+function _extractComments(jsDoc){
+    const documentation = [];
     if(!jsDoc || !jsDoc[0]){
         return [
             ""
         ];
     }
-    else if(jsDoc[0].comment && !jsDoc[0].tags){
-        return [
-            jsDoc[0].comment
-        ];
+    jsDoc.forEach(doc => doc.tags?.forEach(tag => tag.comment ? documentation.push(tag.comment): null));
+    return documentation;
+}
+
+/**
+ * NOTE: Following are hard-coded events that are necessary for integration of our runtime
+ * with Polkadot JS apps. 
+ */
+function _getEvents(name) {
+    switch(name) {
+        case "Balances":
+            return [
+                {
+                    "name": "BalanceSet",
+                    "args": [
+                      "AccountId",
+                      "u64",
+                      "u64"
+                    ],
+                    "documentation": [
+                      " A balance was set by root. \\[who, free, reserved\\]"
+                    ]
+                  },
+                  {
+                    "name": "Transfer",
+                    "args": [
+                      "AccountId",
+                      "AccountId",
+                      "u64"
+                    ],
+                    "documentation": [
+                      " Transfer succeeded. \\[from, to, value\\]"
+                    ]
+                  },
+            ];
+        case "System":
+            return [
+                {
+                    "name": "ExtrinsicSuccess",
+                    "args": [
+                    "DispatchInfo"
+                    ],
+                    "documentation": [
+                    " An extrinsic completed successfully. \\[info\\]"
+                    ]
+                },
+                {
+                    "name": "ExtrinsicFailed",
+                    "args": [
+                    "DispatchError",
+                    "DispatchInfo"
+                    ],
+                    "documentation": [
+                    " An extrinsic failed. \\[error, info\\]"
+                    ]
+                }
+            ];
+        default:
+            null;
     }
-    return jsDoc[0].tags.map(tag => tag.comment);
 }
 
 /**
@@ -243,15 +318,16 @@ module.exports = function generateModuleMetadata(index, node) {
         if(obj.kind === ts.SyntaxKind.ModuleDeclaration){
             const storage = _extractStorageEntries(obj);
             moduleMetadata.storage = storage ? {
-                prefix: node.fileName,
+                prefix: obj.name.escapedText.replace("StorageEntries", ""),
                 items: storage
             } : null;
         }
         // Calls are defined as static functions inside a class with the same name as the name of the pallet
         else if(obj.kind === ts.SyntaxKind.ClassDeclaration){
             moduleMetadata.name = obj.name.escapedText;
+            moduleMetadata.events = _getEvents(obj.name.escapedText);
             moduleMetadata.calls = _extractCalls(obj);
-        }
+        }        
     });
     /**
      * Constants for each pallet are defined in runtime directory with name pattern moduleName + prefix

@@ -1,15 +1,16 @@
-import { ByteArray, Hash } from 'as-scale-codec';
+import { ByteArray, BytesReader, CompactInt, Hash, UInt32 } from 'as-scale-codec';
 import {
     Crypto, InherentData,
-    Log, ResponseCodes, TransactionSource, Utils
+    Log, ResponseCodes, SignatureTypes, TransactionSource, Utils
 } from 'subsembly-core';
 import { Dispatcher } from '../generated/dispatcher';
 import { Aura, Timestamp } from '../pallets';
 import {
+    AccountIdType,
     BlockNumber, BlockType, HeaderType,
-    InherentType, SignatureType, UncheckedExtrinsic
+    Inherent, SignatureType, UncheckedExtrinsic
 } from '../runtime/runtime';
-import { StorageEntries as SystemStorageEntries, System } from './system';
+import { System, SystemStorageEntries } from './system';
 
 /**
  * @description Acts as the orchestration layer for the runtime.
@@ -80,7 +81,7 @@ export namespace Executive {
      * @param data inherents
      */
     export function createExtrinsics(data: InherentData<ByteArray>): u8[] {
-        const timestamp: InherentType = Timestamp._createInherent(data);
+        const timestamp: Inherent = Timestamp._createInherent(data);
         const aura = Aura._createInherent(data);
         return System.ALL_MODULES.concat(timestamp.toU8a()).concat(aura);
     }
@@ -94,7 +95,7 @@ export namespace Executive {
         const result = Executive.applyExtrinsicWithLen(ext, encodedLen);
         // if applying extrinsic succeeded, notify System about it
         if (Utils.areArraysEqual(result, ResponseCodes.SUCCESS)) {
-            System._noteAppliedExtrinsic(ext);
+            System._noteAppliedExtrinsic(ext); 
         }
         return result;
     }
@@ -129,21 +130,33 @@ export namespace Executive {
         if(utx.isSigned()){
             const extSignature = utx.signature;
             const from = extSignature.signer;
-            const signedExt = utx.signature.signedExtension;
+            const signedExt = extSignature.signedExtension;
     
-            const nonce = SystemStorageEntries.AccountNonce().get(from);
-            if (nonce && nonce.unwrap() >= signedExt.nonce.unwrap()) {
+            const nonce = SystemStorageEntries.Account().get(from).nonce;
+            if (nonce && nonce.unwrap() > signedExt.nonce.unwrap()) {
                 Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
                 return ResponseCodes.NONCE_TOO_LOW;
             }
             
-            if (!Crypto.verifySignature(<SignatureType>utx.signature.signature, utx.getPayload(), from)) {
+            const blockNumber = SystemStorageEntries.Number().get();
+            const blockHash = SystemStorageEntries.BlockHash().get(instantiate<BlockNumber>(blockNumber.unwrap() - 1));
+            const genesisHash = SystemStorageEntries.BlockHash().get(instantiate<BlockNumber>(0));
+            const specVersion = new UInt32(1);
+            const transactionVersion = new UInt32(1);
+            const payload = utx.createPayload(blockHash, genesisHash, specVersion, transactionVersion);
+            
+            if (!Crypto.verifySignature(<SignatureType>utx.signature.signature, payload, from, SignatureTypes.sr25519)) {
                 Log.error("Validation error: Invalid signature");
                 return ResponseCodes.INVALID_SIGNATURE;
             }
             return utx.validate(TransactionSource.External).toU8a();
         }
-        return utx.validateUnsigned().valid ? ResponseCodes.SUCCESS : ResponseCodes.CALL_ERROR;
+        const auths = Aura._getAuthorities();
+        const bytesReader = new BytesReader(auths);
+        const _len = bytesReader.readInto<CompactInt>();
+        const auth = bytesReader.readInto<AccountIdType>();
+        const nonce = SystemStorageEntries.Account().get(auth).nonce;
+        return utx.validateUnsigned(auth, nonce).toU8a();
     }
 
     /**

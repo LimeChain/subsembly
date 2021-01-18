@@ -1,5 +1,15 @@
 const INDENTATION = " ".repeat(4);
 
+const polkadotTypes = require("../metadata/types.json");
+
+function _reverseObject(obj) {
+    return Object.keys(obj).reduce((r, k) => 
+        Object.assign(r, { [obj[k]]: k }, {})
+    )
+}
+
+const subsemblyTypes = _reverseObject(polkadotTypes);
+
 class Import {
     constructor(from, types) {
         this.from = from;
@@ -179,7 +189,7 @@ class BytesReader {
 
     toString() {
             return this.args.length ? `let bytesReader = new BytesReader(${this.bytes});
-${this.args.map((arg) => `${INDENTATION.repeat(this.indent)}const ${arg.name} = bytesReader.readInto<${arg.type}>();`).join('\n')}` : ``;
+${this.args.map((arg) => `${INDENTATION.repeat(this.indent)}const ${arg.name} = bytesReader.readInto<${subsemblyTypes[arg.type]}>();`).join('\n')}` : ``;
     }
 }
 

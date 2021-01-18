@@ -29,6 +29,7 @@ function generateFile(rawMetadata) {
     // SCALE encode metadata
     const encodedData = Array.from(numberToU8a(magicNumber)).concat(Array.from(numberToU8a(version))).concat(Array.from(metadata.toU8a()));
     fs.writeFileSync(path.join(__dirname, "../../../assembly/generated/metadata.ts"), _generateNamespace(encodedData));
+    console.log("Successfully generated metadata.ts file in /assembly/generated/!");
 }
 
 module.exports = generateFile;
