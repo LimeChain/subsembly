@@ -2,7 +2,7 @@ import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
     ExecutionPhase,
     ext_trie_blake2_256_ordered_root_version_1,
-    Header, Log, Phase,
+    Header, Phase,
     Serialiser, Storage, Utils
 } from 'subsembly-core';
 import {
@@ -260,7 +260,6 @@ export class System {
                     .concat(bytesReader.getLeftoverBytes())
                     .concat(phase.toU8a()) //
                     .concat(this.EXTRINSIC_SUCCESS);
-                Log.info("newEvents: " + Utils.toHexString(newEvents));
                 Storage.set(Utils.getHashedKey("System", "Events", null), newEvents);
             }
             case SystemEvents.ExtrinsicFailure: {
@@ -269,7 +268,6 @@ export class System {
                     .concat(bytesReader.getLeftoverBytes())
                     .concat(phase.toU8a())
                     .concat(this.EXTRINSIC_FAILURE);
-                Log.info("newEvents Failure: " + Utils.toHexString(newEvents));
                 Storage.set(Utils.getHashedKey("System", "Events", null), newEvents);
             }
             default:

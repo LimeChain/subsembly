@@ -1,5 +1,5 @@
 import { ByteArray, BytesReader, Codec } from "as-scale-codec";
-import { Log, Storage, Utils } from "subsembly-core";
+import { Storage, Utils } from "subsembly-core";
 
 /**
  * @description Represents an entry in the Storage
@@ -27,10 +27,6 @@ export class StorageEntry<T extends Codec>{
      */
     get(suffix: Codec | null = null): T{
         const value = Storage.get(Utils.getHashedKey(this.prefix, this.key, suffix));
-        
-        if(this.key == "Account") {
-            Log.info("key: " + Utils.toHexString(Utils.getHashedKey(this.prefix, this.key, suffix)));
-        }
         if(value.isSome()){
             return BytesReader.decodeInto<T>((<ByteArray>value.unwrap()).unwrap());
         }

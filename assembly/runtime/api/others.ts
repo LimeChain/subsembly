@@ -1,5 +1,5 @@
 import { BytesReader, CompactInt, UInt32 } from "as-scale-codec";
-import { Log, Serialiser } from "subsembly-core";
+import { Serialiser } from "subsembly-core";
 import { Executive, SystemStorageEntries } from "../../frame";
 import { Metadata } from "../../generated/metadata";
 import { TransactionPayment } from "../../pallets";
@@ -64,7 +64,6 @@ export function AccountNonceApi_account_nonce(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
     const who = BytesReader.decodeInto<AccountIdType>(input);
     const nonce = SystemStorageEntries.Account().get(who).nonce;
-    Log.info("Get nonce: " + nonce.unwrap().toString());
     return Serialiser.serialiseResult(nonce.toU8a());
 }
 

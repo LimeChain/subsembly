@@ -1,7 +1,7 @@
 import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
     ExistenceRequirement,
-    Log,
+
     ResponseCodes,
     Storage, Utils, WithdrawReasons
 } from 'subsembly-core';
@@ -35,8 +35,6 @@ export class Balances {
      * Alters the Free balance and Reserved balances in Storage.
      */
     static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): u8[] {
-        Log.info("trying to set: " + freeBalance.toString());
-        Log.info("to: " + accountId.toU8a().toString());
         // this is the minimum balance an account may have
         if(BalancesConfig.existentialDeposit().unwrap() > freeBalance.unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
@@ -53,7 +51,6 @@ export class Balances {
      * @param value value of the transfer
      */
     static transfer(source: AccountIdType, dest: AccountIdType, value: Balance): u8[] {
-        Log.info("trying to transfer: " + value.toString());
         const senderBalance = BalancesStorageEntries.Account().get(source);
         const receiverBalance = BalancesStorageEntries.Account().get(dest);
 
@@ -75,8 +72,7 @@ export class Balances {
         // Increment nonce
         const info = SystemStorageEntries.Account().get(source);
         info.setNonce(instantiate<NonceType>(info.nonce.unwrap() + 1));
-        Log.info("new nonce: " + info.nonce.toString());
-        SystemStorageEntries.Account().set(info);
+        SystemStorageEntries.Account().set(info, source);
         Balances._depositEvent(EventTypes.Transfer, source.toU8a().concat(dest.toU8a()).concat(value.toU8a()));
         
         return ResponseCodes.SUCCESS;
