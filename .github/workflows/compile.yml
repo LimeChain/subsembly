@@ -31,18 +31,22 @@ jobs:
           run: make run-node detached=1
         - name: Insert aura keys
           run: bash scripts/insert-aura.sh
+        - name: Sleep for 10 seconds
+          uses: jakejarvis/wait-action@master
+          with:
+            time: '10s'
         - name: Get latest header
           id: check-header
           run: |
             echo "::set-output name=tx-output::$(bash scripts/test-node.sh)\n" 
         - name: |
             Check the latest header
-            If it contains "0x0000000000000000000000000000000000000000000000000000000000000000",
+            If it contains number":"0x0",
             it means no block was produced except the genesis
           env: 
             TX_RESULT: ${{steps.check-header.outputs.tx-output}}
           run: |
-            if [[ $TX_RESULT == *"0x0000000000000000000000000000000000000000000000000000000000000000"* || $TX_RESULT == *"1001"* ]]; then \
+            if [[ $TX_RESULT == *"number":"0x0"* ]]; then \
               exit 1; \
             else \
               exit 0; \
