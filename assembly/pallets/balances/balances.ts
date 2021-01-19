@@ -34,7 +34,7 @@ export class Balances {
      * @description Sets the balances of a given AccountId
      * Alters the Free balance and Reserved balances in Storage.
      */
-    static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): u8[] {
+    static _setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): u8[] {
         // this is the minimum balance an account may have
         if(BalancesConfig.existentialDeposit().unwrap() > freeBalance.unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
@@ -66,8 +66,8 @@ export class Balances {
             return ResponseCodes.VALIDITY_ERROR;
         }
         
-        this.setBalance(source, instantiate<Balance>(senderNewBalance), instantiate<Balance>(0));
-        this.setBalance(dest, instantiate<Balance>(receiverNewBalance), instantiate<Balance>(0));
+        this._setBalance(source, instantiate<Balance>(senderNewBalance), instantiate<Balance>(0));
+        this._setBalance(dest, instantiate<Balance>(receiverNewBalance), instantiate<Balance>(0));
 
         // Increment nonce
         const info = SystemStorageEntries.Account().get(source);
