@@ -31,18 +31,18 @@ jobs:
           run: make run-node detached=1
         - name: Insert aura keys
           run: bash scripts/insert-aura.sh
-        - name: Send transaction
-          id: submit-tx
+        - name: Get latest header
+          id: check-header
           run: |
-            echo "::set-output name=tx-output::$(bash scripts/submit-tx.sh)\n" 
+            echo "::set-output name=tx-output::$(bash scripts/test-node.sh)\n" 
         - name: |
-            Check extrinsic submission, 
-            if response contains the word "error" 
-            or error code 1001 workflow fails
+            Check the latest header
+            If it contains "0x0000000000000000000000000000000000000000000000000000000000000000",
+            it means no block was produced except the genesis
           env: 
-            TX_RESULT: ${{steps.submit-tx.outputs.tx-output}}
+            TX_RESULT: ${{steps.check-header.outputs.tx-output}}
           run: |
-            if [[ $TX_RESULT == *"error"* || $TX_RESULT == *"1001"* ]]; then \
+            if [[ $TX_RESULT == *"0x0000000000000000000000000000000000000000000000000000000000000000"* || $TX_RESULT == *"1001"* ]]; then \
               exit 1; \
             else \
               exit 0; \
