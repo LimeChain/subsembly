@@ -20,6 +20,6 @@ export class Payment {
         const withdrawReason = tip.eq(instantiate<Balance>(0)) 
             ? WithdrawReasons.TRANSACTION_PAYMENT 
             : WithdrawReasons.TRANSACTION_PAYMENT | WithdrawReasons.TIP;
-        Balances.withdraw(who, fee, withdrawReason, ExistenceRequirement.KeepAlive);
+        Balances._withdraw(who, fee, withdrawReason, ExistenceRequirement.KeepAlive);
     }
 }

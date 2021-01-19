@@ -1,7 +1,8 @@
-import { BytesReader, CompactInt } from "as-scale-codec";
+import { BytesReader, CompactInt, UInt32 } from "as-scale-codec";
 import { Log, Serialiser } from "subsembly-core";
 import { Executive, SystemStorageEntries } from "../../frame";
 import { Metadata } from "../../generated/metadata";
+import { TransactionPayment } from "../../pallets";
 import { AccountIdType, UncheckedExtrinsic } from "../runtime";
 
 /**
@@ -31,10 +32,7 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
     let input = Serialiser.deserialiseInput(data, len);
     const uxt = BytesReader.decodeInto<UncheckedExtrinsic>(input);
-    Log.info("Validate called: " + input.toString());
-    Log.info("Decoding: " + uxt.toU8a().toString());
     const result = Executive.validateTransaction(uxt);
-    Log.info("Validation result: " + result.toString());
     return Serialiser.serialiseResult(result);
 }
 
@@ -70,10 +68,18 @@ export function AccountNonceApi_account_nonce(data: i32, len: i32): u64 {
     return Serialiser.serialiseResult(nonce.toU8a());
 }
 
-// export function TransactionPaymentApi_query_info(data: i32, len: i32): u64 {
-//     const input = Serialiser.deserialiseInput(data, len);
-//     const bytesReader = new BytesReader(input);
-//     const ext = bytesReader.readInto<UncheckedExtrinsic>();
-//     const length = bytesReader.readInto<UInt32>();
-//     return Serialiser.serialiseResult(TransactionPayment._queryInfo(ext, length).toU8a());
-// }
+/**
+ * @description Return dispatch info with partial transaction fees for the Extrinsic
+ * @param data 
+ * @param len 
+ */
+export function TransactionPaymentApi_query_info(data: i32, len: i32): u64 {
+    const input = Serialiser.deserialiseInput(data, len);
+    const bytesReader = new BytesReader(input);
+    const ext = bytesReader.readInto<UncheckedExtrinsic>();
+    const length = bytesReader.readInto<UInt32>();
+    const queryInfo = TransactionPayment._queryInfo(ext, length);
+    const ONE_U128: u8[] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0, 0, 0];
+    const result = queryInfo.weight.toU8a().concat([<u8>queryInfo.klass]);
+    return Serialiser.serialiseResult(result.concat(ONE_U128));
+}

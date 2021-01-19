@@ -24,7 +24,7 @@
     "Block": "Block",
     "Balance": "u64",
     "AccountData": "AccountData",
-    "BlockNumber": "BlockNumber",
+    "BlockNumber": "Compact<u64>",
     "ExtrinsicData": "Bytes",
     "AccountInfo": "AccountInfo",
     "Signature": "Hash512",
@@ -36,9 +36,10 @@
     "Header": "Header",
     "Weight": "Weight",
     "Multiplier": "Multiplier",
-    "TransactionByteFee": "Balance",
     "DispatchInfo": "DispatchInfo",
     "PostDispatchInfo": "DispatchInfo",
     "WithdrawReasons": "WithdrawReasons",
-    "ExistenceRequirement": "bool"
+    "ExistenceRequirement": "bool",
+    "VecEvent": "Vec<EventRecord>",
+    "ByteFee": "Balance"
 }
