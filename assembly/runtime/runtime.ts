@@ -20,12 +20,17 @@ export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type Inherent = UncheckedExtrinsic;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 export type Multiplier = UInt64;
-export type TransactionByteFee = Balance;
+export type ByteFee = Balance;
 export type Weight = UInt64;
 export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceType, SignatureType>;
 export type AccountDataType = AccountData<Balance>;
 export type AccountInfoType = AccountInfo<NonceType, AccountDataType>;
-
+/**
+ * Note: Originally Events are stored as a vector of RawEvents,
+ * since we don't have support for vector of Codec types (i.e Codec[]),
+ * we are using opaque bytes to store events 
+ */
+export type VecEvent = ByteArray;
 /**
  * @description Constants for runtime
  */

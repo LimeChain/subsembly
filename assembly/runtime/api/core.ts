@@ -10,7 +10,6 @@ import { BlockType, HeaderType, RuntimeConfig } from '../runtime';
  */
 export function Core_version(data: i32, len: i32): u64 {
     const version = RuntimeConfig.runtimeVersion();
-    // Log.info("name of: " + );
     return Serialiser.serialiseResult(version.toU8a());
 }
 

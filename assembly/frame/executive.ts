@@ -1,4 +1,4 @@
-import { ByteArray, BytesReader, CompactInt, Hash, UInt32 } from 'as-scale-codec';
+import { ByteArray, Hash } from 'as-scale-codec';
 import {
     Crypto, InherentData,
     Log, ResponseCodes, SignatureTypes, TransactionSource, Utils
@@ -6,11 +6,10 @@ import {
 import { Dispatcher } from '../generated/dispatcher';
 import { Aura, Timestamp } from '../pallets';
 import {
-    AccountIdType,
     BlockNumber, BlockType, HeaderType,
-    Inherent, SignatureType, UncheckedExtrinsic
+    Inherent, RuntimeConfig, SignatureType, UncheckedExtrinsic
 } from '../runtime/runtime';
-import { System, SystemStorageEntries } from './system';
+import { System, SystemEvents, SystemStorageEntries } from './system';
 
 /**
  * @description Acts as the orchestration layer for the runtime.
@@ -97,6 +96,9 @@ export namespace Executive {
         if (Utils.areArraysEqual(result, ResponseCodes.SUCCESS)) {
             System._noteAppliedExtrinsic(ext); 
         }
+        else {
+            System._depositEvent(SystemEvents.ExtrinsicFailure, []);
+        }
         return result;
     }
 
@@ -141,22 +143,17 @@ export namespace Executive {
             const blockNumber = SystemStorageEntries.Number().get();
             const blockHash = SystemStorageEntries.BlockHash().get(instantiate<BlockNumber>(blockNumber.unwrap() - 1));
             const genesisHash = SystemStorageEntries.BlockHash().get(instantiate<BlockNumber>(0));
-            const specVersion = new UInt32(1);
-            const transactionVersion = new UInt32(1);
+            const specVersion = RuntimeConfig.runtimeVersion().specVersion;
+            const transactionVersion = RuntimeConfig.runtimeVersion().transactionVersion;
             const payload = utx.createPayload(blockHash, genesisHash, specVersion, transactionVersion);
-            
+              
             if (!Crypto.verifySignature(<SignatureType>utx.signature.signature, payload, from, SignatureTypes.sr25519)) {
                 Log.error("Validation error: Invalid signature");
                 return ResponseCodes.INVALID_SIGNATURE;
             }
             return utx.validate(TransactionSource.External).toU8a();
         }
-        const auths = Aura._getAuthorities();
-        const bytesReader = new BytesReader(auths);
-        const _len = bytesReader.readInto<CompactInt>();
-        const auth = bytesReader.readInto<AccountIdType>();
-        const nonce = SystemStorageEntries.Account().get(auth).nonce;
-        return utx.validateUnsigned(auth, nonce).toU8a();
+        return utx.validateUnsigned().toU8a();
     }
 
     /**

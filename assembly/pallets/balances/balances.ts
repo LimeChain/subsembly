@@ -1,38 +1,48 @@
-import { AccountData, Log, ResponseCodes } from 'subsembly-core';
-import { StorageEntry } from "../../frame/models/storage-entry";
-import { SystemStorageEntries } from '../../frame/system';
-import { AccountIdType, Balance, BalancesConfig, NonceType } from "../../runtime/runtime";
+import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
+import {
+    ExistenceRequirement,
+
+
+
+    ResponseCodes,
+    Storage, Utils, WithdrawReasons
+} from 'subsembly-core';
+import { StorageEntry, SystemStorageEntries } from '../../frame';
+import { AccountIdType, Balance, BalancesConfig, NonceType } from '../../runtime';
+
+enum EventTypes {
+    Transfer = 0,
+    BalanceSet = 1
+}
 
 export namespace BalancesStorageEntries{
     /**
      * @description Stores information about accountId
      * @storage_map AccountId
      */
-    export function Account(): StorageEntry<AccountData<Balance>>{
-        return new StorageEntry<AccountData<Balance>>("Balances", "Account");
+    export function Account(): StorageEntry<Balance>{
+        return new StorageEntry<Balance>("Balances", "Account");
     }
 }
-
 /**
  * @description The Balances Module.
  * Used for account balance manipulation such as:
  *  - Getting and setting free/reserved balances
  */
 export class Balances {
+    static readonly BALANCESET: u8[] = [2, 0];
+    static readonly TRANSFER: u8[] = [2, 1];
     /**
      * @description Sets the balances of a given AccountId
      * Alters the Free balance and Reserved balances in Storage.
      */
-    static setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): u8[] {
-        const currentAccountData = BalancesStorageEntries.Account().get(accountId);
-
+    static _setBalance(accountId: AccountIdType, freeBalance: Balance, reservedBalance: Balance): u8[] {
         // this is the minimum balance an account may have
         if(BalancesConfig.existentialDeposit().unwrap() > freeBalance.unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
         }
-        currentAccountData.setFree(freeBalance);
-        currentAccountData.setReserved(reservedBalance);
-        BalancesStorageEntries.Account().set(currentAccountData, accountId);
+        BalancesStorageEntries.Account().set(freeBalance, accountId);
+        Balances._depositEvent(EventTypes.BalanceSet, accountId.toU8a().concat(freeBalance.toU8a()));
         return ResponseCodes.SUCCESS;
     }
 
@@ -43,30 +53,107 @@ export class Balances {
      * @param value value of the transfer
      */
     static transfer(source: AccountIdType, dest: AccountIdType, value: Balance): u8[] {
-        Log.info("trying to transfer: " + value.toString());
-        const senderAccData = BalancesStorageEntries.Account().get(source);
-        const receiverAccData = BalancesStorageEntries.Account().get(dest);
+        const senderBalance = BalancesStorageEntries.Account().get(source);
+        const receiverBalance = BalancesStorageEntries.Account().get(dest);
 
-        const info = SystemStorageEntries.Account().get(source);
-        const nonce = info.nonce;
-
-        if(senderAccData.getFree().unwrap() < value.unwrap()) {
+        if(senderBalance.unwrap() < value.unwrap()) {
             return ResponseCodes.INSUFFICIENT_BALANCE;
         }
 
-        const senderNewBalance = senderAccData.getFree().unwrap() - value.unwrap();
-        const receiverNewBalance = receiverAccData.getFree().unwrap() + value.unwrap();
+        const senderNewBalance = senderBalance.unwrap() - value.unwrap();
+        const receiverNewBalance = receiverBalance.unwrap() + value.unwrap();
 
+        // Make sure new balances is higher than ExistentialDeposit
         if(senderNewBalance < BalancesConfig.existentialDeposit().unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
         }
         
-        this.setBalance(source, instantiate<Balance>(senderNewBalance), senderAccData.getReserved());
-        this.setBalance(dest, instantiate<Balance>(receiverNewBalance), receiverAccData.getReserved());
+        this._setBalance(source, instantiate<Balance>(senderNewBalance), instantiate<Balance>(0));
+        this._setBalance(dest, instantiate<Balance>(receiverNewBalance), instantiate<Balance>(0));
 
-        info.setNonce(instantiate<NonceType>(nonce.unwrap() + 1));
-        SystemStorageEntries.Account().set(info);
-        Log.info("Done transfering: " + value.toString());
+        // Increment nonce
+        const info = SystemStorageEntries.Account().get(source);
+        info.setNonce(instantiate<NonceType>(info.nonce.unwrap() + 1));
+        SystemStorageEntries.Account().set(info, source);
+        Balances._depositEvent(EventTypes.Transfer, source.toU8a().concat(dest.toU8a()).concat(value.toU8a()));
+        
         return ResponseCodes.SUCCESS;
+    }
+
+    /**
+     * @description Append event to the vector of events in the storage
+     * @param name Type of the event
+     * @param args Argumenst for the event
+     */
+    static _depositEvent(type: i32, args: u8[]): void {
+        switch(type) {
+            case EventTypes.Transfer: {
+                Balances._addEventInStorage(this.TRANSFER, args);
+            }
+            case EventTypes.BalanceSet: {
+                Balances._addEventInStorage(this.BALANCESET, args);
+            }
+            default:
+                return ;
+        }
+    }
+
+    /**
+     * @description Validate transfer before executing the extrinsic
+     * @param who 
+     * @param amount 
+     */
+    static _validateTransaction(who: AccountIdType, amount: Balance): u8[] {
+        const currentBalance = BalancesStorageEntries.Account().get(who);
+        if(BalancesConfig.existentialDeposit().unwrap() > currentBalance.unwrap()) {
+            return ResponseCodes.VALIDITY_ERROR;
+        }
+        const newBalance = currentBalance.unwrap() - amount.unwrap();
+        if(newBalance < amount.unwrap()) {
+            return ResponseCodes.INSUFFICIENT_BALANCE;
+        }
+
+        return ResponseCodes.SUCCESS;
+    }
+    
+    /**
+     * @description Withdraw fee for transaction inclusion, or for some other reason
+     * @param who 
+     * @param fee 
+     * @param reason 
+     * @param existenceRequirement 
+     */
+    static _withdraw(who: AccountIdType, fee: Balance, reason: WithdrawReasons, existenceRequirement: ExistenceRequirement): void {
+        if(reason == WithdrawReasons.TRANSACTION_PAYMENT) {
+            const balance = BalancesStorageEntries.Account().get(who);
+            if(Utils.areArraysEqual(ResponseCodes.SUCCESS, this._validateTransaction(who, fee))) {
+                BalancesStorageEntries.Account().set(instantiate<Balance>(balance.unwrap() - fee.unwrap()), who);
+                return ;
+            }
+        }
+    }
+
+        /**
+     * @description Adds RawEvent to vector of events in the storage
+     * @param event Raw event to append in the storage
+     */
+    static _addEventInStorage(event: u8[], args: u8[]): void {
+        /**
+         * TO-DO: Make event deposit dynamic
+         * Currently it's hard-coded for two types of events:
+         * ExtrinsicSuccess and ExtrinsicFailed 
+         */
+
+        const events = Storage.get(Utils.getHashedKey("Balances", "Events", null));
+        const eventsRaw: u8[] = events.isSome() ? (<ByteArray>events.unwrap()).unwrap() : [0];
+        const bytesReader = new BytesReader(eventsRaw);
+        const len = <i32>bytesReader.readInto<CompactInt>().unwrap();
+
+        const newEvents = new CompactInt(len + 1).toU8a()
+            .concat(bytesReader.getLeftoverBytes())
+            .concat(event)
+            .concat(args);
+        
+        Storage.set(Utils.getHashedKey("Balances", "Events", null), newEvents);
     }
 }
