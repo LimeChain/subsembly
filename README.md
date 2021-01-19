@@ -108,14 +108,15 @@ For example:
 brew install jq
 brew install make
 ```
-Then: 
+#### Steps: 
 
-1. `make build` (or `make -B build` if you are getting "already up-to-date) to build the runtime
+1. `make build` (or `make -B build` if you are getting `already up-to-date`) to build the runtime
 2. `make run-node` to run the node with the freshly built runtime
 
 Those commands build the Subsembly runtime, copy the generated wasm code to a raw chain spec file and run a docker container with the generated raw chain spec file.
 The only thing left to do is add your Aura keys to get the block production started:
 
+3. Insert Aura keys
 ```
 curl --location --request POST 'localhost:9933' \
 --header 'Content-Type: application/json' \
@@ -131,6 +132,11 @@ curl --location --request POST 'localhost:9933' \
 A `Substrate` node running `Subsembly` runtime can be connected to [Polkadot Apps interface](https://polkadot.js.org/apps/), which improves the communication with your runtime and outer world. You can submit extrinsics, query storage, monitor produced blocks, etc. For more information, refer to [polkadot-js](https://polkadot.js.org/)
 
 In order to connect to the Polkadot Apps, just build and run your node with your `Subsembly` runtime and go to the Polkadot Apps page. It should automatically connect to your node. Just make sure to choose `Development Network` on the left navigation tab.
+
+If you are using the default develop Runtime, the following accounts are preconfigured with balances on genesis:
+```
+TODO add accounts, PK and mnemonics
+```
 
 ### Build runtime (Manual)
 
