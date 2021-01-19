@@ -1,4 +1,4 @@
-import { ByteArray, Hash, UInt32 } from 'as-scale-codec';
+import { ByteArray, Hash } from 'as-scale-codec';
 import {
     Crypto, InherentData,
     Log, ResponseCodes, SignatureTypes, TransactionSource, Utils
@@ -144,9 +144,9 @@ export namespace Executive {
             const blockHash = SystemStorageEntries.BlockHash().get(instantiate<BlockNumber>(blockNumber.unwrap() - 1));
             const genesisHash = SystemStorageEntries.BlockHash().get(instantiate<BlockNumber>(0));
             const specVersion = RuntimeConfig.runtimeVersion().specVersion;
-            const transactionVersion = new UInt32(1);
+            const transactionVersion = RuntimeConfig.runtimeVersion().transactionVersion;
             const payload = utx.createPayload(blockHash, genesisHash, specVersion, transactionVersion);
-            
+              
             if (!Crypto.verifySignature(<SignatureType>utx.signature.signature, payload, from, SignatureTypes.sr25519)) {
                 Log.error("Validation error: Invalid signature");
                 return ResponseCodes.INVALID_SIGNATURE;

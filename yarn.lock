@@ -257,10 +257,10 @@ ret@~0.1.10:
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
 
-subsembly-core@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/subsembly-core/-/subsembly-core-1.0.5.tgz#26576cb884ee6a7629039c640571b20dd0ad521b"
-  integrity sha512-PBu1LVfyMlT2ikPtT25LnCnqew0O2vESobGitXdLKn6zBQP8BRDkBIyXOUacbq7bbVhuV+WiuxNE+i1yH0WmZg==
+subsembly-core@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/subsembly-core/-/subsembly-core-1.0.6.tgz#07485f7ceca9bdb3a35dfdeadfbbe78f95cc81fe"
+  integrity sha512-2fVthRLd9C23ogaBDcClVgB9TsxbEx1S+YYuN1zoB1yXEUdGcvNcIljCcAACuo+JdCxxKtvIjEFg9j0sKv3m4Q==
   dependencies:
     "@assemblyscript/loader" "^0.17.9"
     as-scale-codec "^0.2.2"

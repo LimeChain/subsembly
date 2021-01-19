@@ -2,6 +2,8 @@ import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
     ExistenceRequirement,
 
+
+
     ResponseCodes,
     Storage, Utils, WithdrawReasons
 } from 'subsembly-core';
@@ -78,31 +80,18 @@ export class Balances {
         return ResponseCodes.SUCCESS;
     }
 
-    static _depositEvent(name: i32, args: u8[]): void {
-        /**
-         * TO-DO: Make event deposit dynamic
-         * Currently it's hard-coded for two types of events:
-         * ExtrinsicSuccess and ExtrinsicFailed 
-         */
-        const events = Storage.get(Utils.getHashedKey("Balances", "Events", null));
-        const eventsRaw: u8[] = events.isSome() ? (<ByteArray>events.unwrap()).unwrap() : [0];
-        const bytesReader = new BytesReader(eventsRaw);
-        const len = <i32>bytesReader.readInto<CompactInt>().unwrap();
-
-        switch(name) {
+    /**
+     * @description Append event to the vector of events in the storage
+     * @param name Type of the event
+     * @param args Argumenst for the event
+     */
+    static _depositEvent(type: i32, args: u8[]): void {
+        switch(type) {
             case EventTypes.Transfer: {
-                const newEvents: u8[] = new CompactInt(len + 1).toU8a()
-                    .concat(bytesReader.getLeftoverBytes())
-                    .concat(this.TRANSFER)
-                    .concat(args);
-                Storage.set(Utils.getHashedKey("Balances", "Events", null), newEvents);
+                Balances._addEventInStorage(this.TRANSFER, args);
             }
             case EventTypes.BalanceSet: {
-                const newEvents: u8[] = new CompactInt(len + 1).toU8a()
-                    .concat(bytesReader.getLeftoverBytes())
-                    .concat(this.BALANCESET)
-                    .concat(args);
-                Storage.set(Utils.getHashedKey("Balances", "Events", null), newEvents);
+                Balances._addEventInStorage(this.BALANCESET, args);
             }
             default:
                 return ;
@@ -142,5 +131,29 @@ export class Balances {
                 return ;
             }
         }
+    }
+
+        /**
+     * @description Adds RawEvent to vector of events in the storage
+     * @param event Raw event to append in the storage
+     */
+    static _addEventInStorage(event: u8[], args: u8[]): void {
+        /**
+         * TO-DO: Make event deposit dynamic
+         * Currently it's hard-coded for two types of events:
+         * ExtrinsicSuccess and ExtrinsicFailed 
+         */
+
+        const events = Storage.get(Utils.getHashedKey("Balances", "Events", null));
+        const eventsRaw: u8[] = events.isSome() ? (<ByteArray>events.unwrap()).unwrap() : [0];
+        const bytesReader = new BytesReader(eventsRaw);
+        const len = <i32>bytesReader.readInto<CompactInt>().unwrap();
+
+        const newEvents = new CompactInt(len + 1).toU8a()
+            .concat(bytesReader.getLeftoverBytes())
+            .concat(event)
+            .concat(args);
+        
+        Storage.set(Utils.getHashedKey("Balances", "Events", null), newEvents);
     }
 }

@@ -241,37 +241,41 @@ export class System {
      * @param name 
      * @param args 
      */
-    static _depositEvent(name: i32, args: u8[]): void {
+    static _depositEvent(type: SystemEvents, args: u8[]): void {
         /**
          * TO-DO: Make event deposit dynamic
          * Currently it's hard-coded for two types of events:
          * ExtrinsicSuccess and ExtrinsicFailed 
          */
+        switch(type) {
+            case SystemEvents.ExtrinsicSuccess: {
+                System._addEventInStorage(this.EXTRINSIC_SUCCESS);
+            }
+            case SystemEvents.ExtrinsicFailure: {
+                System._addEventInStorage(this.EXTRINSIC_FAILURE);
+            }
+            default:
+                return ;
+        }
+    }
+
+    /**
+     * @description Adds RawEvent to vector of events in the storage
+     * @param event Raw event to append in the storage
+     */
+    static _addEventInStorage(event: u8[]): void {
         const index: ExtrinsicIndexType = SystemStorageEntries.ExtrinsicIndex().get();
         const events = Storage.get(Utils.getHashedKey("System", "Events", null));
         const eventsRaw: u8[] = events.isSome() ? (<ByteArray>events.unwrap()).unwrap() : [0];
         const bytesReader = new BytesReader(eventsRaw);
         const len = <i32>bytesReader.readInto<CompactInt>().unwrap();
 
-        switch(name) {
-            case SystemEvents.ExtrinsicSuccess: {
-                const phase = new Phase<ExtrinsicIndexType>(ExecutionPhase.ApplyExtrinsic, index);
-                const newEvents: u8[] = new CompactInt(len + 1).toU8a()
-                    .concat(bytesReader.getLeftoverBytes())
-                    .concat(phase.toU8a()) //
-                    .concat(this.EXTRINSIC_SUCCESS);
-                Storage.set(Utils.getHashedKey("System", "Events", null), newEvents);
-            }
-            case SystemEvents.ExtrinsicFailure: {
-                const phase = new Phase<ExtrinsicIndexType>(ExecutionPhase.ApplyExtrinsic, index);
-                const newEvents: u8[] = new CompactInt(len + 1).toU8a()
-                    .concat(bytesReader.getLeftoverBytes())
-                    .concat(phase.toU8a())
-                    .concat(this.EXTRINSIC_FAILURE);
-                Storage.set(Utils.getHashedKey("System", "Events", null), newEvents);
-            }
-            default:
-                return ;
-        }
+        const phase = new Phase<ExtrinsicIndexType>(ExecutionPhase.ApplyExtrinsic, index);
+        const newEvents = new CompactInt(len + 1).toU8a()
+            .concat(bytesReader.getLeftoverBytes())
+            .concat(phase.toU8a())
+            .concat(event);
+        
+        Storage.set(Utils.getHashedKey("System", "Events", null), newEvents);
     }
 }
