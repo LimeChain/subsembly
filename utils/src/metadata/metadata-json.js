@@ -57,7 +57,7 @@ function generateMetadata() {
             // Go through the files inside the pallet
             fs.readdirSync(assemblyPath).forEach(file => {
                 // Name of the file should be same as the name of the pallet/module
-                if (file.includes("index.ts")) {
+                if (file.includes(module)) {
                     const moduleNode = ts.createSourceFile(
                         module,
                         fs.readFileSync(path.join(assemblyPath, file), "utf-8"),

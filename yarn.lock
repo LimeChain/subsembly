@@ -57,7 +57,7 @@
   resolved "https://registry.yarnpkg.com/@assemblyscript/loader/-/loader-0.16.1.tgz#6a8592bed23fae80a77b3d3c4eb33e69fe840ba6"
   integrity sha512-fx6wEDH/NgvNYYrkGZnHaguFa73KUD2Pt42UCIlWNumHr9Vp2gnKH2+neOKNlTBFVrwIrMs9KlUYqDC6v/kh1A==
 
-"@assemblyscript/loader@^0.17.9":
+"@assemblyscript/loader@^0.17.1", "@assemblyscript/loader@^0.17.9":
   version "0.17.13"
   resolved "https://registry.yarnpkg.com/@assemblyscript/loader/-/loader-0.17.13.tgz#0e43a19b095f12f636183d60660bfd5a6216b858"
   integrity sha512-vQpXbqJRV4/KPyfl7dQYCNwUdocGilO+goxwyHivQM4w7TrAkPDodpj4bfY9zy0aeXD9YGjLRuEP3OCfSPYsCQ==
@@ -73,18 +73,6 @@ as-bignum@^0.2.6:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/as-bignum/-/as-bignum-0.2.8.tgz#46ac7a14cf9df951aa3fb850f1db44c0083d4e69"
   integrity sha512-tac9YOYKDLlkiVFiucTsHRIEzd+LawAHfmxqucnfZmZ6TH4DGMzMBw5A6Zex0YWGNLaLHtPz/5z8nA5yyXryNg==
-
-as-scale-codec@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/as-scale-codec/-/as-scale-codec-0.2.1.tgz#0e864a07b9b10cfed59edc5eede2da577a322a78"
-  integrity sha512-kK1bmbHyY8o4dt2RLQbsYZ1Ef4D998jvJFNAphe+fbY2uGWiAohuYvE6Z4WDSjr9vPI5eMsXwACjdEp48JGTGQ==
-  dependencies:
-    "@as-pect/assembly" "^4.0.0"
-    "@as-pect/cli" "^4.0.0"
-    "@as-pect/core" "^4.0.0"
-    "@assemblyscript/loader" "^0.16.1"
-    as-bignum "^0.2.6"
-    assemblyscript "^0.16.1"
 
 as-scale-codec@^0.2.2:
   version "0.2.2"
@@ -269,18 +257,13 @@ ret@~0.1.10:
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
 
-semver@^5.4.1:
-  version "5.7.1"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
-  integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
-
-subsembly-core@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/subsembly-core/-/subsembly-core-1.0.3.tgz#a6d6bc4bf580af40463892dd6375782363db305f"
-  integrity sha512-XC85QCWockuNRRHspCewQjqFZ+Dp9XFFPdVFdX4rtbPKEMbHVGsggw8pgIxwsGdrMJvk0E4OFRTOE4Kj2FgfpQ==
+subsembly-core@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/subsembly-core/-/subsembly-core-1.0.6.tgz#07485f7ceca9bdb3a35dfdeadfbbe78f95cc81fe"
+  integrity sha512-2fVthRLd9C23ogaBDcClVgB9TsxbEx1S+YYuN1zoB1yXEUdGcvNcIljCcAACuo+JdCxxKtvIjEFg9j0sKv3m4Q==
   dependencies:
     "@assemblyscript/loader" "^0.17.9"
-    as-scale-codec "^0.2.1"
+    as-scale-codec "^0.2.2"
 
 supports-color@^7.1.0:
   version "7.2.0"

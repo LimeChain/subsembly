@@ -23,7 +23,7 @@ export class Aura {
     /**
      * @description Calls the TimeStamp module and returns configured min period.
      */
-    static getSlotDuration(): Moment {
+    static _getSlotDuration(): Moment {
         return TimestampConfig.minimumPeriod();
     }
 
@@ -31,7 +31,7 @@ export class Aura {
      * @description Reads from the Storage the authorities that 
      * were set on genesis, creates a vector of AccountIds and return it
      */
-    static getAuthorities(): u8[] {
+    static _getAuthorities(): u8[] {
         const authorities = Storage.get(Aura.AURA_AUTHORITIES);
         return authorities.isSome() ? (<ByteArray>authorities.unwrap()).unwrap() : [];
     }
@@ -59,7 +59,7 @@ export class Aura {
      */
     static _checkInherent(t: Moment, data: InherentData<ByteArray>): bool {
         const auraSlot = Aura._extractAuraInherentData(data);
-        const timestampBasedSlot: Moment = instantiate<Moment>(t.unwrap() / Aura.getSlotDuration().unwrap());
+        const timestampBasedSlot: Moment = instantiate<Moment>(t.unwrap() / Aura._getSlotDuration().unwrap());
         if (timestampBasedSlot == auraSlot) {
             return true;
         }

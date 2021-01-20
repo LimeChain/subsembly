@@ -1,28 +1,29 @@
-import { DispatchInfo, Pays, PostDispatchInfo, WeightToFeeCoefficient, WeightToFeePolynomial } from 'subsembly-core';
+import { BytesReader, UInt128, UInt32 } from 'as-scale-codec';
+import { DispatchClass, DispatchInfo, Pays, PostDispatchInfo, RuntimeDispatchInfo, WeightToFeeCoefficient, WeightToFeePolynomial } from 'subsembly-core';
 import { StorageEntry } from '../../frame';
-import { AccountIdType, Balance, Multiplier, SystemConfig, TransactionByteFee, Weight } from '../../runtime/runtime';
+import { AccountIdType, Balance, ByteFee, Multiplier, SystemConfig, UncheckedExtrinsic, Weight } from '../../runtime/runtime';
 import { Payment } from './payment';
 
 /**
- * Storage entries for FeeCalculator module
+ * Storage entries for TransactionPayment module
  */
-export namespace FeeCalculatorStorageEntries {
+export namespace TransactionPaymentStorageEntries {
     /**
      * @description Multiplier value for the next fee
      */
     export function NextFeeMultiplier(): StorageEntry<Multiplier> {
-        return new StorageEntry<Multiplier>("FeeCalculator", "Multiplier");
+        return new StorageEntry<Multiplier>("TransactionPayment", "Multiplier");
     }
 
     /**
      * @description Fee for each byte
      */
-    export function TransactionByteFee(): StorageEntry<TransactionByteFee> {
-        return new StorageEntry<TransactionByteFee>("FeeCalculator", "ByteFee");
+    export function TransactionByteFee(): StorageEntry<ByteFee> {
+        return new StorageEntry<ByteFee>("TransactionPayment", "ByteFee");
     }
 }
 
-export class FeeCalculator {
+export class TransactionPayment {
     /**
      * @description Compute the final fee value for a particular transaction.
 	 *
@@ -47,7 +48,7 @@ export class FeeCalculator {
      * @param info information about dispatch
      * @param tip tip to be included
      */
-    static computeFee(len: u32, info: DispatchInfo<Weight>, tip: Balance): Balance {
+    static _computeFee(len: UInt32, info: DispatchInfo<Weight>, tip: Balance): Balance {
         return this._computeFeeRaw(len, info.weight, tip, info.paysFee);
     };
 
@@ -61,7 +62,7 @@ export class FeeCalculator {
      * @param postInfo information about what happens after dispatch
      * @param tip tip to be included
      */
-    static computeActualFee(len: u32, info: DispatchInfo<Weight>, postInfo: PostDispatchInfo<Weight>, tip: Balance): Balance {
+    static _computeActualFee(len: UInt32, info: DispatchInfo<Weight>, postInfo: PostDispatchInfo<Weight>, tip: Balance): Balance {
         return this._computeFeeRaw(len, postInfo.calcActualWeight(info), tip, postInfo.paysFee);
     };
 
@@ -72,24 +73,29 @@ export class FeeCalculator {
      * @param tip tip to be included 
      * @param paysFee simple boolean indicating whether initiator pays transaction fees
      */
-    static _computeFeeRaw(len: u32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
+    static _computeFeeRaw(len: UInt32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
         if (paysFee == Pays.Yes) {
-            let length: Balance = instantiate<Balance>(len);
-            let perByte: TransactionByteFee = FeeCalculatorStorageEntries.TransactionByteFee().get();
+            let length: Balance = BytesReader.decodeInto<Balance>(len.toU8a());
+            let perByte: ByteFee = TransactionPaymentStorageEntries.TransactionByteFee().get();
+
+            
+            if (perByte.unwrap() == 0) {
+                perByte = instantiate<ByteFee>(1);
+            }
 
             // length fee. not adjusted
-            let fixedLenFee =<u64>length.unwrap() * <u64>perByte.unwrap();
+            let fixedLenFee = length.unwrap() * perByte.unwrap() / 10;
 
             // the adjustable part of the fee
             let unadjustedWeightFee = this._weightToFee(weight);
-            let multiplier = FeeCalculatorStorageEntries.NextFeeMultiplier().get();
+            let multiplier = BytesReader.decodeInto<Balance>(TransactionPaymentStorageEntries.NextFeeMultiplier().get().toU8a());
 
             // final adjusted part of the fee
-            const adjustedWeightFee = <u64>multiplier.unwrap() * <u64>unadjustedWeightFee.unwrap();   
+            const adjustedWeightFee = multiplier.unwrap() * unadjustedWeightFee.unwrap();   
             let baseFee = this._weightToFee(SystemConfig.ExtrinsicBaseWeight());
 
-            baseFee += <u64>fixedLenFee + <u64>adjustedWeightFee + <u64>tip.unwrap();
-            return instantiate<Balance>(baseFee);
+            let basedFee = baseFee.unwrap() +  fixedLenFee + adjustedWeightFee + tip.unwrap();
+            return instantiate<Balance>(basedFee);
         }
         else {
             return tip;
@@ -117,8 +123,20 @@ export class FeeCalculator {
      * @param info 
      * @param len 
      */
-    static _withdrawFee(who: AccountIdType, tip: Balance, info: DispatchInfo<Weight>, len: i32): void {
-        const fee = this.computeFee(len, info, tip);
+    static _withdrawFee(who: AccountIdType, tip: Balance, info: DispatchInfo<Weight>, len: UInt32): void {
+        const fee = this._computeFee(len, info, tip);
         Payment.withdrawFee(who, info, fee, tip);
     };
+
+    /**
+     * @description Query the data that we know about the fee of a given call.
+     * NOTE: Because of the bug in UInt128 of as-scale-codec, we are currently returning static partial fee of 1;
+     * @param ext 
+     * @param len 
+     */
+    static _queryInfo(ext: UncheckedExtrinsic, len: UInt32): RuntimeDispatchInfo<UInt128, Weight> {
+        const dispatchInfo = new DispatchInfo<Weight>(instantiate<Weight>(1), Pays.Yes, DispatchClass.Normal);
+        const _partialFee = this._computeFee(len, dispatchInfo, instantiate<Balance>(0));
+        return new RuntimeDispatchInfo<UInt128, Weight>(dispatchInfo.weight, dispatchInfo.klass, UInt128.One);
+    }
 }

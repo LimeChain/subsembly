@@ -11,7 +11,7 @@ import { Aura } from "../../pallets";
  * @param len - i32 length (in bytes) of the arguments passed
  */
 export function AuraApi_slot_duration(data: i32, len: i32): u64 {
-    return Serialiser.serialiseResult(Aura.getSlotDuration().toU8a());
+    return Serialiser.serialiseResult(Aura._getSlotDuration().toU8a());
 }
 
 /**
@@ -20,5 +20,5 @@ export function AuraApi_slot_duration(data: i32, len: i32): u64 {
  * @param len - i32 length (in bytes) of the arguments passed
  */
 export function AuraApi_authorities(data: i32, len: i32): u64 {
-    return Serialiser.serialiseResult(Aura.getAuthorities());
+    return Serialiser.serialiseResult(Aura._getAuthorities());
 }
