@@ -127,16 +127,22 @@ curl --location --request POST 'localhost:9933' \
     "id": 1
 }'
 ```
-#### Connecting to Polkadot Apps
+#### Interacting using Polkadot JS Apps
 
 A `Substrate` node running `Subsembly` runtime can be connected to [Polkadot Apps interface](https://polkadot.js.org/apps/), which improves the communication with your runtime and outer world. You can submit extrinsics, query storage, monitor produced blocks, etc. For more information, refer to [polkadot-js](https://polkadot.js.org/)
 
 In order to connect to the Polkadot Apps, just build and run your node with your `Subsembly` runtime and go to the Polkadot Apps page. It should automatically connect to your node. Just make sure to choose `Development Network` on the left navigation tab.
 
-If you are using the default develop Runtime, the following accounts are preconfigured with balances on genesis:
+If you are using the default development Runtime, the following accounts are already preconfigured with balances on genesis:
 ```
-TODO add accounts, PK and mnemonics
+Alice
+Bob
+Charlie
+Dave
+Eve
+Ferdie
 ```
+each one of them having `1 000 000` units.
 
 ### Build runtime (Manual)
 
