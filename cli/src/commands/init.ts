@@ -8,19 +8,24 @@ import { Constants } from '../constants';
 export class Init {
 
     /**
-     * @description 
+     * @description Runs initialization logic
      * @param to Directory to initialize new Subsembly project 
      */
-    static async run(to: string = ''): Promise<void> {
+    static async run(to: string): Promise<void> {
+        // Get the information about latest release of Subsembly
         const { data } = await axios.get(Constants.REPO_URL);
         const zip_url: string = data.zipball_url;
+        
         const response = await axios.get(zip_url, {
             responseType: 'arraybuffer'
         });
+
         const zip = new AdmZip(response.data as Buffer);
 
         for(const entry of zip.getEntries()) {
             const isMatch = Constants.INIT_IGNORE.some(rx => rx.test(entry.entryName));
+            // By default extractEntryTo() extracts everything inside directory, which is not desired for us
+            // since we may ignore only specific files inside the directory.
             if(!isMatch && !entry.isDirectory) {
                 zip.extractEntryTo(entry, `./`, true, true);
             }
@@ -36,8 +41,8 @@ export class Init {
     }
     
     /**
-     * @description Rename the folder with unzipped files to provided project name
-     * @param to project name
+     * @description Move files from unzipped folder to the provided directory
+     * @param to direcrtory name
      */
     static async _renameDir(to: string): Promise<void> {
         const dirs = fs.readdirSync(process.cwd()).filter((dir) => dir.match(Constants.ZIP_FILE_PREFIX));

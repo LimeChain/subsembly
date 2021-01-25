@@ -1,5 +1,8 @@
 import { Init } from "./init";
 
+/**
+ * @description List of command of Subsembly-cli
+ */
 export const commands = [{
     command: 'init [to]',
     description: 'Initialize a new Subsembly starter project',
@@ -12,6 +15,6 @@ export const commands = [{
     },
     //@ts-ignore
     handler: async (argv) => {
-        await Init.run(argv.to);
+        await Init.run(argv.to ? argv.to : '');
     }
 }];

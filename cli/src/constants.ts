@@ -1,6 +1,6 @@
 
 /**
- * @description Class with commonly used constants
+ * @description Commonly used constants
  */
 export class Constants {
     
@@ -12,16 +12,16 @@ export class Constants {
     /**
      * @description Files/directories to ignore while initializing Subsembly project
      */
-    static readonly INIT_IGNORE: string[] = [
-        'cli',
-        'scripts',
-        'Makefile',
-        'README.md',
-        'images'
+    static readonly INIT_IGNORE: RegExp[] = [
+        /cli/,
+        /scripts/,
+        /Makefile/,
+        /README.md/,
+        /images/
     ];
     
     /**
-     * @description Zip file prefix of constants
+     * @description Unzipped file starts with the prefix of github_account + repo_name
      */
     static readonly ZIP_FILE_PREFIX: string = 'LimeChain-subsembly';
 }
