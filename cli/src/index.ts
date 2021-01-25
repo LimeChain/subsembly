@@ -1,18 +1,13 @@
 import yargs from 'yargs';
-import { Init } from './commands/init';
+import { commands } from './commands/commands';
 
-const args = yargs.options({
-    init: {type: 'string', demandOption: false, alias: 'i'},
-}).command({
-    command: 'init',
-    builder: (yargs) => {
-        return yargs.option('y', {
-            alias: 'yes',
-            describe: 'Use default values for the configuration'
-        })
-    },
-    handler: async () => {
-        const answers = await Init.init();
-        console.log(answers);
+const run = () => {
+    for (const command of commands) {
+        yargs.command(command.command, command.description, command.builder, command.handler);
     }
-}).argv;
+    yargs.help('help');
+    yargs.version();
+    yargs.argv;
+}
+
+run();

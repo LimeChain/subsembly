@@ -1,21 +1,17 @@
+import { Init } from "./init";
 
-// const commands = [{
-//     command: 'init [yes]',
-//     description: 'Initialize a new Subsembly starter project',
-//     builder: (yargs) => {
-//         yargs.positional('yes', {
-//             describe: 'Initialize with default configuration.',
-//             type: 'boolean'
-//         })
-//     },
-//     handler: (argv) => {
-//         let { yes } = argv;
-//         try {
-//             process.on('SIGINT', () => {
-//                 console.log('Quitting...');
-//                 process.exit(1);
-//             });
-//             const answers = await Init.askQuestions();
-//         }
-//     }
-// }];
+export const commands = [{
+    command: 'init [to]',
+    description: 'Initialize a new Subsembly starter project',
+    // @ts-ignore
+    builder: (yargs) => {
+        yargs.positional('to', {
+            describe: 'Directory to initialize new Subsembly project in. Defaults to current directory.',
+            type: 'string'
+        })
+    },
+    //@ts-ignore
+    handler: async (argv) => {
+        await Init.run(argv.to);
+    }
+}];
