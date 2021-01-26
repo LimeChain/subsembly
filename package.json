@@ -1,5 +1,5 @@
 {
-  "name": "subsembly",
+  "name": "subsembly-framework",
   "version": "1.0.0",
   "description": "Starter project for Subsembly framework for building Substrate runtimes in AssemblyScript",
   "main": "index.js",
@@ -19,8 +19,8 @@
     "substrate",
     "assemblyscript"
   ],
-  "author": "",
-  "license": "MIT",
+  "author": "Dastanbek Samatov <dastan@limechain.tech>",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/limechain/subsembly/issues"
   },
