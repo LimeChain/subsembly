@@ -20,6 +20,7 @@ export class Constants {
         /images/,
         /build.js/,
         /utils/,
+        /.gitignore/
     ];
     
     /**
