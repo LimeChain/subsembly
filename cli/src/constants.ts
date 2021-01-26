@@ -17,7 +17,9 @@ export class Constants {
         /scripts/,
         /Makefile/,
         /README.md/,
-        /images/
+        /images/,
+        /build.js/,
+        /utils/,
     ];
     
     /**

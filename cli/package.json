@@ -1,5 +1,5 @@
 {
-  "name": "subsembly-cli",
+  "name": "subsembly",
   "version": "1.0.0",
   "description": "CLI tool for Subsembly",
   "main": "index.js",
@@ -9,19 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oclif/example-single-ts.git"
+    "url": "git+https://github.com/LimeChain/subsembly"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["Subsembly", "Substrate", "Polkadot", "AssemblyScript"],
+  "author": "Dastanbek Samatov <dastan@limechain.tech>",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/oclif/example-single-ts/issues"
+    "url": "https://github.com/LimeChain/subsembly/issues"
   },
-  "homepage": "https://github.com/oclif/example-single-ts#readme",
+  "homepage": "https://github.com/LimeChain/subsembly#readme",
   "devDependencies": {
     "@types/adm-zip": "^0.4.33",
     "@types/fs-extra": "^9.0.6",
-    "@types/inquirer": "^7.3.1",
     "@types/node": "^14.14.22",
     "@types/yargs": "^15.0.12",
     "ts-node": "^9.1.1",
@@ -31,7 +30,6 @@
     "adm-zip": "^0.5.1",
     "axios": "^0.21.1",
     "fs-extra": "^9.1.0",
-    "inquirer": "^7.3.3",
     "yargs": "^16.2.0"
   }
 }
