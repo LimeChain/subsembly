@@ -5,11 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "build": "./node_modules/.bin/tsc -p ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oclif/example-single-ts.git"
+  },
+  "bin": {
+    "subsembly-cli": "./build/main.js"
   },
   "keywords": [],
   "author": "",

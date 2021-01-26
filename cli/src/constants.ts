@@ -14,7 +14,8 @@ export class Constants {
      */
     static readonly INIT_IGNORE: RegExp[] = [
         /cli/,
-        /scripts/,
+        /insert-aura/,
+        /test-node/,
         /Makefile/,
         /README.md/,
         /images/
