@@ -18,7 +18,10 @@ export class Constants {
         /test-node/,
         /Makefile/,
         /README.md/,
-        /images/
+        /images/,
+        /build.js/,
+        /utils/,
+        /.gitignore/
     ];
     
     /**
