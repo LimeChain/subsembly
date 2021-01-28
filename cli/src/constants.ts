@@ -28,4 +28,9 @@ export class Constants {
      * @description Unzipped file starts with the prefix of github_account + repo_name
      */
     static readonly ZIP_FILE_PREFIX: string = 'LimeChain-subsembly';
+
+    /**
+     * @description Path to the compiled Wasm file of AS
+     */
+    static readonly WASM_PATH: string = __dirname + '/build/runtime-optimized.wasm';
 }

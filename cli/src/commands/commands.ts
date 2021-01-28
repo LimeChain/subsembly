@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { Compile } from './compile';
 import { Init } from "./init";
 
 /**
@@ -25,28 +25,10 @@ export const commands = [
         description: 'Compile Subsembly project',
         //@ts-ignore
         builder: (yargs) => {
-            yargs
         },
         //@ts-ignore
-        handler: (argv) => {
-            console.log('Compiling substrate ')
-            exec(`yarn install && yarn --cwd=./utils install && yarn build \
-                && hex="0x" result=${"hex"}$( cat wasm-code ) \
-                && mv ./spec-files/customSpecRaw.json ./spec-files/temp-raw.json \
-                && jq --arg res "${"result"}" '.genesis.raw.top."0x3a636f6465" |= $res' ./spec-files/temp-raw.json > ./spec-files/customSpecRaw.json \
-                && rm ./spec-files/temp-raw.json \
-                `, 
-                (error: Error | null, stdout: string, stderr: string) => {
-                    console.log(stdout);
-                    console.log(stderr);
-                    if(error !== null) {
-                        console.log(`Encountered an error: ${error.message}`);
-                    };
-            });
+        handler: async (argv) => {
+            await Compile.run();
         }
-    },
-    {
-        command: 'run',
-        description: 'Run '
     }
 ];
