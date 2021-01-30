@@ -32,5 +32,5 @@ export class Constants {
     /**
      * @description Path to the compiled Wasm file of AS
      */
-    static readonly WASM_PATH: string = __dirname + '/build/runtime-optimized.wasm';
+    static readonly WASM_PATH: string = process.cwd() + '/build/runtime-optimized.wasm';
 }

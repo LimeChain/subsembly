@@ -49,7 +49,7 @@ function _convertValue(type, value){
  */
 const runtime = ts.createSourceFile(
     'runtime.ts',
-    fs.readFileSync(path.join(__dirname, "../../../assembly/runtime/runtime.ts"), 'utf-8'),
+    fs.readFileSync(path.join(process.cwd(), "assembly/runtime/runtime.ts"), 'utf-8'),
     ts.ScriptTarget.Latest
 );
 

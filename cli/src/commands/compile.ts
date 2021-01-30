@@ -1,5 +1,7 @@
-import { exec } from "child_process";
+import { execSync } from "child_process";
 import fs from "fs";
+import path from 'path';
+import { generateDispatcher, generateFile, generateMetadata } from '../../utils/src';
 import { Constants } from "../constants";
 import { Utils } from "../utils";
 
@@ -9,21 +11,12 @@ export class Compile {
      */
     static run(): void {
         console.log('Compiling Subsembly Project');
-        console.log(__dirname + '/node_modules');
         if(!fs.existsSync(__dirname + '/node_modules')) {
             Compile._installDependencies();
         }
         
-        exec(`yarn build`, (error: Error | null, stdout: string, stderr: string) => {
-                console.log(stdout);
-                console.log(stderr);
-                if(error !== null) {
-                    console.log(`Encountered an error: ${error.message}`);
-                };
-            }
-        );
-
-        Compile._buildWasm();
+        execSync(`yarn run asbuild:optimized`);
+        this._generateFiles();
     }
 
     /**
@@ -31,17 +24,17 @@ export class Compile {
      */
     static _installDependencies(): void {
         console.log('Installing Subsembly dependencies...');
-        exec(`yarn install && yarn --cwd=./utils install`, 
-            (error: Error | null, stdout: string, stderr: string) => {
-                console.log(stdout);
-                console.log(stderr);
-                if(error !== null) {
-                    console.log(`Encountered an error: ${error.message}`);
-                };
-            }
-        );
+        execSync(`yarn install && yarn --cwd=./utils install`);
     }
 
+    static _generateFiles(): void {
+        console.log('Generate Metadata and Dispatcher');
+        const metadata = generateMetadata();
+        fs.writeFileSync(path.join(process.cwd(), "../metadata.json"), JSON.stringify(metadata, null, 4));
+        generateDispatcher(metadata);
+        generateFile(metadata);
+        return ;
+    }
     /**
      * @description Convert optimized Wasm to Hex and write it in the file
      */

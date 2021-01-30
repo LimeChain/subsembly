@@ -8,11 +8,17 @@
     "dev": "ts-node src/index.ts",
     "build": "./node_modules/.bin/tsc -p ."
   },
+  "bin": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LimeChain/subsembly"
   },
-  "keywords": ["Subsembly", "Substrate", "Polkadot", "AssemblyScript"],
+  "keywords": [
+    "Subsembly",
+    "Substrate",
+    "Polkadot",
+    "AssemblyScript"
+  ],
   "author": "Dastanbek Samatov <dastan@limechain.tech>",
   "license": "Apache-2.0",
   "bugs": {
@@ -31,6 +37,9 @@
     "adm-zip": "^0.5.1",
     "axios": "^0.21.1",
     "fs-extra": "^9.1.0",
-    "yargs": "^16.2.0"
+    "yargs": "^16.2.0",
+    "@polkadot/metadata": "^2.10.1",
+    "@polkadot/types": "^2.10.1",
+    "@polkadot/util": "^4.2.1"
   }
 }

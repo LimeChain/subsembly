@@ -46,8 +46,9 @@ export class Init {
      */
     static _renameDir(to: string): void {
         const dirs = fs.readdirSync(process.cwd()).filter((dir) => dir.match(Constants.ZIP_FILE_PREFIX));
-        const projectDir: string = dirs[0];
+        const projectDir: string = path.join(process.cwd(), dirs[0]);
 
-        fs.moveSync(projectDir, path.join(process.cwd(), to), { overwrite: true });
+        fs.copySync(projectDir, path.join(process.cwd(), to), { overwrite: true });
+        fs.removeSync(projectDir);
     } 
 }

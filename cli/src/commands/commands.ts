@@ -27,8 +27,8 @@ export const commands = [
         builder: (yargs) => {
         },
         //@ts-ignore
-        handler: async (argv) => {
-            await Compile.run();
+        handler: (argv) => {
+            Compile.run();
         }
     }
 ];
