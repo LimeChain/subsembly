@@ -14,9 +14,8 @@ export class Compile {
         if(!fs.existsSync(__dirname + '/node_modules')) {
             Compile._installDependencies();
         }
-        
-        execSync(`yarn run asbuild:optimized`);
-        this._generateFiles();
+        Compile._generateFiles();
+        Compile._buildWasm();
     }
 
     /**
@@ -27,10 +26,13 @@ export class Compile {
         execSync(`yarn install && yarn --cwd=./utils install`);
     }
 
+    /**
+     * @description Generate Metadata and Dispatcher files
+     */
     static _generateFiles(): void {
-        console.log('Generate Metadata and Dispatcher');
+        console.log('Generating Metadata and Dispatcher files...');
         const metadata = generateMetadata();
-        fs.writeFileSync(path.join(process.cwd(), "../metadata.json"), JSON.stringify(metadata, null, 4));
+        fs.writeFileSync(path.join(process.cwd(), "./metadata.json"), JSON.stringify(metadata, null, 4));
         generateDispatcher(metadata);
         generateFile(metadata);
         return ;
@@ -39,9 +41,12 @@ export class Compile {
      * @description Convert optimized Wasm to Hex and write it in the file
      */
     static _buildWasm(): void {
+        console.log('Building wasm file...');
+        execSync(`yarn run asbuild:optimized`);
+        
         const WASM_FILE = fs.readFileSync(Constants.WASM_PATH);
         const byteArray = new Uint8Array(WASM_FILE);
-        
+
         const result = Utils.toHexString(byteArray);
         fs.writeFile('./wasm-code', result, 'utf8', () => {
             console.info("Successfully created WASM Code file");

@@ -7,6 +7,7 @@
     "esModuleInterop": true,
     "rootDir": ".",
     "outDir": "dist",
-    "allowJs": true
+    "allowJs": true,
+    "resolveJsonModule": true
   }
 }

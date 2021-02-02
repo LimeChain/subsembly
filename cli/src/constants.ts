@@ -20,8 +20,7 @@ export class Constants {
         /README.md/,
         /images/,
         /build.js/,
-        /utils/,
-        /.gitignore/
+        /utils/
     ];
     
     /**
