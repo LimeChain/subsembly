@@ -26,7 +26,7 @@ jobs:
           with: 
             node-version: '14.4.x'
         - name: Install AS dependencies and metadata dependencies
-          run: yarn install && cd ./utils && yarn install
+          run: yarn install && yarn --cwd=./cli/utils install
         - name: Compile and run the node in a detached mode
           run: make run-node detached=1
         - name: Insert aura keys
