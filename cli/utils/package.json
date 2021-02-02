@@ -11,7 +11,7 @@
   },
   "homepage": "https://github.com/limechain/subsembly",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "src/run.js",
   "repository": "https://github.com/limechain/subsembly",
   "scripts": {
     "metadata": "node .",
