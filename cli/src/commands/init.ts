@@ -11,6 +11,11 @@ export class Init {
      * @param to Directory to initialize new Subsembly project 
      */
     static async run(to: string): Promise<void> {
+        if(to === "") {
+            if(fs.readdirSync(path.join(process.cwd(), to)).length !== 0) {
+                throw new Error("Init: Current directory is not empty!");
+            }
+        }
         // Get the information about latest release of Subsembly
         const { data } = await axios.get(Constants.REPO_URL);
         const zip_url: string = data.zipball_url;
@@ -29,7 +34,7 @@ export class Init {
                 zip.extractEntryTo(entry, `./`, true, true);
             }
         };
-        
+
         try{
             this.renameDir(to);
             console.log("Succesfully initialized new Subsembly starter project!");
