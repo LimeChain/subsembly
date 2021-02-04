@@ -1,6 +1,5 @@
 import { execSync } from "child_process";
 import fs from "fs";
-import path from 'path';
 import { generateDispatcher, generateFile, generateMetadata } from '../../utils/src';
 import { Constants } from "../constants";
 import { Utils } from "../utils";
@@ -32,7 +31,6 @@ export class Compile {
     private static generateFiles(): void {
         console.log('Generating Metadata and Dispatcher files...');
         const metadata = generateMetadata();
-        fs.writeFileSync(path.join(process.cwd(), "./metadata.json"), JSON.stringify(metadata, null, 4));
         generateDispatcher(metadata);
         generateFile(metadata);
         return ;
