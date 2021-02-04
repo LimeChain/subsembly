@@ -13,7 +13,8 @@ export class Init {
     static async run(to: string): Promise<void> {
         if(fs.existsSync(path.join(process.cwd(), to))) {
             if(fs.readdirSync(path.join(process.cwd(), to)).length !== 0) {
-                throw new Error("Init: Current directory is not empty!");
+                console.error("Error: Current directory is not empty!");
+                return ;
             }
         }
         // Get the information about latest release of Subsembly
