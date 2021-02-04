@@ -17,12 +17,12 @@ export const commands = [
         },
         //@ts-ignore
         handler: async (argv) => {
-            await Init.run(argv.to ? argv.to : '');
+            await Init.run(argv.to || '');
         }
     },
     {
         command: 'compile',
-        description: 'Compile Subsembly project',
+        description: 'Compiles the Subsembly project placed in the current directory to a WASM bytecode',
         //@ts-ignore
         builder: (yargs) => {
         },

@@ -12,16 +12,16 @@ export class Compile {
     static run(): void {
         console.log('Compiling Subsembly Project');
         if(!fs.existsSync(__dirname + '/node_modules')) {
-            Compile._installDependencies();
+            Compile.installDependencies();
         }
-        Compile._generateFiles();
-        Compile._buildWasm();
+        Compile.generateFiles();
+        Compile.buildWasm();
     }
 
     /**
      * @description Install dependencies for the Subsembly project
      */
-    static _installDependencies(): void {
+    private static installDependencies(): void {
         console.log('Installing Subsembly dependencies...');
         execSync(`yarn install && yarn --cwd=./utils install`);
     }
@@ -29,7 +29,7 @@ export class Compile {
     /**
      * @description Generate Metadata and Dispatcher files
      */
-    static _generateFiles(): void {
+    private static generateFiles(): void {
         console.log('Generating Metadata and Dispatcher files...');
         const metadata = generateMetadata();
         fs.writeFileSync(path.join(process.cwd(), "./metadata.json"), JSON.stringify(metadata, null, 4));
@@ -40,7 +40,7 @@ export class Compile {
     /**
      * @description Convert optimized Wasm to Hex and write it in the file
      */
-    static _buildWasm(): void {
+    private static buildWasm(): void {
         console.log('Building wasm file...');
         execSync(`yarn run asbuild:optimized`);
         
@@ -48,7 +48,7 @@ export class Compile {
         const byteArray = new Uint8Array(WASM_FILE);
 
         const result = Utils.toHexString(byteArray);
-        fs.writeFile('./wasm-code', result, 'utf8', () => {
+        fs.writeFile('./build/subsembly-wasm', result, 'utf8', () => {
             console.info("Successfully created WASM Code file");
         });
     }

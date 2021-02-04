@@ -6,7 +6,6 @@ import process from 'process';
 import { Constants } from '../constants';
 
 export class Init {
-
     /**
      * @description Runs initialization logic
      * @param to Directory to initialize new Subsembly project 
@@ -32,7 +31,7 @@ export class Init {
         };
         
         try{
-            this._renameDir(to);
+            this.renameDir(to);
             console.log("Succesfully initialized new Subsembly starter project!");
         }
         catch(error) {
@@ -44,7 +43,7 @@ export class Init {
      * @description Move files from unzipped folder to the provided directory
      * @param to direcrtory name
      */
-    static _renameDir(to: string): void {
+    private static renameDir(to: string): void {
         const dirs = fs.readdirSync(process.cwd()).filter((dir) => dir.match(Constants.ZIP_FILE_PREFIX));
         const projectDir: string = path.join(process.cwd(), dirs[0]);
 

@@ -8,6 +8,7 @@ const run = () => {
     }
     yargs.help('help');
     yargs.version();
+    yargs.demandCommand();
     yargs.argv;
 }
 
