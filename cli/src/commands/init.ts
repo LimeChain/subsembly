@@ -11,7 +11,7 @@ export class Init {
      * @param to Directory to initialize new Subsembly project 
      */
     static async run(to: string): Promise<void> {
-        if(to === "") {
+        if(fs.existsSync(path.join(process.cwd(), to))) {
             if(fs.readdirSync(path.join(process.cwd(), to)).length !== 0) {
                 throw new Error("Init: Current directory is not empty!");
             }
