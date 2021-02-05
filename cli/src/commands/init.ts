@@ -6,12 +6,17 @@ import process from 'process';
 import { Constants } from '../constants';
 
 export class Init {
-
     /**
      * @description Runs initialization logic
      * @param to Directory to initialize new Subsembly project 
      */
     static async run(to: string): Promise<void> {
+        if(fs.existsSync(path.join(process.cwd(), to))) {
+            if(fs.readdirSync(path.join(process.cwd(), to)).length !== 0) {
+                console.error("Error: Current directory is not empty!");
+                return ;
+            }
+        }
         // Get the information about latest release of Subsembly
         const { data } = await axios.get(Constants.REPO_URL);
         const zip_url: string = data.zipball_url;
@@ -30,9 +35,9 @@ export class Init {
                 zip.extractEntryTo(entry, `./`, true, true);
             }
         };
-        
+
         try{
-            await this._renameDir(to);
+            this.renameDir(to);
             console.log("Succesfully initialized new Subsembly starter project!");
         }
         catch(error) {
@@ -44,10 +49,11 @@ export class Init {
      * @description Move files from unzipped folder to the provided directory
      * @param to direcrtory name
      */
-    static async _renameDir(to: string): Promise<void> {
+    private static renameDir(to: string): void {
         const dirs = fs.readdirSync(process.cwd()).filter((dir) => dir.match(Constants.ZIP_FILE_PREFIX));
-        const projectDir: string = dirs[0];
+        const projectDir: string = path.join(process.cwd(), dirs[0]);
 
-        fs.moveSync(projectDir, path.join(process.cwd(), to), { overwrite: true });
+        fs.copySync(projectDir, path.join(process.cwd(), to), { overwrite: true });
+        fs.removeSync(projectDir);
     } 
 }

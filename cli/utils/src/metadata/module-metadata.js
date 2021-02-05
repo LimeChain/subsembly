@@ -45,15 +45,6 @@ function _convertValue(type, value){
 }
 
 /**
- * Runtime instance to get constants for the modules
- */
-const runtime = ts.createSourceFile(
-    'runtime.ts',
-    fs.readFileSync(path.join(__dirname, "../../../assembly/runtime/runtime.ts"), 'utf-8'),
-    ts.ScriptTarget.Latest
-);
-
-/**
  * Render Storage items for the module metadata
  * @param obj node object
  */
@@ -295,6 +286,16 @@ function _getEvents(name) {
  * @param node Loaded Module file
  */
 module.exports = function generateModuleMetadata(index, node) {
+
+    /**
+     * Runtime instance to get constants for the modules
+     */
+    const runtime = ts.createSourceFile(
+        'runtime.ts',
+        fs.readFileSync(path.join(process.cwd(), "assembly/runtime/runtime.ts"), 'utf-8'),
+        ts.ScriptTarget.Latest
+    );
+    
     /**
      * Template for Metadata of the module
      */

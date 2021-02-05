@@ -2,7 +2,7 @@ const ts = require('typescript');
 const fs = require('fs');
 const path = require('path');
 const generateModuleMetadata = require("./module-metadata");
-const palletsPath = path.join(__dirname, "../../../assembly/pallets/")
+const palletsPath = path.join(process.cwd(), "assembly/pallets/")
 
 /**
  * Generates the metadata of the Subsembly runtime
@@ -37,7 +37,7 @@ function generateMetadata() {
      */
     const systemNode = ts.createSourceFile(
         "System",
-        fs.readFileSync(path.join(__dirname, '../../../assembly/frame/system.ts'), 'utf-8'),
+        fs.readFileSync(path.join(process.cwd(), 'assembly/frame/system.ts'), 'utf-8'),
         ts.ScriptTarget.Latest
     );
 

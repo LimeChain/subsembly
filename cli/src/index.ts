@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import yargs from 'yargs';
 import { commands } from './commands/commands';
 
@@ -7,6 +8,7 @@ const run = () => {
     }
     yargs.help('help');
     yargs.version();
+    yargs.demandCommand();
     yargs.argv;
 }
 
