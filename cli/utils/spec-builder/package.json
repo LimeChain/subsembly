@@ -1,0 +1,27 @@
+{
+  "name": "@as-substrate/spec-builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "asbuild:optimized": "asc assembly/index.ts -b build/build-spec.wasm -t build/build-spec.wat --runtime full --optimize",
+    "asbuild": "npm run asbuild:optimized",
+    "build-spec": "npm run asbuild:optimized && node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@assemblyscript/loader": "^0.17.9",
+    "@polkadot/api": "^^2.10.1",
+    "@polkadot/types": "^2.10.1",
+    "@polkadot/util": "^4.2.1",
+    "@polkadot/util-crypto": "5.5.2",
+    "as-scale-codec": "^0.2.2",
+    "yargs": "^15.4.1"
+  },
+  "devDependencies": {
+    "mocha": "^8.0.1",
+    "assemblyscript": "^0.17.9"
+  }
+}
