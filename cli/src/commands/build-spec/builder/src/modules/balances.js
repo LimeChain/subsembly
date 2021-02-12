@@ -1,17 +1,19 @@
-const { getAccountDataBytes, __getArray } = require('../wasm-loader');
+const { getAccountDataBytes, __getArray, __newArray, UInt8Array_ID } = require('../wasm-loader');
 const { Keyring } = require('@polkadot/api');
 const { u8aToHex } = require('@polkadot/util');
 const Utils = require('../utils');
+const { TypeRegistry } = require('@polkadot/types');
 
 class Balances {
     /**
      * @description Storage prefix of the module
      */
-    static MODULE_PREFIX = "Balance";
+    static MODULE_PREFIX = "Balances";
     /**
      * @description Account key for the the module
      */
     static MODULE_KEY = "Account";
+
     /**
      * 
      * @param balances array with accountId and balances
@@ -21,12 +23,13 @@ class Balances {
 
         const rawBalances = {};
         const keyring = new Keyring({ type: 'sr25519' });
+        const typeReg = new TypeRegistry();
         balancesArray.forEach(balanceArray => {
             validateIsArray(balanceArray);
             
             const keyringInstance = keyring.addFromAddress(balanceArray[0]);
-            const key = u8aToHex(Utils.getHashKey(this.MODULE_PREFIX, this.MODULE_KEY, keyringInstance.publicKey));
-            const value = accDataToHex(balanceArray[1]);
+            const key = Utils.getHashKey(this.MODULE_PREFIX, this.MODULE_KEY, keyringInstance.publicKey);
+            const value = accDataToHex(typeReg.createType("U64", balanceArray[1].toString()).toArray('le'));
             rawBalances[key] = value;
         });
         return rawBalances;
@@ -48,7 +51,7 @@ function validateIsArray (arr) {
  * @param value encodes AccountData instance to hex
  */
 const accDataToHex = (value) => {
-    const accData = getAccountDataBytes(value);
+    const accData = getAccountDataBytes(__newArray(UInt8Array_ID, value));
     const res = __getArray(accData);
     return u8aToHex(res);
 }

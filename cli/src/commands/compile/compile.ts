@@ -1,8 +1,8 @@
 import { execSync } from "child_process";
 import fs from "fs";
-import { generateDispatcher, generateFile, generateMetadata } from '../../utils/src';
-import { Constants } from "../constants";
-import { Utils } from "../utils";
+import { Constants } from "../../constants";
+import { Utils } from "../../utils";
+import { generateDispatcher, generateFile, generateMetadata } from './pre-compile/src';
 
 export class Compile {
     /**

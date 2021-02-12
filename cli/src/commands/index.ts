@@ -1,5 +1,6 @@
-import { Compile } from './compile';
-import { Init } from "./init";
+import { BuildSpec } from './build-spec/build-spec';
+import { Compile } from './compile/compile';
+import { Init } from "./init/init";
 
 /**
  * @description List of command of Subsembly-cli
@@ -29,6 +30,27 @@ export const commands = [
         //@ts-ignore
         handler: (argv) => {
             Compile.run();
+        }
+    },
+    {
+        command: 'spec [spec] [raw] [wasm]',
+        description: 'Generates custom spec file or converts it',
+        //@ts-ignore
+        builder: (yargs) => {
+            yargs.positional('src', {
+                describe: 'Path to the spec file',
+                type: 'string'
+            }).positional('raw', {
+                describe: 'Path for raw chain spec output',
+                type: 'string'
+            }).positional('wasm', {
+                describe: 'Path to the wasm file',
+                type: 'string'
+            })
+        },
+        //@ts-ignore
+        handler: (argv) => {
+            BuildSpec.run(argv.src || "", argv.raw || "", argv.wasm || "");
         }
     }
 ];

@@ -5,16 +5,17 @@ import { AccountData, AccountId, Utils } from 'subsembly-core';
 export type Balance = UInt64;
 
 /**
- * Gets the AccountData converted to the bytes
+ * @description Gets the AccountData converted to the bytes
  * @param freeBalance free balance for the AccountData
  */
-export function getAccountDataBytes(freeBalance: u64): u8[] {
-  const accData = new AccountData<Balance>(instantiate<Balance>(freeBalance), instantiate<Balance>(0));
+export function getAccountDataBytes(freeBalance: Uint8Array): u8[] {
+  const balance = BytesReader.decodeInto<Balance>(Utils.toU8Array(freeBalance));
+  const accData = new AccountData<Balance>(balance, instantiate<Balance>(0));
   return accData.toU8a();
 }
 
 /**
- * 
+ * @description Get bytes as AccountID
  * @param authorities list of authorities in bytes
  */
 export function getAccountIdBytes(authorities: Uint8Array): u8[] {
@@ -33,6 +34,15 @@ export function getAccountIdBytes(authorities: Uint8Array): u8[] {
   const length = new CompactInt(counter);
   return result.concat(length.toU8a())
     .concat(auths);
+}
+
+/**
+ * @description Encode string
+ * @param str value
+ * @param scale SCALE encoded if true
+ */
+export function stringToU8a(str: string, scale: bool): u8[] {
+  return Utils.stringsToBytes([str], scale);
 }
 
 export const UInt8Array_ID = idof<Uint8Array>();

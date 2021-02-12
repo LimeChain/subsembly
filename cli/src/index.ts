@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
-import { commands } from './commands/commands';
+import { commands } from './commands';
 
 const run = () => {
     for (const command of commands) {

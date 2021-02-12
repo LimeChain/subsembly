@@ -9,5 +9,14 @@
     "outDir": "dist",
     "allowJs": true,
     "resolveJsonModule": true
-  }
+  },
+  "include": [
+    "src/**/*",
+    "utils/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/commands/build-spec/builder/assembly/*.ts",
+    "src/commands/build-spec/builder/node_modules/**/*"
+  ]
 }

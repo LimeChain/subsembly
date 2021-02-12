@@ -29,7 +29,7 @@ class Aura {
         }
 
         let rawAuthorities = [];
-        const key = u8aToHex(Utils.getHashKey(this.MODULE_PREFIX, this.MODULE_KEY, []));
+        const key = Utils.getHashKey(this.MODULE_PREFIX, this.MODULE_KEY, []);
         const keyring = new Keyring({ type: 'sr25519' });
 
         authorities.forEach(element => {
