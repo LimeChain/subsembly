@@ -16,8 +16,7 @@
     "@polkadot/util": "5.6.2",
     "@polkadot/util-crypto": "5.6.2",
     "as-scale-codec": "^0.2.2",
-    "subsembly-core": "^1.0.6",
-    "yargs": "^15.4.1"
+    "subsembly-core": "^1.0.6"
   },
   "devDependencies": {
     "assemblyscript": "^0.17.9",

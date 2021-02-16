@@ -7,9 +7,7 @@
     "test": "asc test",
     "asbuild:untouched": "asc assembly/index.ts -b build/runtime-untouched.wasm -t build/runtime-untouched.wat --runtime half --memoryBase=16777216 --importMemory --noAssert --use abort=",
     "asbuild:optimized": "asc assembly/index.ts -b build/runtime-optimized.wasm -t build/runtime-optimized.wat --runtime half --memoryBase=16777216 --importMemory --noAssert --optimize --use abort=",
-    "build": "yarn run metadata && yarn run dispatcher && yarn run asbuild:optimized && node build.js",
-    "metadata": "node ./cli/utils/src/run",
-    "dispatcher": "node ./cli/utils/src/run --dispatcher"
+    "build": "npm install --prefix ./cli && npm run build --prefix ./cli && node ./cli/dist/src/index.js compile"
   },
   "repository": {
     "type": "git",

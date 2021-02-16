@@ -15,7 +15,7 @@ class Utils {
         // we use twoX128 hashing algorithm for keys
         const hashedPrefix = xxhashAsU8a(Utils.stringToBytes(prefix, false), 128);
         const hashedKey = xxhashAsU8a(Utils.stringToBytes(key, false), 128);
-        const hashedSuffix = xxhashAsU8a(suffix, 128);
+        const hashedSuffix = suffix.length > 0 ? xxhashAsU8a(suffix, 128) : [];
         const finalKey = new Uint8Array([...hashedPrefix, ...hashedKey, ...hashedSuffix]);
         return u8aToHex(finalKey);
     }
