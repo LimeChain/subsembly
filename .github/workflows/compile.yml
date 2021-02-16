@@ -32,7 +32,7 @@ jobs:
         - name: Get latest header
           id: check-header
           run: |
-            echo "::set-output name=tx-output::$(bash .github/worklows/scripts/get-latest-header.sh)\n" 
+            echo "::set-output name=tx-output::$(bash .github/workflows/scripts/get-latest-header.sh)\n" 
         - name: |
             Check the latest header
             If it contains number":"0x0",

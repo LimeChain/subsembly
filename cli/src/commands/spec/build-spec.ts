@@ -13,6 +13,10 @@ export class BuildSpec {
      * @param wasmPath where is the wasm code
      */
     static run(to: string, srcPath: string, rawSpecPath: string, wasmPath: string): void {
+        if (to === '' && srcPath === '' && rawSpecPath === '' && wasmPath === '') {
+            SpecBuilder.customSpec(path.resolve(process.cwd(), 'chain-spec.json'));
+            return ;
+        }
         if(to !== '') {
             SpecBuilder.customSpec(path.resolve(process.cwd(), to));
             return ;
