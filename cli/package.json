@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node src/index.ts",
-    "build-spec": "cd ./src/commands/build-spec/builder && npm run asbuild && cd -",
-    "copy-wasm": "mkdir -p ./dist/src/commands/build-spec/builder/build/ && cp ./src/commands/build-spec/builder/build/build-spec.wasm ./dist/src/commands/build-spec/builder/build/",
+    "build-spec": "cd ./src/commands/spec/builder && npm run asbuild && cd -",
+    "copy-wasm": "mkdir -p ./dist/src/commands/spec/builder/build/ && cp ./src/commands/spec/builder/build/build-spec.wasm ./dist/src/commands/spec/builder/build/",
     "build": "./node_modules/.bin/tsc -p . && npm run build-spec && npm run copy-wasm"
   },
   "bin": {

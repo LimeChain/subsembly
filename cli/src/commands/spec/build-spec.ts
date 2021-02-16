@@ -12,13 +12,13 @@ export class BuildSpec {
      * @param rawSpecPath where to save raw file
      * @param wasmPath where is the wasm code
      */
-    static run(srcPath: string, rawSpecPath: string, wasmPath: string): void {
-        if(srcPath === '') {
-            SpecBuilder.customSpec('./chain-spec.json');
+    static run(to: string, srcPath: string, rawSpecPath: string, wasmPath: string): void {
+        if(to !== '') {
+            SpecBuilder.customSpec(path.resolve(process.cwd(), to));
             return ;
         }
-        if(!fs.existsSync(path.resolve(process.cwd(), srcPath))) {
-            SpecBuilder.customSpec(path.resolve(process.cwd(), srcPath));
+        if(srcPath === '') {
+            console.error('No source spec file is specified!');
             return ;
         }
         if (rawSpecPath === '') {
