@@ -1,8 +1,8 @@
 import { execSync } from "child_process";
 import fs from "fs";
-import { generateDispatcher, generateFile, generateMetadata } from '../../utils/src';
-import { Constants } from "../constants";
-import { Utils } from "../utils";
+import { generateDispatcher, generateFile, generateMetadata } from '.';
+import { Constants } from "../../constants";
+import { Utils } from "../../utils";
 
 export class Compile {
     /**
@@ -22,7 +22,7 @@ export class Compile {
      */
     private static installDependencies(): void {
         console.log('Installing Subsembly dependencies...');
-        execSync(`yarn install && yarn --cwd=./utils install`);
+        execSync(`yarn install`);
     }
 
     /**

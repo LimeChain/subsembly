@@ -1,23 +1,17 @@
 import { ByteArray, BytesReader } from 'as-scale-codec';
-import { InherentData, Storage } from "subsembly-core";
+import { InherentData, Storage, Utils } from "subsembly-core";
 import { Moment, TimestampConfig } from '../../runtime/runtime';
 
 /**
  * Storage entries for Aura module
  */
-export namespace AuraStorageEntries {
-};
+export namespace AuraStorageEntries {};
 
 /**
  * @description Aura provides a slot-based block authoring mechanism. 
  * In Aura a known set of authorities take turns producing blocks.
  */
 export class Aura {
-    /**
-     * Scale encoded key {scale("aura")}{scale("authorities"}
-     * Key for the AuraInherentData
-     */
-    public static readonly AURA_AUTHORITIES: u8[] = [16, 97, 117, 114, 97, 44, 97, 117, 116, 104, 111, 114, 105, 116, 105, 101, 115];
     public static readonly INHERENT_IDENTIFIER: string = "auraslot";
 
     /**
@@ -32,7 +26,7 @@ export class Aura {
      * were set on genesis, creates a vector of AccountIds and return it
      */
     static _getAuthorities(): u8[] {
-        const authorities = Storage.get(Aura.AURA_AUTHORITIES);
+        const authorities = Storage.get(Utils.getHashedKey("Aura", "Authorities", null));
         return authorities.isSome() ? (<ByteArray>authorities.unwrap()).unwrap() : [];
     }
     /**
@@ -40,7 +34,7 @@ export class Aura {
      * @param auths SCALE encoded list of authorities
      */
     static _setAuthorities(auths: u8[]): void {
-        Storage.set(Aura.AURA_AUTHORITIES, auths);
+        Storage.set(Utils.getHashedKey("Aura", "Authorities", null), auths);
     }
 
     /**

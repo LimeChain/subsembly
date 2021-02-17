@@ -3,7 +3,7 @@ import axios from 'axios';
 import fs from 'fs-extra';
 import path from 'path';
 import process from 'process';
-import { Constants } from '../constants';
+import { Constants } from '../../constants';
 
 export class Init {
     /**
