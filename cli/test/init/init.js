@@ -26,7 +26,7 @@ describe('Init command', () => {
         assert.include(dirs, 'assembly', "Does not contain assembly files initialized correctly!");
     })
 
-    it('to commannd ignored', async () => {
+    it.only('to command ignored', async () => {
         // create a new dir and go there
         execSync(`cd ${path.join(__dirname, '../test-gen')} && mkdir sub2 && cd sub2`)
         await assert.isFulfilled(Subsembly.run(`${path.join(__dirname, '../test-gen/sub2')}`, 'init', {}), 'Unexpected error in initializing');
@@ -35,7 +35,7 @@ describe('Init command', () => {
         assert.include(dirs, 'assembly', "Not initialized");
     })
 
-    it.only('Ignored files are not included', async () => {
+    it('Ignored files are not included', async () => {
         await assert.isFulfilled(Subsembly.run('', 'init', {to: './test/test-gen/sub1'}), 'Unexpected error in initializing');
         const dirs = fs.readdirSync(path.join(__dirname, '../test-gen/sub1'));
         const isMatch = dirs.filter(dir => Constants.INIT_IGNORE.some(rx => rx.test(dir)));
