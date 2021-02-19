@@ -11,10 +11,11 @@ export class Init {
      * @param to Directory to initialize new Subsembly project 
      */
     static async run(to: string): Promise<void> {
-        if(fs.existsSync(path.join(process.cwd(), to))) {
-            if(fs.readdirSync(path.join(process.cwd(), to)).length !== 0) {
-                console.error("Error: Current directory is not empty!");
-                return ;
+        console.log('here: ' + path.resolve(process.cwd(), to));
+        if(fs.existsSync(path.resolve(process.cwd(), to))) {
+            
+            if(fs.readdirSync(path.resolve(process.cwd(), to)).length !== 0) {
+                throw new Error("Error: initialization directory is not empty!");
             }
         }
         // Get the information about latest release of Subsembly

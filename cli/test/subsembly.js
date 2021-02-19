@@ -1,4 +1,4 @@
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process");
 const path = require('path');
 
 class Subsembly {
@@ -14,11 +14,16 @@ class Subsembly {
             argsString.push(`--${key}=${value}`);
         });
         const executable = path.relative(cwd, './dist/src/index.js');
-        console.log(executable);
-        const process = exec(`cd ${cwd || ""} && ${executable} ${command} ${argsString.join(' ')}`);
+        const process = exec(`${ cwd ? `cd ${cwd} &&` : ''} ${executable} ${command} ${argsString.join(' ')} && cd -`);
         return new Promise (function(resolve, reject) {
-            process.addListener('error', reject);
-            process.addListener('exit', resolve);   
+            process.addListener('close', (code, signal) => {
+                switch(code) {
+                    case 0:
+                        resolve();
+                    default:
+                        reject();
+                }
+            })
         });
     }
 }
