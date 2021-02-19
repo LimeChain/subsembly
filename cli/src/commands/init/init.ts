@@ -11,7 +11,6 @@ export class Init {
      * @param to Directory to initialize new Subsembly project 
      */
     static async run(to: string): Promise<void> {
-        console.log('here: ' + path.resolve(process.cwd(), to));
         if(fs.existsSync(path.resolve(process.cwd(), to))) {
             
             if(fs.readdirSync(path.resolve(process.cwd(), to)).length !== 0) {
