@@ -2,7 +2,7 @@ const assert = require('chai').assert;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
-const { execSync, exec } = require('child_process');
+const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs-extra');
 const Subsembly = require('../subsembly');
