@@ -23,7 +23,7 @@ describe('Subsembly compile command', () => {
         assert.include(genDirs, 'dispatcher.ts', 'dispatcher.ts is not generated');
         assert.include(genDirs, 'metadata.ts', 'metadata.ts is not generated');
         assert.isTrue(fs.existsSync(path.resolve(__dirname, '../generated/sub1/build/subsembly-wasm'), 'subsembly-wasm was not generated'));
-    }).timeout(20000);
+    }).timeout(30000);
 
     after(() => {
         fs.removeSync(path.join(__dirname, '../generated'));
