@@ -7,7 +7,6 @@ on:
 
 defaults:
   run:
-    shell: zsh
     working-directory: cli
 jobs:
   runtime:

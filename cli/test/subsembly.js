@@ -1,6 +1,9 @@
 const { exec } = require("child_process");
 const path = require('path');
 
+/**
+ * @description Wrapper class of cli for tests
+ */
 class Subsembly {
     /**
      * @description Runs a specific command with subsembly cli
