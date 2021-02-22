@@ -1,0 +1,17 @@
+name: Subsembly CLI tests
+
+on:
+  push:
+    paths:
+      - "cli"
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install CLI dependencies
+      run: cd cli && npm install
+    - name: Build and link CLI
+      run: cd cli && npm run build && npm link
+    - name: Run tests
+      run: npm run test

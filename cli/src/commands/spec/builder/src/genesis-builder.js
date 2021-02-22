@@ -11,9 +11,9 @@ class GenesisBuilder {
      * Converts genesis property of the class to Raw
      * @param genesis instance of class 
      */
-    static toRaw(genesisConfig) {
-        if (!(genesisConfig && genesisConfig.genesis && genesisConfig.genesis.runtime && genesisConfig.genesis.runtime.system)) {
-            throw new Error('Invalid Genesis config provided');
+    static toRaw(genesisConfig, wasm) {
+        if (!(genesisConfig && 'genesis' in genesisConfig && 'runtime' in genesisConfig?.genesis && 'system' in genesisConfig?.genesis?.runtime)) {
+            throw new Error('Error: Invalid Genesis config provided');
         }
 
         const rawGenesis = {
@@ -24,6 +24,7 @@ class GenesisBuilder {
         };
 
         const system = genesisConfig.genesis.runtime.system;
+        system['code'] = wasm;
         const rawSystem = System.toRaw(system);
         Object.assign(rawGenesis.raw.top, rawSystem);
 

@@ -1,0 +1,30 @@
+{
+    "name": "Local Testnet",
+    "id": "local_testnet",
+    "chainType": "Local",
+    "bootNodes": [],
+    "telemetryEndpoints": null,
+    "protocolId": null,
+    "properties": null,
+    "consensusEngine": null,
+    "genesis": {
+      "runtime": {
+        "balances": {
+          "balances": [
+            [
+              "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+              1152921504606846976
+            ],
+            [
+              "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+              1152921504606846976
+            ],
+            [
+              "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
+              1152921504606846976
+            ]
+          ]
+        }
+      }
+    }
+  }

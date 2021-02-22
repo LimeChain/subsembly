@@ -29,16 +29,16 @@ describe.only('Subsembly spec command', () => {
         assert.isFalse(fs.existsSync(path.join(cwdSpec, './raw-chain-spec.json')), 'Raw spec file was generated!')
     })
 
+    it('Should convert spec file to raw', async() => {
+        await assert.isFulfilled(Subsembly.run(cwdSpec, 'spec', {to: './chain-spec-3.json'}), 'Unexpected error while generating spec!');
+        await assert.isFulfilled(Subsembly.run(cwdSpec, 'spec', {src: './chain-spec-3.json', raw: './raw-chain-spec-2.json', wasm: wasmPath }), 'Unexpected error while generating spec!');
+        assert.isTrue(fs.existsSync(path.join(cwdSpec, './raw-chain-spec-2.json')), 'Raw chain spec does not exist!');
+    })
+    
     it('Should write raw file to the same directory as src file if not specified', async () => {
         await assert.isFulfilled(Subsembly.run(cwdSpec, 'spec', {to: './chain-spec-2.json'}), 'Unexpected error while generating spec!');
         await assert.isFulfilled(Subsembly.run(cwdSpec, 'spec', { src: './chain-spec-2.json', wasm: wasmPath }), 'Unexpected error while generating spec!');
         assert.isTrue(fs.existsSync(path.join(cwdSpec, './raw-chain-spec.json')), 'Raw chain spec does not exist!');
-    })
-
-    it('Should convert spec file to raw', async() => {
-        await assert.isFulfilled(Subsembly.run(cwdSpec, 'spec', {to: './chain-spec-3.json'}), 'Unexpected error while generating spec!');
-        await assert.isFulfilled(Subsembly.run(cwdSpec, 'spec', {src: './chain-spec-2.json', raw: './raw-chain-spec-2.json', wasm: wasmPath }), 'Unexpected error while generating spec!');
-        assert.isTrue(fs.existsSync(path.join(cwdSpec, './raw-chain-spec-2.json')), 'Raw chain spec does not exist!');
     })
 
     after(() => {

@@ -7,7 +7,6 @@ chai.use(chaiAsPromised);
 const path = require('path');
 const fs = require('fs-extra');
 /**
- *
 Check for generated files
 Check for wasm file
 If there is a compilation error it should display it

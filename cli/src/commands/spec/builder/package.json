@@ -20,6 +20,8 @@
   },
   "devDependencies": {
     "assemblyscript": "^0.17.9",
-    "mocha": "^8.0.1"
+    "mocha": "^8.0.1",
+    "chai": "^4.3.0",
+    "chai-as-promised": "^7.1.1"
   }
 }
