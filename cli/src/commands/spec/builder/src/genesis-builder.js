@@ -12,7 +12,7 @@ class GenesisBuilder {
      * @param genesis instance of class 
      */
     static toRaw(genesisConfig, wasm) {
-        if (!(genesisConfig && 'genesis' in genesisConfig && 'runtime' in genesisConfig?.genesis && 'system' in genesisConfig?.genesis?.runtime)) {
+        if (!(genesisConfig && genesisConfig.genesis && genesisConfig.genesis.runtime && genesisConfig.genesis.runtime.system)) {
             throw new Error('Error: Invalid Genesis config provided');
         }
 

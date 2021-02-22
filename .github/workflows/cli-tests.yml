@@ -4,14 +4,18 @@ on:
   push:
     paths:
       - "cli/**"
+
+defaults:
+  run:
+    working-directory: cli
 jobs:
   runtime:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Install CLI dependencies
-      run: cd cli && npm install
+      run: npm install
     - name: Build and link CLI
-      run: cd cli && npm run build && sudo npm link
+      run: npm run build && sudo npm link
     - name: Run tests
       run: npm run test
