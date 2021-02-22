@@ -3,7 +3,7 @@ name: Subsembly CLI tests
 on:
   push:
     paths:
-      - "cli"
+      - "cli/**"
 jobs:
   runtime:
     runs-on: ubuntu-latest
