@@ -30,6 +30,7 @@ class SpecBuilder{
     
         let customSpec = require(specPath);
         let wasmCode = '0x';
+        
         if(!fs.existsSync(wasmPath)){
             throw new Error(`Wasm code doesn't exist at the provided path: ${wasmPath} `);
         }
