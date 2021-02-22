@@ -24,6 +24,7 @@ class Subsembly {
                         reject();
                 }
             })
+            process.addListener('error', reject);
         });
     }
 }
