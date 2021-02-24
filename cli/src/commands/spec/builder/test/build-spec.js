@@ -3,7 +3,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const fs = require('fs');
-const Utils = require('./utils/spawn-child-process');
+const Utils = require('./utils/utils');
 const MockedConstants = require('./utils/mocked-constants.json');
 
 describe('Build spec tests', () => {

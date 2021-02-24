@@ -14,7 +14,8 @@ export class Init {
         if(fs.existsSync(path.resolve(process.cwd(), to))) {
             
             if(fs.readdirSync(path.resolve(process.cwd(), to)).length !== 0) {
-                throw new Error("Error: initialization directory is not empty!");
+                console.error("Error: initialization directory is not empty!");
+                process.exit(1);
             }
         }
         // Get the information about latest release of Subsembly
@@ -41,7 +42,8 @@ export class Init {
             console.log("Succesfully initialized new Subsembly starter project!");
         }
         catch(error) {
-            throw new Error("Error initializing Subsembly project " + error.message);
+            console.error("Error initializing Subsembly project " + error.message);
+            process.exit(1);
         }
     }
     

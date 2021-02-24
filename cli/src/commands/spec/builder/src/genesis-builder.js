@@ -13,7 +13,8 @@ class GenesisBuilder {
      */
     static toRaw(genesisConfig, wasm) {
         if (!(genesisConfig && genesisConfig.genesis && genesisConfig.genesis.runtime && genesisConfig.genesis.runtime.system)) {
-            throw new Error('Error: Invalid Genesis config provided');
+            console.error('Error: Invalid Genesis config provided');
+            process.exit(1);
         }
 
         const rawGenesis = {

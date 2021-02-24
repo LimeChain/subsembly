@@ -22,7 +22,8 @@ export class BuildSpec {
             return ;
         }
         if(srcPath === '') {
-            throw new Error('No source spec file is specified!');
+            console.error('No source spec file is specified!');
+            process.exit(1);
         }
         if (rawSpecPath === '') {
             srcPath = path.resolve(process.cwd(), srcPath);
@@ -30,7 +31,8 @@ export class BuildSpec {
         }
         if (wasmPath === '') {
             if(!fs.existsSync(path.resolve(process.cwd(), './build/subsembly-wasm'))){
-                throw new Error(`No wasm file path provided and ./build/wasm-runtime does not exist`);
+                console.error(`No wasm file path provided and ./build/wasm-runtime does not exist`);
+                process.exit(1);
             }
             wasmPath = path.resolve(process.cwd(), './build/subsembly-wasm');
         }

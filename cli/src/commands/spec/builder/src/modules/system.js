@@ -13,7 +13,8 @@ class System {
      */
     static toRaw(system) {
         if (!system.code) {
-            throw new Error("Code property is not populated");
+            console.error("Code property is not populated");
+            process.exit(1);
         }
         return { [stringToHex(this.CODE)]: system.code };
     }

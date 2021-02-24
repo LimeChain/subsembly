@@ -42,7 +42,8 @@ class Balances {
  */
 function validateIsArray (arr) {
     if (!Array.isArray(arr)) {
-        throw new Error("Balances: Invalid or no balances array provided");
+        console.error("Balances: Invalid or no balances array provided");
+        process.exit(1);
     }
 }
  

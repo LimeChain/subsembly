@@ -25,14 +25,16 @@ class SpecBuilder{
      */
     static toRaw(specPath, rawSpecPath, wasmPath) {
         if(!fs.existsSync(specPath)){
-            throw new Error(`Spec file doesn't exist at the provided path: ${specPath}`);
+            console.error(`Spec file doesn't exist at the provided path: ${specPath}`);
+            return ;
         };
     
         let customSpec = require(specPath);
         let wasmCode = '0x';
         
         if(!fs.existsSync(wasmPath)){
-            throw new Error(`Wasm code doesn't exist at the provided path: ${wasmPath} `);
+            console.error(`Wasm code doesn't exist at the provided path: ${wasmPath}`);
+            return ;
         }
         else{
             wasmCode = hexAddPrefix(fs.readFileSync(wasmPath).toString());
