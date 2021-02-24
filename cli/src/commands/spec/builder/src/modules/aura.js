@@ -25,8 +25,7 @@ class Aura {
         validateIsArray(authorities);
 
         if (authorities.length === 0){
-            console.error("Aura: Array of authorities is empty");
-            process.exit(1);
+            throw new Error("Aura: Array of authorities is empty");
         }
 
         let rawAuthorities = [];
@@ -50,8 +49,7 @@ class Aura {
  */
 function validateIsArray (arr) {
     if (!Array.isArray(arr)) {
-        console.error("Aura: Invalid or no authorities array provided");
-        process.exit(1);
+        throw new Error("Aura: Invalid or no authorities array provided");
     }
 }
 

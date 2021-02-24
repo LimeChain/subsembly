@@ -12,7 +12,7 @@ describe('Build spec tests', () => {
     });
 
     it('correctly converts customSpec with all properties', async function() {
-        await Utils.spec('./test/json-files/customSpec.json', './test/actual-raw-files/customSpecRaw.json', './test/wasm-code');
+        await Utils.spec('./test/json-files/customSpec.json', './test/actual-raw-files/customSpecRaw.json', './test/utils/wasm-exmpl');
         
         assert.isTrue(fs.existsSync('./test/actual-raw-files/customSpecRaw.json'), 'file does not exist');
         const actualRaw = require('./actual-raw-files/customSpecRaw.json');
@@ -20,7 +20,7 @@ describe('Build spec tests', () => {
     })
 
     it('correctly converts customSpec without Aura authorities', async function() {
-        await Utils.spec('./test/json-files/customSpec-noAura.json', './test/actual-raw-files/customSpecRaw-noAura.json', './test/wasm-code');
+        await Utils.spec('./test/json-files/customSpec-noAura.json', './test/actual-raw-files/customSpecRaw-noAura.json', './test/utils/wasm-exmpl');
         
         assert.isTrue(fs.existsSync('./test/actual-raw-files/customSpecRaw-noAura.json'), 'file does not exist');
         
@@ -29,7 +29,7 @@ describe('Build spec tests', () => {
     })
 
     it('correctly converts customSpec with system property only', async function() {
-        await Utils.spec('./test/json-files/customSpec-code.json', './test/actual-raw-files/customSpecRaw-code.json', './test/wasm-code');
+        await Utils.spec('./test/json-files/customSpec-code.json', './test/actual-raw-files/customSpecRaw-code.json', './test/utils/wasm-exmpl');
         
         assert.isTrue(fs.existsSync('./test/actual-raw-files/customSpecRaw-code.json'), 'file does not exist');
         
@@ -38,22 +38,22 @@ describe('Build spec tests', () => {
     })
 
     it('should fail to convert customSpec without system property', async function() {
-        const result = Utils.spec('./test/json-files/customSpec-noCode.json', './test/actual-raw-files/customSpecRaw-noCode.json', './test/wasm-code');
+        const result = Utils.spec('./test/json-files/customSpec-noCode.json', './test/actual-raw-files/customSpecRaw-noCode.json', './test/utils/wasm-exmpl');
         await assert.isRejected(result, "Error: Invalid Genesis config provided");
     })
 
     it('should fail if there is no genesis property', async function(){
-        const result = Utils.spec('./test/json-files/customSpec-noGenesis.json', './test/actual-raw-files/customSpecRaw-noGenesis.json', './test/wasm-code');
+        const result = Utils.spec('./test/json-files/customSpec-noGenesis.json', './test/actual-raw-files/customSpecRaw-noGenesis.json', './test/utils/wasm-exmpl');
         await assert.isRejected(result, "Error: Invalid Genesis config provided");
     })
 
     it('should fail if balances property is not given', async function(){
-        const result = Utils.spec('./test/json-files/customSpec-noBalances.json', './test/actual-raw-files/customSpecRaw-noBalances.json', './test/wasm-code');
+        const result = Utils.spec('./test/json-files/customSpec-noBalances.json', './test/actual-raw-files/customSpecRaw-noBalances.json', './test/utils/wasm-exmpl');
         await assert.isRejected(result, "Balances: Invalid or no balances array provided");
     })
 
     it('should fail if there is no runtime property', async function(){
-        const result = Utils.spec('./test/json-files/customSpec-noRuntime.json', './test/actual-raw-files/customSpecRaw-noRuntime.json', './test/wasm-code');
+        const result = Utils.spec('./test/json-files/customSpec-noRuntime.json', './test/actual-raw-files/customSpecRaw-noRuntime.json', './test/utils/wasm-exmpl');
         await assert.isRejected(result, "Error: Invalid Genesis config provided");
     })
 

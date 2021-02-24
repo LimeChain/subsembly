@@ -4,15 +4,15 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const path = require('path');
 const fs = require('fs-extra');
-const Subsembly = require('../subsembly');
+const Subsembly = require('./utils/subsembly');
 
-describe('Subsembly spec command', () => {
+describe.only('Subsembly spec command', () => {
     before(() => {
-        fs.mkdirSync(path.join(__dirname, '../generated'));
-        fs.mkdirSync(path.join(__dirname, '../generated/spec-files'))
+        fs.mkdirSync(path.join(__dirname, './generated'));
+        fs.mkdirSync(path.join(__dirname, './generated/spec-files'))
     })
-    const cwdSpec = path.resolve(__dirname, '../generated/spec-files');
-    const wasmPath = path.resolve(__dirname, './wasm-exmpl');
+    const cwdSpec = path.resolve(__dirname, './generated/spec-files');
+    const wasmPath = path.resolve(__dirname, './utils/wasm-exmpl');
 
     it('Should initialize new default spec', async () => {
         await assert.isFulfilled(Subsembly.run(cwdSpec, 'spec', {}), 'Unexpected error while generating spec!');
@@ -42,6 +42,6 @@ describe('Subsembly spec command', () => {
     })
 
     after(() => {
-        fs.removeSync(path.join(__dirname, '../generated'));
+        fs.removeSync(path.join(__dirname, './generated'));
     })
 })

@@ -13,17 +13,14 @@ class Utils {
      */
     static spec(src, output, wasm) {
         return new Promise(function(resolve, reject) {
-            SpecBuilder.toRaw(src, output, wasm);
-            process.on('exit', (code) => {
-                if(code === 0) {
-                    resolve();
-                }
-                else {
-                    reject();
-                };
-            })
-        }
-        )
+            try {
+                SpecBuilder.toRaw(src, output, wasm);
+                resolve();
+            }
+            catch(error) {
+                reject(error);
+            }
+        })
     }
 
     /**

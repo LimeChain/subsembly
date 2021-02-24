@@ -5,9 +5,9 @@ chai.use(chaiAsPromised);
 const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs-extra');
-const Subsembly = require('../subsembly');
+const Subsembly = require('./utils/subsembly');
 
-const Constants = require('../constants');
+const Constants = require('./utils/constants');
 /**
     Test that cli does not do anything if the folder is not empty
     Test that the cli inits a project in the current directory if to is omitted & verify that ignored folder/files are not there
@@ -15,7 +15,7 @@ const Constants = require('../constants');
  */
 describe('Init command', () => {
     before(() => {
-        fs.mkdirSync(path.join(__dirname, '../generated'));
+        fs.mkdirSync(path.join(__dirname, './generated'));
     })
 
     it('Works for non-existing dir', async () => {
@@ -24,23 +24,23 @@ describe('Init command', () => {
 
     it('Populates the directory', async () => {
         await assert.isFulfilled(Subsembly.run(".", 'init', { to: './test/generated/sub2'}), "Unexpected error initializing");
-        const dirs = fs.readdirSync(path.join(__dirname, '../generated/sub2'));
+        const dirs = fs.readdirSync(path.join(__dirname, './generated/sub2'));
         assert.isAtLeast(dirs.length, 1, 'Directory was not generated');
         assert.include(dirs, 'assembly', "Does not contain assembly files initialized correctly!");
     })
 
     it('Initializes in current dir if to command is ignored', async () => {
         // create a new dir and go there
-        execSync(`cd ${path.join(__dirname, '../generated')} && mkdir sub3 && cd sub3`)
-        await assert.isFulfilled(Subsembly.run(`${path.join(__dirname, '../generated/sub3')}`, 'init', {}), 'Unexpected error in initializing');
-        const dirs = fs.readdirSync(path.join(__dirname, '../generated/sub3'));
+        execSync(`cd ${path.join(__dirname, './generated')} && mkdir sub3 && cd sub3`)
+        await assert.isFulfilled(Subsembly.run(`${path.join(__dirname, './generated/sub3')}`, 'init', {}), 'Unexpected error in initializing');
+        const dirs = fs.readdirSync(path.join(__dirname, './generated/sub3'));
         assert.isNotEmpty(dirs, "Not initialized");
         assert.include(dirs, 'assembly', "Not initialized");
     })
 
     it('Should not include ignored files in the directory', async () => {
         await assert.isFulfilled(Subsembly.run('.', 'init', {to: './test/generated/sub4'}), 'Unexpected error in initializing');
-        const dirs = fs.readdirSync(path.join(__dirname, '../generated/sub1'));
+        const dirs = fs.readdirSync(path.join(__dirname, './generated/sub1'));
         const isMatch = dirs.filter(dir => Constants.INIT_IGNORE.some(rx => rx.test(dir)));
         assert.isEmpty(isMatch, "Some files are not ignored");
     })
@@ -50,6 +50,6 @@ describe('Init command', () => {
     })
 
     after(() => {
-        fs.removeSync(path.join(__dirname, '../generated'));
+        fs.removeSync(path.join(__dirname, './generated'));
     })
 })
