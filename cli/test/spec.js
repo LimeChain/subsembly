@@ -6,10 +6,10 @@ const path = require('path');
 const fs = require('fs-extra');
 const Subsembly = require('./utils/subsembly');
 
-describe.only('Subsembly spec command', () => {
+describe('Subsembly spec command', () => {
     before(() => {
-        fs.mkdirSync(path.join(__dirname, './generated'));
-        fs.mkdirSync(path.join(__dirname, './generated/spec-files'))
+        fs.mkdirsSync(path.join(__dirname, './generated'));
+        fs.mkdirsSync(path.join(__dirname, './generated/spec-files'))
     })
     const cwdSpec = path.resolve(__dirname, './generated/spec-files');
     const wasmPath = path.resolve(__dirname, './utils/wasm-exmpl');

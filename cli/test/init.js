@@ -15,7 +15,7 @@ const Constants = require('./utils/constants');
  */
 describe('Init command', () => {
     before(() => {
-        fs.mkdirSync(path.join(__dirname, './generated'));
+        fs.mkdirsSync(path.join(__dirname, './generated'));
     })
 
     it('Works for non-existing dir', async () => {

@@ -14,7 +14,7 @@ If there is a compilation error it should display it
  */
 describe('Subsembly compile command', () => {
     before(async() => {
-        fs.mkdirSync(path.join(__dirname, './generated'));
+        fs.mkdirsSync(path.join(__dirname, './generated'));
         await Subsembly.run(".", 'init', { to: './test/generated/sub1'})
     })
 

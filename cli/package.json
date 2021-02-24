@@ -31,7 +31,7 @@
   "homepage": "https://github.com/LimeChain/subsembly#readme",
   "devDependencies": {
     "@types/adm-zip": "^0.4.33",
-    "@types/fs-extra": "^9.0.6",
+    "@types/fs-extra": "^9.0.7",
     "@types/node": "^14.14.22",
     "@types/yargs": "^15.0.12",
     "mocha": "^8.3.0",

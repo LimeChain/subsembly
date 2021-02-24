@@ -34,7 +34,7 @@ class Utils {
                     resolve(fs.removeSync(rawFilesPath));
                 }
                 else {
-                    resolve(fs.mkdirSync(rawFilesPath));
+                    resolve(fs.mkdirsSync(rawFilesPath));
                 }
             }
             catch(error) {
