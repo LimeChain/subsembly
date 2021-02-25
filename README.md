@@ -87,7 +87,7 @@ Initializes new Subsemly project to the specified path. Path to the new Subsembl
 #   --to - initialization directory for the new Subsembly project
 
 # With specified path
-subsembly init --to={path}
+subsembly init --to=./new-sub
 
 # Without specified path (initializes into the current directory)
 subsembly init
@@ -115,7 +115,7 @@ A command used for generating chain specification files and converting them into
 # Generating new chain spec file
 subsembly spec
 
-# or
+# or (it is recommended to put all your spec files inside spec-files/ folder in root directory)
 subsembly spec --to=./new-sub
 
 # Converting chain spec file to raw
