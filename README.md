@@ -30,14 +30,13 @@ subsembly
     │
     └───runtime    <--- Runtime API entries && defined types
     |
-    └───frame      <--- Contains Executive and System modules used for orchestrating 
-    
-    cli/           <--- Contains source code of the Subsembly CLI       
-    
+    └───frame      <--- Contains Executive and System modules used for orchestrating       
     runtime/
     │
     └───pallets    <--- Subsembly pallets include in Runtime
-
+    
+    cli/           <--- Contains source code of the Subsembly CLI 
+    
     spec-files/    <--- Raw chain-spec files
 ```
 
@@ -55,16 +54,6 @@ To install `subsembly`, run:
 
 Requirements:
 - Node >= 14.0.0
-
-### Tests
-
-To run tests for the cli:
-
-- `yarn install && cd cli` - Install dependencies and go to cli directory
-
-- `npm install && npm run build && npm link` - Install dependencies, run the cli and link it globally
-
-- `npm run test` - perform tests
 
 ### Commands
 
@@ -128,6 +117,15 @@ subsembly spec --src=./spec-files/chain-spec
 subsembly spec --src=./spec-files/chain-spec --raw=./
 ```
 
+### Subsembly CLI Tests
+
+To run tests for the cli:
+
+- `yarn install && cd cli` - Install dependencies and go to cli directory
+
+- `npm install && npm run build && npm link` - Install dependencies, run the cli and link it globally
+
+- `npm run test` - perform tests
 
 ## Developing Subsembly Runtimes
 
