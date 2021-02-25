@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/limechain/subsembly#readme",
   "dependencies": {
-    "@assemblyscript/loader": "^0.17.1",
     "as-bignum": "^0.2.6",
     "as-scale-codec": "^0.2.2",
     "subsembly-core": "^1.0.6"
