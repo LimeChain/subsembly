@@ -34,7 +34,7 @@ Initializes new Subsemly project to the specified path. Path to the new Subsembl
 
 ```
 # subsembly init [to]
-    --to - initialization directory for the new Subsembly project
+#   --to - initialization directory for the new Subsembly project
 
 # With specified path
 subsembly init --to={path}
