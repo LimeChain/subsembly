@@ -21,7 +21,7 @@ subsembly -h
 ```
 
 ### `subsembly compile`
-Compiles current Subsembly project. Specifically, it installs dependencies, generates `metadata` and `dispatcher` files and compiles the Subsembly runtime into hex encoded wasm binary file.
+Compiles current Subsembly project. Specifically, installs dependencies, generates `metadata` and `dispatcher` files and compiles the Subsembly runtime into hex encoded wasm binary file.
 
 ```
 # creates new compiled wasm of the runtime in /build directory
@@ -35,6 +35,7 @@ Initializes new Subsemly project to the specified path. Path to the new Subsembl
 ```
 # subsembly init [to]
     --to - initialization directory for the new Subsembly project
+
 # With specified path
 subsembly init --to={path}
 
@@ -52,10 +53,10 @@ A command used for generating chain specification files and converting them into
 #   --src - chain specification file that has to be converted to raw (required for converting to raw)
 #   --raw - raw chain specification file (defaults to the {src}/raw-chain-spec.json)
 #   --wasm - hex encoded wasm binary of the runtime (defaults to build/subsembly-wasm)
-*/
 
 # Generating new chain spec file
 subsembly spec
+
 # or
 subsembly spec --to=./new-sub
 
