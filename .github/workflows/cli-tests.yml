@@ -11,5 +11,5 @@ jobs:
       with:
         node-version: 14.x
     - run: npm install -g yarn && yarn install
-    - run: cd cli && npm install && npm run build
+    - run: cd cli && npm install && npm run build && sudo npm link
     - run: cd cli && npm run test

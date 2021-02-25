@@ -45,7 +45,7 @@ export class BuildSpec {
             );
         }
         catch(error) {
-            console.error('Unexpected error while executing the command ' + error.message);
+            console.error('Error: ' + error.message);
             process.exit(1);
         }
     }

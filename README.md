@@ -5,6 +5,7 @@
 <div align="center">
   
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Smoke Tests](https://github.com/LimeChain/subsembly/workflows/Smoke%20Tests/badge.svg)
+![Subsembly CLI Tests](https://github.com/LimeChain/subsembly/workflows/Subsembly%20CLI%20tests/badge.svg)
 
 </div>
 
@@ -29,7 +30,11 @@ subsembly
     │
     └───runtime    <--- Runtime API entries && defined types
     |
-    └───frame      <--- Contains Executive and System modules used for orchestrating Runtime
+    └───frame      <--- Contains Executive and System modules used for orchestrating 
+    
+    cli/           <--- Contains source code of the Subsembly CLI       
+    
+    runtime/
     │
     └───pallets    <--- Subsembly pallets include in Runtime
 
@@ -37,6 +42,92 @@ subsembly
 ```
 
 Main types and API entries are defined in `runtime` folder. `runtime.ts` file in `runtime` folder defines types and constants for the frame modules and pallets.
+
+## Subsembly CLI
+
+`subsembly` is a cli tool that is used to ease the devopment of Subsembly runtimes.
+
+### Installation
+
+To install `subsembly`, run:
+
+`npm install -g subsembly`
+
+Requirements:
+- Node >= 14.0.0
+
+### Tests
+
+To run tests for the cli:
+
+- `yarn install && cd cli` - Install dependencies and go to cli directory
+
+- `npm install && npm run build && npm link` - Install dependencies, run the cli and link it globally
+
+- `npm run test` - perform tests
+
+### Commands
+
+#### `subsembly`
+
+```
+# Default command, displays help window
+subsembly 
+
+# Help command (alternatively, --help)
+subsembly -h
+
+```
+#### `subsembly init`  
+  
+Initializes new Subsemly project to the specified path. Path to the new Subsembly project should be an empty or non-existing directory.
+
+```
+# subsembly init [to]
+#   --to - initialization directory for the new Subsembly project
+
+# With specified path
+subsembly init --to={path}
+
+# Without specified path (initializes into the current directory)
+subsembly init
+```
+
+#### `subsembly compile`
+Compiles current Subsembly project. More specifically it installs the dependencies and generates the required files for the Runtime to support the `metadata` interface used by PolkadotJS. Lastly, it compiles the Subsembly Runtime into the hex encoded wasm binary file (WASM blob)
+
+```
+# creates new compiled wasm of the runtime in /build directory
+subsembly compile
+```
+
+#### `subsembly spec`
+
+A command used for generating chain specification files and converting them into raw.
+
+```
+# subsembly spec [to] [src] [raw] [wasm]
+#   --to - path to the new chain specification file
+#   --src - chain specification file that has to be converted to raw (required for converting to raw)
+#   --raw - raw chain specification file (defaults to the {src}/raw-chain-spec.json)
+#   --wasm - hex encoded wasm binary of the runtime (defaults to build/subsembly-wasm)
+
+# Generating new chain spec file
+subsembly spec
+
+# or
+subsembly spec --to=./new-sub
+
+# Converting chain spec file to raw
+subsembly spec --src=./spec-files/chain-spec --raw=./spec-files/raw-chain-spec --wasm=./build/subsembly-wasm
+
+# or (places new raw spec file in ./spec-files, if wasm exists in /build)
+subsembly spec --src=./spec-files/chain-spec
+
+# or (places new raw spec file in current directory, if wasm exists in /build)
+subsembly spec --src=./spec-files/chain-spec --raw=./
+```
+
 
 ## Developing Subsembly Runtimes
 
