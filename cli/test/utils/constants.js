@@ -4,7 +4,6 @@ class Constants {
         /cli/,
         /insert-aura/,
         /test-node/,
-        /Makefile/,
         /README.md/,
         /images/,
         /build.js/,

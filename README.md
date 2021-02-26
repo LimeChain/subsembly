@@ -37,7 +37,6 @@ subsembly
     
     cli/           <--- Contains source code of the Subsembly CLI 
     
-    spec-files/    <--- Raw chain-spec files
 ```
 
 Main types and API entries are defined in `runtime` folder. `runtime.ts` file in `runtime` folder defines types and constants for the frame modules and pallets.
@@ -238,12 +237,17 @@ each one of them having `1 000 000` units.
 1. `yarn install`
 2. `yarn run build`
 
-The above command generates `wasm-code` file in the root folder. You need to copy the content of the file and paste it as the value of the `0x3a636f6465` property in the `customSpecRaw.json` file.
+Follow instructions above to create raw chain specification for your runtime. For example,
+
+1. subsembly spec --to=./chain-spec.json
+2. subsembly spec --src=./chain-spec.json
+
+This will create a raw chain specification file in the current directory.
 
 In order to run `Substrate` node with generated runtime, use Docker image of node `as-substrate`, which is a pre-built substrate template node running Aura consensus.
 
 1. `docker pull limechain/as-substrate:stable`
-2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(pwd)/spec-files/customSpecRaw.json":/customSpecRaw.json -d limechain/as-substrate`
+2. `docker run -p 9933:9933 -p 9944:9944 -p 30333:30333 -v "$(pwd)/raw-chain-spec.json":/customSpecRaw.json -d limechain/as-substrate`
 
 In order for you to start block production, you will have to instert your Aura keys as described above.
 
