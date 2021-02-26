@@ -1,3 +1,6 @@
+/**
+ * @description Utility functions
+ */
 export namespace Utils {
     /**
      * @description Hex encode raw bytes

@@ -127,15 +127,18 @@ function _extractNode(obj) {
 
 function _extractMapTags(jsDoc) {
     const tags = [];
-    jsDoc.forEach(doc => doc.tags?.forEach(tag => {
-        if(tag?.tagName?.escapedText.includes("storage_map")){
-            tags.push({
-                name: tag?.tagName?.escapedText,
-                type: tag.comment
-            });
+    jsDoc.forEach(doc => {
+        if(doc.tags) {
+            doc.tags.forEach(tag => {
+                if(tag && tag.tagName && tag.tagName.escapedText && tag.tagName.escapedText.includes("storage_map")) {
+                    tags.push({
+                        name: tag.tagName.escapedText,
+                        type: tag.comment
+                    });
+                }
+            })
         }
-    }
-    ));
+    });
     return tags;
 }
 
@@ -150,7 +153,7 @@ function _extractStorageType(type, jsDoc){
         return {
             Map: {
                 hasher: "Twox128",
-                key: tags[0]?.type,
+                key: tags[0].type || "",
                 value: extractedType,
                 linked: false
             }
@@ -218,7 +221,11 @@ function _extractComments(jsDoc){
             ""
         ];
     }
-    jsDoc.forEach(doc => doc.tags?.forEach(tag => tag.comment ? documentation.push(tag.comment): null));
+    jsDoc.forEach(doc => {
+        if(doc.tags) {
+            doc.tags.forEach(tag => tag.comment ? documentation.push(tag.comment): null);
+        }
+    })
     return documentation;
 }
 

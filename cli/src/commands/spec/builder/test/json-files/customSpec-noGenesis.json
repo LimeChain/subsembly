@@ -1,0 +1,10 @@
+{
+    "name": "Local Testnet",
+    "id": "local_testnet",
+    "chainType": "Local",
+    "bootNodes": [],
+    "telemetryEndpoints": null,
+    "protocolId": null,
+    "properties": null,
+    "consensusEngine": null
+}

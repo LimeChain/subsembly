@@ -8,3 +8,4 @@ metadata.json
 metadata.ts
 dispatcher.ts
 dist
+cli/test/generated

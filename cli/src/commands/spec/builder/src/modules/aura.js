@@ -25,7 +25,7 @@ class Aura {
         validateIsArray(authorities);
 
         if (authorities.length === 0){
-            throw new Error("Aura: Array of authorities is empty")
+            throw new Error("Aura: Array of authorities is empty");
         }
 
         let rawAuthorities = [];
