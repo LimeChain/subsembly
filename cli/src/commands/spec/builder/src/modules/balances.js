@@ -29,7 +29,7 @@ class Balances {
             
             const keyringInstance = keyring.addFromAddress(balanceArray[0]);
             const key = Utils.getHashKey(this.MODULE_PREFIX, this.MODULE_KEY, keyringInstance.publicKey);
-            const value = accDataToHex(typeReg.createType("U64", balanceArray[1].toString()).toArray('le'));
+            const value = accDataToHex(typeReg.createType("U128", balanceArray[1].toString()).toU8a());
             rawBalances[key] = value;
         });
         return rawBalances;

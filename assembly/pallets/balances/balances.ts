@@ -1,5 +1,6 @@
 import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
+    AccountData,
     ExistenceRequirement,
     ResponseCodes,
     Storage, Utils, WithdrawReasons
@@ -17,8 +18,8 @@ export namespace BalancesStorageEntries{
      * @description Stores information about accountId
      * @storage_map AccountId
      */
-    export function Account(): StorageEntry<Balance>{
-        return new StorageEntry<Balance>("Balances", "Account");
+    export function Account(): StorageEntry<AccountData<Balance>>{
+        return new StorageEntry<AccountData<Balance>>("Balances", "Account");
     }
 }
 /**
@@ -38,7 +39,10 @@ export class Balances {
         if(BalancesConfig.existentialDeposit().unwrap() > freeBalance.unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
         }
-        BalancesStorageEntries.Account().set(freeBalance, accountId);
+        const accData = BalancesStorageEntries.Account().get(accountId);
+        accData.setFree(freeBalance);
+        accData.setReserved(reservedBalance);
+        BalancesStorageEntries.Account().set(accData, accountId);
         Balances._depositEvent(EventTypes.BalanceSet, accountId.toU8a().concat(freeBalance.toU8a()));
         return ResponseCodes.SUCCESS;
     }
@@ -53,20 +57,23 @@ export class Balances {
         const senderBalance = BalancesStorageEntries.Account().get(source);
         const receiverBalance = BalancesStorageEntries.Account().get(dest);
 
-        if(senderBalance.unwrap() < value.unwrap()) {
+        if(senderBalance.getFree().unwrap() < value.unwrap()) {
             return ResponseCodes.INSUFFICIENT_BALANCE;
         }
 
-        const senderNewBalance = senderBalance.unwrap() - value.unwrap();
-        const receiverNewBalance = receiverBalance.unwrap() + value.unwrap();
-
         // Make sure new balances is higher than ExistentialDeposit
-        if(senderNewBalance < BalancesConfig.existentialDeposit().unwrap()) {
+        //@ts-ignore
+        if(senderBalance.getFree().unwrap() - value.unwrap() < BalancesConfig.existentialDeposit().unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
         }
+
+        //@ts-ignore
+        senderBalance.setFree(instantiate<Balance>(senderBalance.getFree().unwrap() - value.unwrap()));
+        //@ts-ignore
+        receiverBalance.setFree(instantiate<Balance>(receiverBalance.getFree().unwrap() + value.unwrap()));
         
-        this._setBalance(source, instantiate<Balance>(senderNewBalance), instantiate<Balance>(0));
-        this._setBalance(dest, instantiate<Balance>(receiverNewBalance), instantiate<Balance>(0));
+        BalancesStorageEntries.Account().set(senderBalance, source);
+        BalancesStorageEntries.Account().set(receiverBalance, dest);
 
         // Increment nonce
         const info = SystemStorageEntries.Account().get(source);
@@ -102,10 +109,11 @@ export class Balances {
      */
     static _validateTransaction(who: AccountIdType, amount: Balance): u8[] {
         const currentBalance = BalancesStorageEntries.Account().get(who);
-        if(BalancesConfig.existentialDeposit().unwrap() > currentBalance.unwrap()) {
+        if(BalancesConfig.existentialDeposit().unwrap() > currentBalance.getFree().unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
         }
-        const newBalance = currentBalance.unwrap() - amount.unwrap();
+        //@ts-ignore
+        const newBalance = currentBalance.getFree().unwrap() - amount.unwrap();
         if(newBalance < amount.unwrap()) {
             return ResponseCodes.INSUFFICIENT_BALANCE;
         }
@@ -122,7 +130,7 @@ export class Balances {
      */
     static _withdraw(who: AccountIdType, fee: Balance, reason: WithdrawReasons, existenceRequirement: ExistenceRequirement): void {
         if(reason == WithdrawReasons.TRANSACTION_PAYMENT) {
-            const balance = BalancesStorageEntries.Account().get(who);
+            const balance = BalancesStorageEntries.Account().get(who).getFree();
             if(Utils.areArraysEqual(ResponseCodes.SUCCESS, this._validateTransaction(who, fee))) {
                 BalancesStorageEntries.Account().set(instantiate<Balance>(balance.unwrap() - fee.unwrap()), who);
                 return ;
