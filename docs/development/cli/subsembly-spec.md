@@ -6,7 +6,7 @@ description: Spec files
 
 ### Overview
 
-A command used for generating chain specification files and converting them into raw. A chain specification file is used define network communications, consensus-related information and initial account balances that Substrate node must have at genesis.
+A command used for generating chain specification files and converting them into raw.
 
 ### Syntax
 
