@@ -6,7 +6,7 @@ description: cli overview and usage
 
 ## Overview
 
-**`subsembly`** is a cli tool that is used to ease the development of Subsembly runtimes. CLI tool contains following commands that help developers to easily compile and run their Subsembly runtimes.
+**`subsembly`** is a cli tool that is used to ease the development of **`Subsembly`** runtimes. CLI tool contains following commands that help developers to easily compile and run **`Subsembly`** runtimes.
 
 ## Installation
 
