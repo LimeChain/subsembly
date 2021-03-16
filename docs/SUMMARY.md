@@ -35,5 +35,6 @@
 
 * [as-scale-codec](advanced/as-scale-codec.md)
 * [subsembly-core](advanced/subsembly-core.md)
-* [Untitled](advanced/untitled.md)
+* [Metadata](advanced/untitled/README.md)
+  * [Dispatcher](advanced/untitled/dispatcher.md)
 

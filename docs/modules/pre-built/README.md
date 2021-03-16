@@ -6,7 +6,7 @@ description: Modules ready for use
 
 ### Overview
 
-Modules are represented as a AS class and are used to compose runtimes. Each module has its own logic and can modify the functionality of the state transition function of the blockchain.
+Modules are represented as an AS class and are used to compose runtimes. Each module has its own logic and can modify the functionality of the state transition function of the blockchain.
 
 It is possible to write your own custom module, provided that you implement all the necessary API entries. 
 
