@@ -6,7 +6,7 @@ description: Developing runtime
 
 ### Getting Started
 
-First, make sure you have the CLI tool installed [globally](cli/). To start the runtime development, first initialise a new **`Subsembly`** project:
+First, make sure you have the CLI tool installed [globally](../getting-started/cli/). To start the runtime development, first initialise a new **`Subsembly`** project:
 
 ```text
 subsembly init --to={projectPath} 
