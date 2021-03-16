@@ -31,3 +31,9 @@
   * [Timestamp](modules/pre-built/timestamp.md)
   * [TransactionPayment](modules/pre-built/transactionpayment.md)
 
+## Advanced
+
+* [as-scale-codec](advanced/as-scale-codec.md)
+* [subsembly-core](advanced/subsembly-core.md)
+* [Untitled](advanced/untitled.md)
+
