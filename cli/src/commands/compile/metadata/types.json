@@ -29,7 +29,6 @@
     "AccountInfo": "AccountInfo",
     "Signature": "Hash512",
     "Hash": "Hash",
-    "Amount": "Balance",
     "Phase": "Phase",
     "Moment": "Moment",
     "ByteArray": "Bytes",
@@ -40,6 +39,5 @@
     "PostDispatchInfo": "DispatchInfo",
     "WithdrawReasons": "WithdrawReasons",
     "ExistenceRequirement": "bool",
-    "VecEvent": "Vec<EventRecord>",
-    "ByteFee": "Balance"
+    "VecEvent": "Vec<EventRecord>"
 }

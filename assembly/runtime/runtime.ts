@@ -20,7 +20,6 @@ export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type Inherent = UncheckedExtrinsic;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 export type Multiplier = UInt64;
-export type ByteFee = Balance;
 export type Weight = UInt64;
 export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceType, SignatureType>;
 export type AccountDataType = AccountData<Balance>;

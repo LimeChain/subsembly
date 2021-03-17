@@ -15,7 +15,6 @@ function _getFallback(type){
         case polkadotTypes.AccountId:
             return "0x".concat("00".repeat(32));
         case polkadotTypes.BlockNumber:
-        case polkadotTypes.Amount:
         case polkadotTypes.Int64:
         case polkadotTypes.Moment:
         case polkadotTypes.Nonce:

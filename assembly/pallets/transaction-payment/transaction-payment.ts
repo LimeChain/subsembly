@@ -2,7 +2,7 @@ import { u128 } from 'as-bignum';
 import { UInt128, UInt32 } from 'as-scale-codec';
 import { DispatchClass, DispatchInfo, Pays, PostDispatchInfo, RuntimeDispatchInfo, WeightToFeeCoefficient, WeightToFeePolynomial } from 'subsembly-core';
 import { StorageEntry } from '../../frame';
-import { AccountIdType, Balance, ByteFee, Multiplier, SystemConfig, UncheckedExtrinsic, Weight } from '../../runtime/runtime';
+import { AccountIdType, Balance, Multiplier, SystemConfig, UncheckedExtrinsic, Weight } from '../../runtime/runtime';
 import { Payment } from './payment';
 
 /**
@@ -19,8 +19,8 @@ export namespace TransactionPaymentStorageEntries {
     /**
      * @description Fee for each byte
      */
-    export function TransactionByteFee(): StorageEntry<ByteFee> {
-        return new StorageEntry<ByteFee>("TransactionPayment", "ByteFee");
+    export function TransactionByteFee(): StorageEntry<Balance> {
+        return new StorageEntry<Balance>("TransactionPayment", "ByteFee");
     }
 }
 
@@ -77,10 +77,10 @@ export class TransactionPayment {
     static _computeFeeRaw(len: UInt32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
         if (paysFee == Pays.Yes) {
             let length: Balance = instantiate<Balance>(u128.fromU32(len.unwrap()));
-            let perByte: ByteFee = TransactionPaymentStorageEntries.TransactionByteFee().get();
+            let perByte: Balance = TransactionPaymentStorageEntries.TransactionByteFee().get();
             
             if (perByte.unwrap() == u128.Zero) {
-                perByte = instantiate<ByteFee>(u128.One);
+                perByte = instantiate<Balance>(u128.One);
             }
 
             // length fee. not adjusted

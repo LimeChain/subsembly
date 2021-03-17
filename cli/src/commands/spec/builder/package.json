@@ -12,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@assemblyscript/loader": "^0.17.9",
-    "as-scale-codec": "^0.2.2",
-    "subsembly-core": "^1.0.6"
+    "as-scale-codec": "0.2.3",
+    "subsembly-core": "1.0.7"
   },
   "devDependencies": {
     "assemblyscript": "^0.17.9",
