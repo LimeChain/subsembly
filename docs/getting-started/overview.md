@@ -6,7 +6,7 @@ description: Substrate + AssemblyScript = Subsembly
 
 **`Subsembly`** framework used for developing [**`Substrate`**](substrate-essentials.md) runtimes in **`AssemblyScript`**. The project is work in progress.
 
-This is the high-level overview of **`Subsembly`**.
+The following diagram shows the high-level components Architecture of **`Subsembly:`**
 
 ![High-level overview](../.gitbook/assets/components_diagram.png)
 

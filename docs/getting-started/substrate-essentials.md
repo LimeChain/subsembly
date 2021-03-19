@@ -8,7 +8,7 @@ description: Substrate knowledge base
 
 [**`Substrate`**](https://substrate.dev/docs/en/) takes a modular approach to blockchain development and defines a rich set of primitives that allows developers to make use of powerful, familiar programming idioms.
 
-For more information about Substrate, please refer to their in-depth documentation.
+For more information about Substrate, please refer to their in-depth [documentation](https://substrate.dev/).
 
 ### Runtime
 
@@ -18,9 +18,9 @@ For more information about Substrate, please refer to their in-depth documentati
 
 Substrate can be used in three ways:
 
-* **With the Substrate Node -** run node just by providing chain specification file to node
+* **With the Substrate Node -** run node with runtime just by providing chain specification file to node
 * **With Substrate FRAME -** run node with your custom runtime
-* **With Substrate Core -** design and implement runtime from scratch and compile targeting **`WebAssembly`**. This is how **`Subsembly`** works.
+* **With Substrate Core -** design and implement runtime from scratch and compile targeting **`WebAssembly`**. This is what **`Subsembly`** utilises.
 
-By using **`AssemblyScript`** that targets **`WebAssembly`**, we can build our custom runtimes from scratch and run it on **`Substrate`** nodes.
+Since **`Substrate`** supports **`WebAssembly`** runtimes, anything that compiles down to that is theoretically able to serve as a Substrate runtime. AssemblyScript is a language very similar to TypeScript that compiles down to WebAssembly and **`Subsembly`** is an AssemblyScript framework.
 

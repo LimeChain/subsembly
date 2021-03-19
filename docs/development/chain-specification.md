@@ -10,7 +10,7 @@ A chain specification file is used define network communications, consensus-rela
 
 ### The Genesis State
 
-Chain spec provides initial state of the runtime to the node. Some modules require specific storage keys to be populated before running. For instance, chain spec contains accounts with initial token balances for the **`Balances`** module, initial list of authorities for **`Aura`** module, etc.
+Chain spec provides initial state of the runtime to the node. Some modules require specific storage keys to be populated before running. For instance, chain spec contains accounts with initial account balances for the **`Balances`** module, initial list of authorities for **`Aura`** module, etc.
 
 ### **`:code`**
 

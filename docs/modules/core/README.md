@@ -6,7 +6,7 @@ description: Core modules
 
 ### Introduction
 
-There are some core modules that are critical and necessary for every **`Subsembly`** runtime. Each modules has its specific purpose that are essential for the functioning of runtime. These modules are:
+There are some core modules that are critical and necessary for every **`Subsembly`** runtime. Each module has its specific purpose that is essential for the functioning of runtime. These modules are:
 
 * **`System`**
 * **`Executive`**

@@ -10,7 +10,7 @@ The Balances module provides functionality for manipulating accounts and balance
 
 * Get and set account balances
 * Retrieving free and reserved balances
-* Validating transactions
+* Validating Balance transfers
 * Creating accounts
 * Transferring an amount between accounts \(only free balance\)
 

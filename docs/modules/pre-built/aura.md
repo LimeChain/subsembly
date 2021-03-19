@@ -18,7 +18,7 @@ Blocks from future steps will be either deferred or rejected depending on how fa
 
 NOTE: Aura itself is designed to be generic over the crypto used.
 
-For more, visit Aura [docs](https://substrate.dev/rustdocs/v3.0.0/sc_consensus_aura/index.html).
+For more, visit Aura [docs](https://substrate.dev/docs/en/knowledgebase/runtime/frame).
 
 ### Functions
 

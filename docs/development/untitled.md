@@ -30,18 +30,14 @@ yarn.lock
 package.json       <--- Subsembly dependencies       
 ```
 
-Main types and API entries are defined in runtime folder. **`runtime.ts`** file in runtime folder defines types and constants for the frame modules and pallets. 
+**Runtime configuration**
 
-### Runtime API 
+Top-level runtime folder consists of Runtime API entries that are exposed to the Host. Some functions of API are general to the block chain, such as block production, execution, extrinsic submission and some others are specific to the module, such as **`Aura`** authorities. There is also, `runtime.ts` file, where types and constants for the frame modules and pallets are defined. We define general types that are used across the runtime and also pallet specific constants and types.
 
-Our runtime exposes several functions that define the business logic of the runtime. Some functions are general to the block chain, such as block production, execution, extrinsic submission and some others are specific to the module, such as **`Aura`** authorities. 
+Some requirements for Runtime types, such as:
 
-For example:
+* Type should implement `Codec` interface from `as-scale-codec`. It makes sure that every type in the Runtime can be SCALE encoded and decoded.
+* Make sure to avoid possible `IntegerOverflow` exceptions. For example, it does not make sense to use 8-bit unsigned integer as `Timestamp` `Moment` type, since the value of timestamp is way out of range of what 8-bit unsigned integer can hold.
 
-```text
-# Block initialization
-export function Core_initialize_block
-# Block execution
-export funtion BlockBuilder_execute_block
-```
+
 
