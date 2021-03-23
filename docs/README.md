@@ -16,7 +16,7 @@ description: Substrate runtimes in AssemblyScript
 
 ### Funding and Support
 
-**`Subsembly`** is funded by **Web3 Foundation Grants** and developed, maintained by **LimeChain**.
+**`Subsembly`** is funded by [**Web3 Foundation**](https://web3.foundation) **Grants** and developed, maintained by [**LimeChain**](https://limechain.tech).
 
 
 

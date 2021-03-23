@@ -23,19 +23,23 @@ subsembly spec [to] [src] [raw] [wasm]
 
 ### Examples
 
+Generating new spec file:
+
+{% hint style="info" %}
+It is recommended to put all your spec files inside spec-files/ folder in root directory
+{% endhint %}
+
 {% tabs %}
-{% tab title="1st" %}
+{% tab title="Option 1" %}
 ```bash
-# Generating new chain spec file
-subsembly-user new-sub % subsembly spec
+$ subsembly spec
 Successfully generated new custom spec file!
 ```
 {% endtab %}
 
-{% tab title="2nd" %}
+{% tab title="Option 2" %}
 ```bash
-# or (it is recommended to put all your spec files inside spec-files/ folder in root directory)
-subsembly-user new-sub % subsembly spec --to=./chain-spec.json
+$ subsembly spec --to=./chain-spec.json
 Successfully generated new custom spec file!
 ```
 {% endtab %}
@@ -44,8 +48,7 @@ Successfully generated new custom spec file!
 Both commands will produce the same output:
 
 ```bash
-# Contents of the chain-spec.json
-subsembly-user new-sub % cat chain-spec.json
+$ cat chain-spec.json
 {
   "name": "Local Testnet",
   "id": "local_testnet",
@@ -97,24 +100,21 @@ subsembly-user new-sub % cat chain-spec.json
 Converting spec file to raw:
 
 {% tabs %}
-{% tab title="1st" %}
+{% tab title="Option 1" %}
 ```bash
-# Converting chain spec file to raw
-subsembly-user new-sub % subsembly spec --src=./spec-files/chain-spec.json --raw=./spec-files/raw-chain-spec.json --wasm=./build/subsembly-wasm
+$ subsembly spec --src=./spec-files/chain-spec.json --raw=./spec-files/raw-chain-spec.json --wasm=./build/subsembly-wasm
 ```
 {% endtab %}
 
-{% tab title="2nd" %}
+{% tab title="Option 2" %}
 ```bash
-# or (places new raw spec file in ./spec-files, if wasm exists in /build)
-subsembly-user new-sub % subsembly spec --src=./spec-files/chain-spec.json
+$ subsembly spec --src=./spec-files/chain-spec.json
 ```
 {% endtab %}
 
-{% tab title="3rd" %}
+{% tab title="Option 3" %}
 ```bash
-# or (places new raw spec file in current directory, if wasm exists in /build)
-subsembly-user new-sub % subsembly spec --src=./spec-files/chain-spec.json --raw=./
+$ subsembly spec --src=./spec-files/chain-spec.json --raw=./
 ```
 {% endtab %}
 {% endtabs %}
@@ -126,7 +126,7 @@ This raw spec file is strictly for demonstration purposes.
 {% endhint %}
 
 ```bash
-subsembly-user new-sub % cat raw-chain-spec.json
+$ cat raw-chain-spec.json
 {
     "name": "Local Testnet",
     "id": "local_testnet",

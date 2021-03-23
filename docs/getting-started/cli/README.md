@@ -6,7 +6,7 @@ description: Install and run Subsembly
 
 ## Overview
 
-**`Subsembly`** comes with a CLI tool that helps to ease the development of **`Subsembly`** runtimes. CLI tool contains following commands that simplify compiling and running **`Subsembly`** runtimes.
+**Subsembly** comes with a CLI tool that helps to ease the development of **`Subsembly`** runtimes. CLI tool contains following commands that simplify compiling and running **Subsembly** runtimes.
 
 ## Installation
 

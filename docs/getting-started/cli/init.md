@@ -6,7 +6,9 @@ description: Initialising new Subsembly project
 
 ### Overview
 
-Initialises new **`Subsemly`** project to the specified path. Path to the new **`Subsembly`** project should be an empty or non-existing directory.
+In order for you to start working on a **`Subsembly`** based Runtime, you need to initialise new project that will provide all of the necessary boilerplate code with high-level abstractions so that you can focus on the business requirements of your Runtime.
+
+This command initialises new **`Subsemly`** project to the specified path.
 
 ### Syntax
 
@@ -26,13 +28,17 @@ Initialisation directory should be empty.
 
 ```text
 # With specified path
-subsembly init --to=./new-sub
+$ subsembly init --to=./new-sub
 
 # Without specified path (initializes into the current directory)
-subsembly init
+$ subsembly init
 ```
 
 The result of the above command:
 
-![Picture 1. Subsembly project files](../../.gitbook/assets/image%20%284%29.png)
+```text
+$ ls
+LICENSE     assembly     package.json
+Makefile    yarn.lock
+```
 

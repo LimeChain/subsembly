@@ -11,4 +11,5 @@ There are some core modules that are critical and necessary for every **`Subsemb
 * **`System`**
 * **`Executive`**
 * **`Log`**
+* **`Crypto`**
 

@@ -6,7 +6,7 @@ description: Substrate knowledge base
 
 ### Substrate
 
-[**`Substrate`**](https://substrate.dev/docs/en/) takes a modular approach to blockchain development and defines a rich set of primitives that allows developers to make use of powerful, familiar programming idioms.
+**Substrate** takes a modular approach to blockchain development and defines a rich set of primitives that allows developers to make use of powerful, familiar programming idioms.
 
 For more information about Substrate, please refer to their in-depth [documentation](https://substrate.dev/).
 

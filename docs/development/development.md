@@ -39,5 +39,15 @@ Some requirements for Runtime types, such as:
 * Type should implement `Codec` interface from `as-scale-codec`. It makes sure that every type in the Runtime can be SCALE encoded and decoded.
 * Make sure to avoid possible `IntegerOverflow` exceptions. For example, it does not make sense to use 8-bit unsigned integer as `Timestamp` `Moment` type, since the value of timestamp is way out of range of what 8-bit unsigned integer can hold.
 
+### Compiling
+
+To compile the runtime:
+
+```text
+subsembly compile
+```
+
+This should compile your runtime and place hex-encoded **`wasm`** binary to the **`build`** folder.
+
 
 
