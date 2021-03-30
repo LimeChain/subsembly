@@ -43,5 +43,6 @@
   * [Set Up](guides/create-your-first-subsembly-runtime/set-up.md)
   * [Start the Node](guides/create-your-first-subsembly-runtime/start-the-node.md)
   * [PolkadotJS](guides/create-your-first-subsembly-runtime/polkadotjs.md)
-* [Start Your Network](guides/start-your-network.md)
+* [Start Your Network](guides/start-your-network/README.md)
+  * [Launch a Network](guides/start-your-network/launch-a-network.md)
 
