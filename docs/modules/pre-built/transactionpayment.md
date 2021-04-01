@@ -10,7 +10,7 @@ The Transaction Payment pallet provides the basic logic to compute pre-dispatch 
 
 ### Configuration
 
-This module requires following constants to be set during runtime initialisation:
+This module requires the following constants to be set during runtime initialisation:
 
 * **`ExtrinsicBaseWeight`** - the base weight of an Extrinsic in the block, independent of the of extrinsic being executed.
 * **`NextFeeMultiplier`** - multiplier value for the next fee
