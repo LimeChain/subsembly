@@ -22,7 +22,6 @@ In the accounts tab, you can explore list of accounts in the storage:
 
 ![Picture 2. Accounts tab](../../.gitbook/assets/screenshot-2021-03-23-at-17.40.28.png)
 
-### Transfer
+### Others
 
-//TO-DO
-
+You can see the block issuance and the details of the produced blocks. Querying the state of the chain can be done in the `Developer` -> `Chain state`
