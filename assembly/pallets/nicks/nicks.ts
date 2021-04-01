@@ -38,11 +38,11 @@ export class Nicks {
     static set_name(origin: AccountIdType, name: ScaleString): u8[] {
         if (name.unwrap().length <= NicksConfig.minLength().unwrap()) {
             Log.error("Nicks: Name too short!");
-            return ResponseCodes.dispatchError(Pallets.Nicks, Nicks.TOO_SHORT_ERROR);
+            return ResponseCodes.dispatchError(<u8>Pallets.Nicks, Nicks.TOO_SHORT_ERROR);
         }
         else if(name.unwrap().length >= NicksConfig.maxLength().unwrap()) {
             Log.error("Nicks: Name too long!");
-            return ResponseCodes.dispatchError(Pallets.Nicks, Nicks.TOO_LONG_ERROR);
+            return ResponseCodes.dispatchError(<u8>Pallets.Nicks, Nicks.TOO_LONG_ERROR);
         }
         NicksStorageEntries.NameOf().set(name, origin);
         return ResponseCodes.SUCCESS;

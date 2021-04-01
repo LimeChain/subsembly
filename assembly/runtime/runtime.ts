@@ -1,4 +1,5 @@
-import { ByteArray, BytesReader, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import { u128 } from "as-bignum";
+import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
     AccountData, AccountId, AccountInfo, Block, DigestItem, ExtrinsicData,
     GenericExtrinsic, Header, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
@@ -123,7 +124,7 @@ export class BalancesConfig {
      * @description Existential deposit
      */
     static existentialDeposit(): Balance {
-        return BytesReader.decodeInto<Balance>([<u8>0xfd]);
+        return instantiate<Balance>(u128.fromU32(1000));
     }
 }
 

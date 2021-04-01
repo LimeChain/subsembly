@@ -1,5 +1,5 @@
 import { BytesReader, CompactInt, UInt32 } from "as-scale-codec";
-import { Log, Serialiser, Utils } from "subsembly-core";
+import { Serialiser } from "subsembly-core";
 import { Executive, SystemStorageEntries } from "../../frame";
 import { Metadata } from "../../generated/metadata";
 import { TransactionPayment } from "../../pallets";
@@ -31,9 +31,7 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
     let input = Serialiser.deserialiseInput(data, len);
-    Log.info("input: " + input.toString());
     const uxt = BytesReader.decodeInto<UncheckedExtrinsic>(input);
-    Log.info("uxt: " + Utils.toHexString(uxt.toU8a()));
     const result = Executive.validateTransaction(uxt);
     return Serialiser.serialiseResult(result);
 }

@@ -2,7 +2,7 @@ import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
     ExecutionPhase,
     ext_trie_blake2_256_ordered_root_version_1,
-    Header, Phase,
+    Header, Log, Phase,
     Serialiser, Storage, Utils
 } from 'subsembly-core';
 import {
@@ -216,6 +216,7 @@ export class System {
      * @param ext extrinsic as bytes
      */
     static _noteAppliedExtrinsic(ext: UncheckedExtrinsic): void {
+        Log.info("it's here");
         const extrinsics = SystemStorageEntries.ExtrinsicData().get();
         const extIndex = SystemStorageEntries.ExtrinsicIndex().get();
         extrinsics.insert(extIndex, new ByteArray(ext.toU8a()));
