@@ -2,7 +2,7 @@
 
 ### Introduction
 
-Before we generate our keys and edit our chain spec files, we need to launch a network for two participants: **Alice** and **Bob**.
+Before we generate our keys and edit the chain spec files, we need are going to launch a network of two nodes: **Alice** and **Bob**.
 
 ### Alice Starts the Node
 
