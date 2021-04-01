@@ -2,13 +2,13 @@
 
 ### Overview
 
-Ideally, each node who wants to participate in the blockchain network should generate their own keys, but for demonstration purposes we've used default Alice and Bob keys. In this section, we will generate our own key that will be used to participate in the network.
+Ideally, each node who wants to participate as validator in the blockchain network should generate their own keys, but for demonstration purposes we've used default Alice and Bob keys. In this section, we will generate our own key that will be used to participate in the network.
 
 ### Option 1: Subkey
 
-**`Subkey`** is a tool that generates keys specifically designed to be used with Substrate. For installation instruction, refer [here.](https://substrate.dev/docs/en/knowledgebase/integrate/subkey)
+**`Subkey`** is a tool that generates keys specifically designed to be used with Substrate. The installation instructions can be found [here](https://substrate.dev/docs/en/knowledgebase/integrate/subkey).
 
-After you've installed the tool, it's time to generate our keys. We need to generate **`sr25519`** keys that will be used by Aura for block production.
+After you've installed the tool, it's time to generate the validator keys. We need to generate **`sr25519`** keys that will be used by Aura for block production.
 
 ```text
 subkey generate --scheme sr25519
