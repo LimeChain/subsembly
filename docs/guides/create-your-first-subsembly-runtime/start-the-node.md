@@ -6,7 +6,7 @@ description: Starting your node
 
 ### Subsembly Development Node
 
-We have a compiled, minimal **Substrate** node that we use for development and testing purposes. It is a modified version of [**substrate-node-template**](https://github.com/substrate-developer-hub) It uses **Aura** consensus for block production, and has a support to pallets like: **Balances** and **Timestamp**.
+We have a compiled, minimal **Substrate** node that we use for development and testing purposes. It is a modified version of [**substrate-node-template**](https://github.com/substrate-developer-hub). It uses **Aura** consensus for block production, and has support for **Balances** and **Timestamp** modules.
 
 ### Starting Your Node
 
@@ -33,7 +33,7 @@ make run-node-demo spec=./raw-chain-spec.json
 ```
 
 {% hint style="info" %}
-Chain spec file argument should be in raw format
+The provided Chain spec file must be in raw format
 {% endhint %}
 
 Now, you will notice that your node is running, but no blocks are being produced. At this point you should insert your keys into the keystore. In our case, you need to insert **Aura** keys that are needed for block production:
