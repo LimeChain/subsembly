@@ -67,7 +67,7 @@ Mar 25 16:11:41.726  INFO 🏷  Local node identity is: 12D3KooWGtgEa8AuxLMnuKf7
 
 ## Connect to PolkadotJs
 
-Follow the same steps as in the first guide to connect to the PolkadotJs interface.
+Once your node is running, go to PolkadotJS interface at [https://polkadot.js.org/apps](https://polkadot.js.org/apps). PolkadotJS interface provides an interface for interacting with your node and it should automatically connect to your local node:
 
 ![Picture 1. Connected to PolkadotJs](../../.gitbook/assets/screenshot-2021-03-31-at-16.27.13.png)
 
