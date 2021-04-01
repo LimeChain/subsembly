@@ -6,7 +6,7 @@ description: Genesis chain spec
 
 ### Overview
 
-A chain specification file is used define network communications, consensus-related information and initial account balances that Substrate node must have at genesis. For more information, please refer to Substrate [docs](https://substrate.dev/docs/en/knowledgebase/integrate/chain-spec#:~:text=A%20chain%20specification%2C%20or%20%22chain,it%20must%20have%20at%20genesis.).
+A chain specification file is used to define network communications, consensus-related information and initial account balances that Substrate nodes must have at genesis. For more information, please refer to Substrate [docs](https://substrate.dev/docs/en/knowledgebase/integrate/chain-spec#:~:text=A%20chain%20specification%2C%20or%20%22chain,it%20must%20have%20at%20genesis.).
 
 ### The Genesis State
 
@@ -28,11 +28,11 @@ Once you have the chain spec file, you are free to modify fields of the JSON fil
 
 ### Raw Chain Spec
 
-Before chain spec is supplied to the runtime, it needs to converted to raw so that runtime understands it. It can be done by using this command:
+Before chain spec is supplied to the runtime, it needs to converted to raw so that the runtime can parse it correctly it. In order to do that, one must execute:
 
 ```text
 subsembly spec --src=./chain-spec.json --raw=./raw-chain-spec.json --wasm=./build/subsembly-wasm
 ```
 
-When we distribute chain specs in JSON format, we need to convert it to raw to make sure that all nodes can sync the chain even after runtime upgrades.
+Chain spec files must be converted to raw to make sure that all nodes can sync and build on the same chain even after runtime upgrades.
 
