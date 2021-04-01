@@ -45,4 +45,6 @@
   * [PolkadotJS](guides/create-your-first-subsembly-runtime/polkadotjs.md)
 * [Start Your Network](guides/start-your-network/README.md)
   * [Launch a Network](guides/start-your-network/launch-a-network.md)
+  * [Generate Authority Keys](guides/start-your-network/generate-authority-keys.md)
+  * [Launch the Third Node](guides/start-your-network/launch-the-third-node.md)
 
