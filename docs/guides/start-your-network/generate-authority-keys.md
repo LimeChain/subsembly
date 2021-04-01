@@ -1,10 +1,10 @@
 # Generate Authority Keys
 
-### Overview
+## Overview
 
 Ideally, each node who wants to participate as validator in the blockchain network should generate their own keys, but for demonstration purposes we've used default Alice and Bob keys. In this section, we will generate our own key that will be used to participate in the network.
 
-### Option 1: Subkey
+## Option 1: Subkey
 
 **`Subkey`** is a tool that generates keys specifically designed to be used with Substrate. The installation instructions can be found [here](https://substrate.dev/docs/en/knowledgebase/integrate/subkey).
 
@@ -26,7 +26,7 @@ Secret phrase `lady demand candy vacuum warm nurse shaft garment horror list bur
 
 Make sure to save your mnemonic phrase somewhere secure, as it will be used later for inserting your Aura keys to the keystore.
 
-### Option 2: PolkadotJs
+## Option 2: PolkadotJs
 
 You can also generate your own keys using PolkadotJs interface. In the Accounts tab, select **Add Account** button. This will generate **`sr25519`** keys by default. Again, make sure to save your mnemonic seed and public key.
 

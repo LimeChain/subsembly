@@ -4,17 +4,16 @@ description: Instructions to set up your computer
 
 # Set Up
 
-### Prerequisites
+## Prerequisites
 
 Your set up needs to meet the following requirements :
 
 * **`Node >= 14.0.0`**
 * **`make`** and **`curl`** packages
 
-### Getting Started
+## Getting Started
 
-To initialise and compile the runtime, follow the steps in the [**Runtime Development**](../../development/development.md) section.
-The following steps should be completed before the next step of the guide:
+To initialise and compile the runtime, follow the steps in the [**Runtime Development**](../../development/development.md) section. The following steps should be completed before the next step of the guide:
 
 Initialise a new **Subsembly** project:
 

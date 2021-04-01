@@ -4,17 +4,17 @@ description: Developing runtime
 
 # Runtime Development
 
-### Getting Started
+## Getting Started
 
 First, make sure you have the CLI tool installed [globally](../getting-started/cli/). To start the runtime development, first initialise a new **`Subsembly`** project:
 
 ```text
-subsembly init --to={projectPath} 
+subsembly init --to={projectPath}
 ```
 
-### `Subsembly` File Structure 
+## `Subsembly` File Structure
 
-Newly initialised **`Subsembly`** project has the following file structure: 
+Newly initialised **`Subsembly`** project has the following file structure:
 
 ```text
 subsembly-project
@@ -27,7 +27,7 @@ subsembly-project
     │
     └───pallets    <--- Subsembly pallets included in the Runtime
 yarn.lock              
-package.json       <--- Subsembly dependencies       
+package.json       <--- Subsembly dependencies
 ```
 
 **Runtime configuration**
@@ -39,7 +39,7 @@ Some requirements for Runtime types, such as:
 * Type should implement `Codec` interface from `as-scale-codec`. It makes sure that every type in the Runtime can be SCALE encoded and decoded.
 * Make sure to avoid possible `IntegerOverflow` exceptions. For example, it does not make sense to use 8-bit unsigned integer as `Timestamp` `Moment` type, since the value of timestamp is way out of range of what 8-bit unsigned integer can hold.
 
-### Compiling
+## Compiling
 
 To compile the runtime:
 
@@ -48,6 +48,4 @@ subsembly compile
 ```
 
 This should compile your runtime and place hex-encoded **`wasm`** binary to the **`build`** folder.
-
-
 

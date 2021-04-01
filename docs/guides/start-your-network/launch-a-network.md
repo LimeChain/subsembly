@@ -1,10 +1,10 @@
 # Launch a Network
 
-### Introduction
+## Introduction
 
 Before we generate our keys and edit the chain spec files, we need are going to launch a network of two nodes: **Alice** and **Bob**.
 
-### Alice Starts the Node
+## Alice Starts the Node
 
 The prerequisite for this step is a compiled runtime and generated chain spec file. Refer to [**Development**](../../development/development.md) section or to [previous](../create-your-first-subsembly-runtime/) guide on how to do it.
 
@@ -56,22 +56,22 @@ Mar 25 16:11:41.730  INFO 📦 Highest known block at #0
 Mar 25 16:11:41.731  INFO 〽️ Prometheus server started at 127.0.0.1:9615    
 Mar 25 16:11:41.733  INFO Listening for new connections on 127.0.0.1:9944.    
 Mar 25 16:11:46.736  INFO 💤 Idle (0 peers), best: #0 (0x1bef…c190), finalized #0 (0x1bef…c190), ⬇ 0 ⬆ 0    
-Mar 25 16:11:51.707  INFO 💤 Idle (0 peers), best: #0 (0x1bef…c190), finalized #0 (0x1bef…c190), ⬇ 0 ⬆ 0    
+Mar 25 16:11:51.707  INFO 💤 Idle (0 peers), best: #0 (0x1bef…c190), finalized #0 (0x1bef…c190), ⬇ 0 ⬆ 0
 ```
 
 We copy Alice's node identity to use it when we are connecting other nodes to Alice's:
 
 ```text
-Mar 25 16:11:41.726  INFO 🏷  Local node identity is: 12D3KooWGtgEa8AuxLMnuKf71qE1bPb2nGKXbgmyjhC5G1w7Yrrf (legacy representation: 12D3KooWGtgEa8AuxLMnuKf71qE1bPb2nGKXbgmyjhC5G1w7Yrrf)    
+Mar 25 16:11:41.726  INFO 🏷  Local node identity is: 12D3KooWGtgEa8AuxLMnuKf71qE1bPb2nGKXbgmyjhC5G1w7Yrrf (legacy representation: 12D3KooWGtgEa8AuxLMnuKf71qE1bPb2nGKXbgmyjhC5G1w7Yrrf)
 ```
 
-### Connect to PolkadotJs
+## Connect to PolkadotJs
 
 Follow the same steps as in the first guide to connect to the PolkadotJs interface.
 
 ![Picture 1. Connected to PolkadotJs](../../.gitbook/assets/screenshot-2021-03-31-at-16.27.13.png)
 
-### Bob Joins
+## Bob Joins
 
 In a separate terminal, run the node for Bob:
 
@@ -86,7 +86,7 @@ NAME=node02 \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp
 ```
 
-We can notice some differences compared to the command used to run Alice's node. We changed the ports and name of the node, since two nodes can not have the same name and one port can not be exposed from two different nodes. 
+We can notice some differences compared to the command used to run Alice's node. We changed the ports and name of the node, since two nodes can not have the same name and one port can not be exposed from two different nodes.
 
 Most importantly, we added a **`--bootnodes`** flag, to specify a single boot node of Alice. Here, the value of **`--bootnodes`** flag is comprised of following properties:
 
@@ -121,7 +121,7 @@ Mar 31 14:07:06.194  INFO 💤 Idle (1 peers), best: #0 (0xc122…3dac), finaliz
 As you see from the output \(**`1 peers`**\), Bob successfully connected to the Alice's node:
 
 ```text
-Mar 31 14:06:56.190  INFO 💤 Idle (1 peers), best: #0 (0xc122…3dac), finalized #0 (0xc122…3dac), ⬇ 1.0kiB/s ⬆ 1.0kiB/s    
+Mar 31 14:06:56.190  INFO 💤 Idle (1 peers), best: #0 (0xc122…3dac), finalized #0 (0xc122…3dac), ⬇ 1.0kiB/s ⬆ 1.0kiB/s
 ```
 
 You can also connect this node to PolkadotJs interface. To do that, you will need to change the **`ws`** port in the left tab in the main page \(`9945` in this case\)

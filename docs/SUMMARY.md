@@ -47,4 +47,8 @@
   * [Launch a Network](guides/start-your-network/launch-a-network.md)
   * [Generate Authority Keys](guides/start-your-network/generate-authority-keys.md)
   * [Launch the Third Node](guides/start-your-network/launch-the-third-node.md)
+* [Create a New Module](guides/create-a-new-module/README.md)
+  * [Nicks Module](guides/create-a-new-module/nicks-module.md)
+  * [Launch the Node](guides/create-a-new-module/launch-the-node.md)
+  * [PolkadotJs](guides/create-a-new-module/polkadotjs.md)
 

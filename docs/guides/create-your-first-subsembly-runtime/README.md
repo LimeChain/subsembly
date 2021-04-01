@@ -4,7 +4,7 @@ description: Guide for running your Subsembly runtime with Substrate runtime
 
 # Create Your First Subsembly Runtime
 
-### Introduction
+## Introduction
 
 In this guide, you will learn how to initialise a new **Subsembly** project, compile, and interact with it using **PolkadotJS** apps interface.
 
@@ -15,7 +15,7 @@ Some prerequisites for completing this guide:
 * General familiarity with software development, specifically in **Typescript** or **NodeJS**
 * General familiarity with core blockchain concepts
 
-### Outline
+## Outline
 
 Before we get started, here's the outline of the guide:
 

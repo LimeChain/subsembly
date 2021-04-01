@@ -4,11 +4,11 @@ description: Handle transaction payments
 
 # TransactionPayment
 
-### Overview
+## Overview
 
 The Transaction Payment pallet provides the basic logic to compute pre-dispatch transaction fees. It provides a functionality to compute the absolute minimum transaction fee to be charged for extrinsic to be included in the block.
 
-### Configuration
+## Configuration
 
 This module requires the following constants to be set during runtime initialisation:
 

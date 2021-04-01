@@ -4,17 +4,17 @@ description: Starting your node
 
 # Start the Node
 
-### Subsembly Development Node
+## Subsembly Development Node
 
 We have a compiled, minimal **Substrate** node that we use for development and testing purposes. It is a modified version of [**substrate-node-template**](https://github.com/substrate-developer-hub). It uses **Aura** consensus for block production, and has support for **Balances** and **Timestamp** modules.
 
-### Starting Your Node
+## Starting Your Node
 
 In the root directory of the project, there is a **Makefile** with useful commands to run the Substrate node. Make sure to install **`make, curl`** packages, if you don't have them installed.
 
 {% tabs %}
 {% tab title="MacOS" %}
-```
+```text
 brew install make curl
 ```
 {% endtab %}
