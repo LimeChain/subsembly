@@ -29,26 +29,22 @@ apt-get install make curl
 After we have the required packages installed, we can run **Substrate** node with our runtime:
 
 ```text
-make run-node spec=./raw-chain-spec.json
+make run-node-demo spec=./raw-chain-spec.json
 ```
 
 {% hint style="info" %}
 Chain spec file argument should be in raw format
 {% endhint %}
 
-Now, you will notice that your node is running, but no blocks are being produced. At this point you should insert your keys into the keystore. In our case, you need to insert **Aura** keys that are needed 
-
-But it won't produce blocks yet. For it to start block production, insert **Aura** keys to the keystore. 
-
-Remember your mnemonic seed and public address and insert your keys using **Curl**:
+Now, you will notice that your node is running, but no blocks are being produced. At this point you should insert your keys into the keystore. In our case, you need to insert **Aura** keys that are needed for block production:
 
 ```text
-curl --location --request POST 'localhost:9933' \
+curl --location --request POST '0.0.0.0:9933' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "jsonrpc": "2.0",
     "method": "author_insertKey",
-    "params": ["aura","<your mnemonic phrase>","<your public key>"],
+    "params": ["aura","dice height enter anger ahead chronic easily wave curious banana era happy","0xdcc1461cba689c60dcae053ef09bc9e9524cdceb696ce39c7ed43bf3a5fa9659"],
     "id": 1
 }'
 ```
@@ -88,24 +84,6 @@ Mar 23 13:35:55.024  INFO 🙌 Starting consensus session on top of parent 0xcbc
 Mar 23 13:35:55.079  INFO 🎁 Prepared block for proposing at 2 [hash: 0xa8d90c9d83bf5be8d4b5f6b83d65dbf2bee04bb4811159d571e5275be6c839d8; parent_hash: 0xcbc9…d8b4; extrinsics (1): [0xb620…d531]]    
 Mar 23 13:35:55.082  INFO 🔖 Pre-sealed block for proposal at 2. Hash now 0x1c4239f2f39ba23d38d76ced5168932d4ca9e9f3c2ce1ba40a7b252f506e8d7b, previously 0xa8d90c9d83bf5be8d4b5f6b83d65dbf2bee04bb4811159d571e5275be6c839d8.    
 Mar 23 13:35:55.083  INFO ✨ Imported #2 (0x1c42…8d7b)    
-Mar 23 13:35:56.011  INFO 💤 Idle (0 peers), best: #2 (0x1c42…8d7b), finalized #0 (0x2df5…f598), ⬇ 0 ⬆ 0    
-Mar 23 13:36:00.023  INFO 🙌 Starting consensus session on top of parent 0x1c4239f2f39ba23d38d76ced5168932d4ca9e9f3c2ce1ba40a7b252f506e8d7b    
-Mar 23 13:36:00.079  INFO 🎁 Prepared block for proposing at 3 [hash: 0xf4a555f3f22826c3fd948018cf2130ed4fb0edce59b0cca2ed0a305fde38cca9; parent_hash: 0x1c42…8d7b; extrinsics (1): [0xbd79…6f60]]    
-Mar 23 13:36:00.085  INFO 🔖 Pre-sealed block for proposal at 3. Hash now 0x2fddaf1a42df38822e91b439b9b8c6a8d28022c0a988646c7d53ee4730eb5dc7, previously 0xf4a555f3f22826c3fd948018cf2130ed4fb0edce59b0cca2ed0a305fde38cca9.    
-Mar 23 13:36:00.086  INFO ✨ Imported #3 (0x2fdd…5dc7)    
-Mar 23 13:36:01.014  INFO 💤 Idle (0 peers), best: #3 (0x2fdd…5dc7), finalized #0 (0x2df5…f598), ⬇ 0 ⬆ 0    
-Mar 23 13:36:05.025  INFO 🙌 Starting consensus session on top of parent 0x2fddaf1a42df38822e91b439b9b8c6a8d28022c0a988646c7d53ee4730eb5dc7    
-Mar 23 13:36:05.076  INFO 🎁 Prepared block for proposing at 4 [hash: 0xc247833cc10066d8b72b5277150e52dd2ba6c80f72786b59f0639d364664b7d4; parent_hash: 0x2fdd…5dc7; extrinsics (1): [0x13de…fb33]]    
-Mar 23 13:36:05.080  INFO 🔖 Pre-sealed block for proposal at 4. Hash now 0xfaa2664656499312909d26c042440f320dae69d9bc24c6b8c27fff6c9925da87, previously 0xc247833cc10066d8b72b5277150e52dd2ba6c80f72786b59f0639d364664b7d4.    
-Mar 23 13:36:05.080  INFO ✨ Imported #4 (0xfaa2…da87)    
-Mar 23 13:36:06.015  INFO 💤 Idle (0 peers), best: #4 (0xfaa2…da87), finalized #0 (0x2df5…f598), ⬇ 0 ⬆ 0    
-Mar 23 13:36:10.022  INFO 🙌 Starting consensus session on top of parent 0xfaa2664656499312909d26c042440f320dae69d9bc24c6b8c27fff6c9925da87    
-Mar 23 13:36:10.075  INFO 🎁 Prepared block for proposing at 5 [hash: 0x6a99338a69f4ca678c9df175620c9cf7f16962b0434e9476cbbd8a025847f07d; parent_hash: 0xfaa2…da87; extrinsics (1): [0x6b57…0773]]    
-Mar 23 13:36:10.078  INFO 🔖 Pre-sealed block for proposal at 5. Hash now 0x7ea9f27ee99635dcf41ca4ccc4983fb5806dc14bf473722751b12356aa625ad0, previously 0x6a99338a69f4ca678c9df175620c9cf7f16962b0434e9476cbbd8a025847f07d.    
-Mar 23 13:36:10.080  INFO ✨ Imported #5 (0x7ea9…5ad0)    
-Mar 23 13:36:11.017  INFO 💤 Idle (0 peers), best: #5 (0x7ea9…5ad0), finalized #0 (0x2df5…f598), ⬇ 0 ⬆ 0    
-Mar 23 13:36:15.021  INFO 🙌 Starting consensus session on top of parent 0x7ea9f27ee99635dcf41ca4ccc4983fb5806dc14bf473722751b12356aa625ad0    
+Mar 23 13:35:56.011  INFO 💤 Idle (0 peers), best: #2 (0x1c42…8d7b), finalized #0 (0x2df5…f598), ⬇ 0 ⬆ 0
 ```
-
-
 

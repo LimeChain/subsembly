@@ -34,12 +34,12 @@ Generate new chain specification file:
 subsembly spec --to=./chain-spec.json
 ```
 
-Here, you will need to replace or add a new Aura authority in the chain spec file. For generating your own keys, refer to **Substrate** [tutorial](https://substrate.dev/docs/en/tutorials/start-a-private-network/keygen). Just add the public address of authority inside the array of authorities:
+Here, you will need to replace or add a new Aura authority in the chain spec file. For generating your own keys, refer to **Substrate** [tutorial](https://substrate.dev/docs/en/tutorials/start-a-private-network/keygen). By default chain spec comes with generic Alice address. If you want a different authority, just add the public address of authority inside the array of authorities:
 
 ```text
 "aura": {
   "authorities": [
-    "<your Aura authority address>"
+    "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs"
   ]
 }
 ```
