@@ -109,7 +109,7 @@ export namespace Executive {
      * @param encoded encoded extrinsic
      */
     export function applyExtrinsicWithLen(ext: UncheckedExtrinsic, encodedLen: u32): u8[] {
-        return Dispatcher.dispatch(ext.method);
+        return Dispatcher.dispatch(ext);
     }
 
     /**
@@ -146,8 +146,10 @@ export namespace Executive {
             const specVersion = RuntimeConfig.runtimeVersion().specVersion;
             const transactionVersion = RuntimeConfig.runtimeVersion().transactionVersion;
             const payload = utx.createPayload(blockHash, genesisHash, specVersion, transactionVersion);
-              
-            if (!Crypto.verifySignature(<SignatureType>utx.signature.signature, payload, from, SignatureTypes.sr25519)) {
+            Log.info("payload: " + Utils.toHexString(payload));
+            Log.info("sign: " + Utils.toHexString(extSignature.signature.toU8a()));
+
+            if (!Crypto.verifySignature(<SignatureType>extSignature.signature, payload, from, SignatureTypes.sr25519)) {
                 Log.error("Validation error: Invalid signature");
                 return ResponseCodes.INVALID_SIGNATURE;
             }

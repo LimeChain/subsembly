@@ -78,13 +78,12 @@ export class TransactionPayment {
         if (paysFee == Pays.Yes) {
             let length: Balance = instantiate<Balance>(u128.fromU32(len.unwrap()));
             let perByte: Balance = TransactionPaymentStorageEntries.TransactionByteFee().get();
-            
             if (perByte.unwrap() == u128.Zero) {
                 perByte = instantiate<Balance>(u128.One);
             }
 
             // length fee. not adjusted
-            let fixedLenFee = length.unwrap() * perByte.unwrap() / u128.fromU32(10);
+            let fixedLenFee = length.unwrap() * perByte.unwrap();
 
             // the adjustable part of the fee
             let unadjustedWeightFee = this._weightToFee(weight);
@@ -135,8 +134,8 @@ export class TransactionPayment {
      * @param len 
      */
     static _queryInfo(ext: UncheckedExtrinsic, len: UInt32): RuntimeDispatchInfo<UInt128, Weight> {
-        const dispatchInfo = new DispatchInfo<Weight>(instantiate<Weight>(1), Pays.Yes, DispatchClass.Normal);
-        const _partialFee = this._computeFee(len, dispatchInfo, instantiate<Balance>(u128.Zero));
-        return new RuntimeDispatchInfo<UInt128, Weight>(dispatchInfo.weight, dispatchInfo.klass, UInt128.One);
+        const dispatchInfo = new DispatchInfo<Weight>(instantiate<Weight>(ext.encodedLength()), Pays.Yes, DispatchClass.Normal);
+        const partialFee = this._computeFee(len, dispatchInfo, instantiate<Balance>(u128.Zero));
+        return new RuntimeDispatchInfo<UInt128, Weight>(dispatchInfo.weight, dispatchInfo.klass, partialFee);
     }
 }

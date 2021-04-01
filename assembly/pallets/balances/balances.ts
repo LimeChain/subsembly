@@ -1,6 +1,7 @@
 import { ByteArray, BytesReader, CompactInt } from 'as-scale-codec';
 import {
     AccountData,
+    AccountId,
     ExistenceRequirement,
     ResponseCodes,
     Storage, Utils, WithdrawReasons
@@ -48,12 +49,22 @@ export class Balances {
     }
 
     /**
+     * @description Dummy transfer call
+     * @param dest 
+     * @param value 
+     * @returns 
+     */
+    static transfer(dest: AccountId, value: Balance): u8[] {
+        return [];
+    }
+
+    /**
      * @description Transfer the given value from source to destination
      * @param source source account
      * @param dest dest account
      * @param value value of the transfer
      */
-    static transfer(source: AccountIdType, dest: AccountIdType, value: Balance): u8[] {
+    static _applyTransfer(source: AccountIdType, dest: AccountIdType, value: Balance): u8[] {
         const senderBalance = BalancesStorageEntries.Account().get(source);
         const receiverBalance = BalancesStorageEntries.Account().get(dest);
 

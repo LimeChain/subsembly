@@ -1,5 +1,5 @@
 import { BytesReader, CompactInt, UInt32 } from "as-scale-codec";
-import { Serialiser } from "subsembly-core";
+import { Log, Serialiser, Utils } from "subsembly-core";
 import { Executive, SystemStorageEntries } from "../../frame";
 import { Metadata } from "../../generated/metadata";
 import { TransactionPayment } from "../../pallets";
@@ -31,7 +31,9 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
     let input = Serialiser.deserialiseInput(data, len);
+    Log.info("input: " + input.toString());
     const uxt = BytesReader.decodeInto<UncheckedExtrinsic>(input);
+    Log.info("uxt: " + Utils.toHexString(uxt.toU8a()));
     const result = Executive.validateTransaction(uxt);
     return Serialiser.serialiseResult(result);
 }
@@ -76,9 +78,6 @@ export function TransactionPaymentApi_query_info(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
     const bytesReader = new BytesReader(input);
     const ext = bytesReader.readInto<UncheckedExtrinsic>();
-    const length = bytesReader.readInto<UInt32>();
-    const queryInfo = TransactionPayment._queryInfo(ext, length);
-    const ONE_U128: u8[] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0, 0, 0];
-    const result = queryInfo.weight.toU8a().concat([<u8>queryInfo.klass]);
-    return Serialiser.serialiseResult(result.concat(ONE_U128));
+    const queryInfo = TransactionPayment._queryInfo(ext, new UInt32(ext.encodedLength()));
+    return Serialiser.serialiseResult(queryInfo.toU8a());
 }
