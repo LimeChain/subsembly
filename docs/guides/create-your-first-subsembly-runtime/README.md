@@ -8,7 +8,7 @@ description: Guide for running your Subsembly runtime with Substrate runtime
 
 In this guide, you will learn how to initialise a new **Subsembly** project, compile, and interact with it using **PolkadotJS** apps interface.
 
-This guide is aimed at someone who is new in **Subsembly** and wants to quickly get started with it. No deep knowledge about Substrate is required to complete this guide.
+This guide is aimed at someone who is new to **Subsembly** and wants to quickly get started with it. No deep knowledge about Substrate is required to complete this guide.
 
 Some prerequisites for completing this guide:
 
