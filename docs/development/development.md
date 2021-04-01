@@ -25,14 +25,14 @@ subsembly-project
     └───frame      <--- Contains Executive and System modules used for orchestrating       
     runtime/
     │
-    └───pallets    <--- Subsembly pallets include in Runtime
+    └───pallets    <--- Subsembly pallets included in the Runtime
 yarn.lock              
 package.json       <--- Subsembly dependencies       
 ```
 
 **Runtime configuration**
 
-Top-level runtime folder consists of Runtime API entries that are exposed to the Host. Some functions of API are general to the block chain, such as block production, execution, extrinsic submission and some others are specific to the module, such as **`Aura`** authorities. There is also, `runtime.ts` file, where types and constants for the frame modules and pallets are defined. We define general types that are used across the runtime and also pallet specific constants and types.
+Top-level runtime folder consists of Runtime API entries that are exposed to the Host. Some functions of API are general to the blockchain, such as block production, execution, extrinsic submission and some others are specific to the module, such as **`Aura`** authorities. There is also, `runtime.ts` file, where types and constants for the frame modules and pallets are defined. We define general types that are used across the runtime and also pallet specific constants and types.
 
 Some requirements for Runtime types, such as:
 
