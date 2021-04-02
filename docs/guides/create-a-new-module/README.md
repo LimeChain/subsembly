@@ -2,7 +2,7 @@
 
 ### Overview
 
-One of the core features of Subsembly, is the ability to add new module to your runtime easily. In this tutorial, we will demonstrate how new modules are added and implemented in a Subsembly runtime.
+One of the core features of Subsembly is the ability to add new modules to your runtime easily. In this tutorial we will demonstrate how new modules are added and implemented in a Subsembly runtime.
 
 ### Basics
 
