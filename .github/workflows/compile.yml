@@ -24,7 +24,7 @@ jobs:
         - name: Compile runtime
           run: bash .github/workflows/scripts/compile.sh
         - name: Run the node and insert Aura keys
-          run: make run-node spec=./raw-chain-spec.json detached=1 && bash .github/workflows/scripts/insert-aura.sh
+          run: make run-node-demo spec=./raw-chain-spec.json detached=1 && bash .github/workflows/scripts/insert-aura.sh
         - name: Sleep for 10 seconds
           uses: jakejarvis/wait-action@master
           with:
