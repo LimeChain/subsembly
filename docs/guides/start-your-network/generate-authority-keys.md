@@ -25,6 +25,7 @@ Secret phrase `lady demand candy vacuum warm nurse shaft garment horror list bur
 ```
 
 **Important**
+
 Make sure to save your mnemonic phrase, public key and SS58 address variables as they will be used later.
 
 Perform the key generation twice, for both of the nodes and save the mnemonic, public key and SS58 address for the second generation as-well.
