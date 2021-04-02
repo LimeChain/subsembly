@@ -99,10 +99,6 @@ class DispatcherHelpers {
         })
         return switchCase("ext.method.callIndex[1]", members, this.indentLevel + 4, returnType('ResponseCodes.CALL_ERROR'));
     }
-
-    static generateTransferCall() {
-
-    }
     /**
      * Generate body of the dispatch() function
      * @param {} pallets enum of pallets
