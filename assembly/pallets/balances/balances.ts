@@ -87,10 +87,16 @@ export class Balances {
         BalancesStorageEntries.Account().set(senderBalance, source);
         BalancesStorageEntries.Account().set(receiverBalance, dest);
 
-        // Increment nonce
-        const info = SystemStorageEntries.Account().get(source);
-        info.setNonce(instantiate<NonceType>(info.nonce.unwrap() + 1));
-        SystemStorageEntries.Account().set(info, source);
+        // Increment nonce and update balances in System
+        const senderInfo = SystemStorageEntries.Account().get(source);
+        const receiverInfo = SystemStorageEntries.Account().get(dest);
+        
+        senderInfo.setData(senderBalance);
+        receiverInfo.setData(receiverBalance);
+
+        senderInfo.setNonce(instantiate<NonceType>(senderInfo.nonce.unwrap() + 1));
+        SystemStorageEntries.Account().set(senderInfo, source);
+        SystemStorageEntries.Account().set(receiverInfo, dest);
         Balances._depositEvent(EventTypes.Transfer, source.toU8a().concat(dest.toU8a()).concat(value.toU8a()));
         
         return ResponseCodes.SUCCESS;

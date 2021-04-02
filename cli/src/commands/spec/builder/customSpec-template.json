@@ -16,31 +16,29 @@
           "balances": [
             [
               "5F25Yb9PB9GV6RcqKpWceyx1X48TfnBxWn9m84A1JUYvsEF2",
-              1000001803
+              10000000000000000
             ],
             [
               "5CnyWwRgxbjqPyi4y9zMFjUWPjgw7M1SLzzehHRnp4K52M1L",
-              1000001803
+              10000000000000000
             ],
             [
               "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs",
-              1000001803
+              10000000000000000
             ],
             [
               "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-              1000001803
+              10000000000000000
             ],
             [
               "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
-              1000001803
+              10000000000000000
             ]
           ]
         },
         "aura": {
           "authorities": [
-            "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs",
-            "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
-            "5HQxe4hw4bZm5uK4kUeq3Wkvw7Uem7NesYjB53BjAUizNZN6"
+            "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs"
           ]
         }
       }

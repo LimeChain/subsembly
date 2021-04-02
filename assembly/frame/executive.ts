@@ -92,7 +92,6 @@ export namespace Executive {
     export function applyExtrinsic(ext: UncheckedExtrinsic): u8[] {
         const encodedLen = ext.encodedLength();
         const result = Executive.applyExtrinsicWithLen(ext, encodedLen);
-        Log.info("result: " + result.toString());
         // if applying extrinsic succeeded, notify System about it
         if (Utils.areArraysEqual(result, ResponseCodes.SUCCESS)) {
             System._noteAppliedExtrinsic(ext); 
@@ -136,8 +135,6 @@ export namespace Executive {
             const signedExt = extSignature.signedExtension;
     
             const nonce = SystemStorageEntries.Account().get(from).nonce;
-            Log.info("nonce: " + nonce.toString());
-            Log.info("signature: " + Utils.toHexString(extSignature.toU8a()));
             if (nonce && nonce.unwrap() > signedExt.nonce.unwrap()) {
                 Log.error("Validation error: Nonce value is less than or equal to the latest nonce");
                 return ResponseCodes.NONCE_TOO_LOW;
@@ -149,8 +146,6 @@ export namespace Executive {
             const specVersion = RuntimeConfig.runtimeVersion().specVersion;
             const transactionVersion = RuntimeConfig.runtimeVersion().transactionVersion;
             const payload = utx.createPayload(blockHash, genesisHash, specVersion, transactionVersion);
-            Log.info("payload: " + Utils.toHexString(payload));
-            Log.info("sign: " + Utils.toHexString(extSignature.signature.toU8a()));
 
             if (!Crypto.verifySignature(<SignatureType>extSignature.signature, payload, from, SignatureTypes.sr25519)) {
                 Log.error("Validation error: Invalid signature");
