@@ -133,6 +133,7 @@ You can also connect this node to PolkadotJs interface. To do that, you will nee
 After we launched the nodes and they are successfully connected, we have to insert their respective Aura keys to start the block production.
 
 **Important**
+
 The params that you are providing in the curl request are the mnemonic and public key generated in step 1.
 
 Insert the keys for **Alice**:
