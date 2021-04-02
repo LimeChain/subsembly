@@ -127,24 +127,3 @@ export class BalancesConfig {
         return instantiate<Balance>(u128.fromU32(1000));
     }
 }
-
-/**
- *@description Configuration for Nicks module
- */
-export class NicksConfig {
-    /**
-     * @description Minimum length of the name
-     * @returns min value
-     */
-    static minLength(): UInt32 {
-        return new UInt32(3);
-    }
-
-    /**
-     * @description Maximum length of the name
-     * @returns max value
-     */
-    static maxLength(): UInt32 {
-        return new UInt32(16);
-    }
-}
