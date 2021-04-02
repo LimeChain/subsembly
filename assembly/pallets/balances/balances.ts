@@ -72,15 +72,15 @@ export class Balances {
         if(senderBalance.getFree().unwrap() < value.unwrap()) {
             return ResponseCodes.INSUFFICIENT_BALANCE;
         }
-
-        // Make sure new balances is higher than ExistentialDeposit
         //@ts-ignore
-        if(senderBalance.getFree().unwrap() - value.unwrap() < BalancesConfig.existentialDeposit().unwrap()) {
+        const newFreeBalance = senderBalance.getFree().unwrap() - value.unwrap();
+        // Make sure new balances is higher than ExistentialDeposit
+        if(newFreeBalance < BalancesConfig.existentialDeposit().unwrap()) {
             return ResponseCodes.VALIDITY_ERROR;
         }
 
         //@ts-ignore
-        senderBalance.setFree(instantiate<Balance>(senderBalance.getFree().unwrap() - value.unwrap()));
+        senderBalance.setFree(instantiate<Balance>(newFreeBalance));
         //@ts-ignore
         receiverBalance.setFree(instantiate<Balance>(receiverBalance.getFree().unwrap() + value.unwrap()));
         

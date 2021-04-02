@@ -116,9 +116,6 @@ class DispatcherHelpers {
             if(module.calls){
                 palletMembers.push([`Pallets.${name}`, this._generateSwitchCall(name, module.calls)]);
             }
-            if(name==='Balances'){
-                palletMembers.push()
-            }
         })
         return switchCase("ext.method.callIndex[0]", palletMembers, this.indentLevel + 2, returnType('ResponseCodes.CALL_ERROR')).toString();
     }
