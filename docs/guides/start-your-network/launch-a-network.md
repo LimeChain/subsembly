@@ -1,4 +1,4 @@
-# Launch a Network
+# Launch Validator Nodes
 
 ## Introduction
 
@@ -37,7 +37,7 @@ More details about the flags and other options for the node, can be explored wit
 make run-node help=1
 ```
 
-After running the last command, you should see the following output:
+After launching the node, you should see the following output:
 
 ```text
 Mar 25 16:11:41.565  INFO Substrate Node    
@@ -127,4 +127,51 @@ Mar 31 14:06:56.190  INFO 💤 Idle (1 peers), best: #0 (0xc122…3dac), finaliz
 You can also connect this node to PolkadotJs interface. To do that, you will need to change the **`ws`** port in the left tab in the main page \(`9945` in this case\)
 
 ![Picture 2. Custom endpoint of the Node](../../.gitbook/assets/screenshot-2021-03-31-at-18.18.54.png)
+
+### Insert Keys
+
+After we launched the nodes and they are successfully connected, we insert Aura keys to start the block production. First, we insert keys for **Alice**:
+
+```text
+curl --location --request POST '0.0.0.0:9933' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "jsonrpc": "2.0",
+    "method": "author_insertKey",
+    "params": ["aura","dice height enter anger ahead chronic easily wave curious banana era happy","0xdcc1461cba689c60dcae053ef09bc9e9524cdceb696ce39c7ed43bf3a5fa9659"],
+    "id": 1
+}'
+```
+
+Then, for **Bob**:
+
+```text
+curl --location --request POST '0.0.0.0:9933' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "jsonrpc": "2.0",
+    "method": "author_insertKey",
+    "params": ["aura","lady demand candy vacuum warm nurse shaft garment horror list burst strike","0xec9fd69c119fb45b6f6efca397db3e864649e6903cf227d4609ed53a66d3bf1e"],
+    "id": 1
+}'
+```
+
+If you see this output, you have successfully inserted the keys:
+
+```text
+{"jsonrpc":"2.0","result":null,"id":1}
+```
+
+You will notice that nodes will start producing new blocks:
+
+```text
+Apr 02 10:24:20.131  INFO 💤 Idle (0 peers), best: #0 (0xe3c0…1d52), finalized #0 (0xe3c0…1d52), ⬇ 0 ⬆ 0    
+Apr 02 10:24:25.132  INFO 💤 Idle (0 peers), best: #0 (0xe3c0…1d52), finalized #0 (0xe3c0…1d52), ⬇ 0 ⬆ 0    
+Apr 02 10:24:27.190  INFO Accepted a new tcp connection from 172.17.0.1:56090.    
+Apr 02 10:24:30.020  INFO 🙌 Starting consensus session on top of parent 0xe3c0470c20338ba3aa8c7bdc776b9060db7c0d49788576dae05cf829bc5f1d52    
+Apr 02 10:24:30.070  INFO 🎁 Prepared block for proposing at 1 [hash: 0x908cc6443bd80bcfb2f8c0bab749117e638b72f707b974c63661d17f73bc392c; parent_hash: 0xe3c0…1d52; extrinsics (1): [0x790b…38f5]]    
+Apr 02 10:24:30.073  INFO 🔖 Pre-sealed block for proposal at 1. Hash now 0x23225f0aa6c0487ef27081dfed4be7ad5c9c9374459abb5a12e49cb5c0c7d2df, previously 0x908cc6443bd80bcfb2f8c0bab749117e638b72f707b974c63661d17f73bc392c.    
+Apr 02 10:24:30.074  INFO ✨ Imported #1 (0x2322…d2df)    
+Apr 02 10:24:30.133  INFO 💤 Idle (0 peers), best: #1 (0x2322…d2df), finalized #0 (0xe3c0…1d52), ⬇ 0 ⬆ 0
+```
 

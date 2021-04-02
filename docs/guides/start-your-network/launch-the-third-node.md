@@ -1,55 +1,8 @@
 # Launch the Third Node
 
-### Modify the Chain Spec
+### Start Third Node
 
-We have already done this step in the last [guide](../create-your-first-subsembly-runtime/) and in the [Development](../../development/development.md) section. So the default content of **`chain-spec.json`** looks like this:
-
-```text
-"runtime": {
-      "system": {
-        "code": "0x"
-      },
-      "aura": {
-        "authorities": [
-          "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs",
-          "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
-        ]
-      }
-    }
-    //-- snip --
-```
-
-**`aura.authorities`** property in the chain spec defines the list of public keys or authorities that have the right to produce blocks. And there we add our newly generated address from the last step:
-
-```text
-"runtime": {
-      "system": {
-        "code": "0x"
-      },
-      "aura": {
-        "authorities": [
-          "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs",
-          "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
-          "5HQxe4hw4bZm5uK4kUeq3Wkvw7Uem7NesYjB53BjAUizNZN6"
-        ]
-      }
-    }
-    //-- snip --
-```
-
-And don't forget to convert your modified chain spec into raw:
-
-```text
-subsembly spec --src=./chain-spec.json
-```
-
-### Restart the Nodes
-
-Every node in one network should have the common raw chain specification file. Since we have updated our chain spec file, we will need to restart the nodes of Alice and Bob with the new one. Quit the nodes, if you are running them and restart them with the same [commands](launch-a-network.md).
-
-### Start Custom Node
-
-To launch the third node with our own generated keys, run this command:
+In the last step we launched two validating nodes. In this one, we launch the third one, non-validating validator node.
 
 ```text
 make run-node \
@@ -58,7 +11,6 @@ WS-PORT=9946 \
 RPC-PORT=9935 \
 spec=raw-chain-spec.json \
 NAME=node03 \
--- --validator \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp /ip4/172.17.0.3/tcp/30334/p2p/12D3KooWE2e8yccz2skbaKmHnizcgY2vGyuUBehXbDnYok3Ze59A
 ```
 
@@ -85,4 +37,6 @@ Apr 01 08:07:09.574  INFO 💤 Idle (2 peers), best: #0 (0x37c1…c164), finaliz
 Apr 01 08:07:14.576  INFO 💤 Idle (2 peers), best: #0 (0x37c1…c164), finalized #0 (0x37c1…c164), ⬇ 0 ⬆ 0    
 Apr 01 08:07:19.546  INFO 💤 Idle (2 peers), best: #0 (0x37c1…c164), finalized #0 (0x37c1…c164), ⬇ 0 ⬆ 0
 ```
+
+Then your node should start the syncing process with the other nodes and start executing the blocks, without taking part in the production.
 

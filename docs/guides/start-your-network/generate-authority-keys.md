@@ -1,8 +1,8 @@
-# Generate Authority Keys
+# Prepare the Network
 
 ## Overview
 
-Ideally, each node who wants to participate as validator in the blockchain network should generate their own keys, but for demonstration purposes we've used default Alice and Bob keys. In this section, we will generate our own key that will be used to participate in the network.
+Ideally, each node who wants to participate as validator in the blockchain network should generate their own keys. In this section, we will generate our own key that will be used to participate in the network.
 
 ## Option 1: Subkey
 
@@ -28,9 +28,52 @@ Make sure to save your mnemonic phrase somewhere secure, as it will be used late
 
 ## Option 2: PolkadotJs
 
-You can also generate your own keys using PolkadotJs interface. In the Accounts tab, select **Add Account** button. This will generate **`sr25519`** keys by default. Again, make sure to save your mnemonic seed and public key.
+You can also generate your own keys using **PolkadotJs** interface. In the **Accounts** tab, select **Add Account** button. This will generate **`sr25519`** keys by default. Again, make sure to save your mnemonic seed and public key.
 
 For example:
 
-![](../../.gitbook/assets/screenshot-2021-03-31-at-18.00.40.png)
+![Picture 1. Account generation](../../.gitbook/assets/screenshot-2021-03-31-at-18.00.40.png)
+
+### Modify the Chain Spec
+
+We have already done this step in the last [guide](../create-your-first-subsembly-runtime/) and in the [Development](../../development/development.md) section. So the default content of **`chain-spec.json`** looks like this:
+
+```text
+//--snip--//
+"runtime": {
+      "system": {
+        "code": "0x"
+      },
+      "aura": {
+        "authorities": [
+          "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs"
+        ]
+      }
+    }
+    //--snip--//
+```
+
+**`aura.authorities`** property in the chain spec defines the list of public keys or authorities that have the right to produce blocks. And there we add our newly generated address:
+
+```text
+//--snip--/
+"runtime": {
+      "system": {
+        "code": "0x"
+      },
+      "aura": {
+        "authorities": [
+          "5H49oi57ktRnYTbhVtKpGGk79rB9QXNcApYELLWcKa9W8nfs",
+          "5HQxe4hw4bZm5uK4kUeq3Wkvw7Uem7NesYjB53BjAUizNZN6"
+        ]
+      }
+    }
+    //--snip--/
+```
+
+And don't forget to convert your modified chain spec into raw:
+
+```text
+subsembly spec --src=./chain-spec.json
+```
 
