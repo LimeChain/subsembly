@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ideally, each node who wants to participate as validator in the blockchain network should generate their own keys. In this section, we will generate our own key that will be used to participate in the network.
+Each node who wants to participate as validator in the blockchain network must generate their own private/public keys. In this section, we will generate two keys for the 2 validator nodes - `Alice` and `Bob`.
 
 ## Option 1: Subkey
 
@@ -24,7 +24,10 @@ Secret phrase `lady demand candy vacuum warm nurse shaft garment horror list bur
   SS58 Address:     5HQxe4hw4bZm5uK4kUeq3Wkvw7Uem7NesYjB53BjAUizNZN6
 ```
 
-Make sure to save your mnemonic phrase somewhere secure, as it will be used later for inserting your Aura keys to the keystore.
+**Important**
+Make sure to save your mnemonic phrase, public key and SS58 address variables as they will be used later.
+
+Perform the key generation twice, for both of the nodes and save the mnemonic, public key and SS58 address for the second generation as-well.
 
 ## Option 2: PolkadotJs
 
@@ -53,7 +56,7 @@ We have already done this step in the last [guide](../create-your-first-subsembl
     //--snip--//
 ```
 
-**`aura.authorities`** property in the chain spec defines the list of public keys or authorities that have the right to produce blocks. And there we add our newly generated address:
+**`aura.authorities`** property in the chain spec defines the list of public keys or authorities that have the right to produce blocks. Delete the already specified authority in the list and add the 2 SS58 addresses that you generated
 
 ```text
 //--snip--/
