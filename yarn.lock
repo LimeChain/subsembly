@@ -58,9 +58,9 @@
   integrity sha512-fx6wEDH/NgvNYYrkGZnHaguFa73KUD2Pt42UCIlWNumHr9Vp2gnKH2+neOKNlTBFVrwIrMs9KlUYqDC6v/kh1A==
 
 "@assemblyscript/loader@^0.17.9":
-  version "0.17.13"
-  resolved "https://registry.yarnpkg.com/@assemblyscript/loader/-/loader-0.17.13.tgz#0e43a19b095f12f636183d60660bfd5a6216b858"
-  integrity sha512-vQpXbqJRV4/KPyfl7dQYCNwUdocGilO+goxwyHivQM4w7TrAkPDodpj4bfY9zy0aeXD9YGjLRuEP3OCfSPYsCQ==
+  version "0.17.14"
+  resolved "https://registry.yarnpkg.com/@assemblyscript/loader/-/loader-0.17.14.tgz#43bfe793c787180c5eb0a57ada8318fb62171b4e"
+  integrity sha512-+PVTOfla/0XMLRTQLJFPg4u40XcdTfon6GGea70hBGi8Pd7ZymIXyVUR+vK8wt5Jb4MVKTKPIz43Myyebw5mZA==
 
 ansi-styles@^4.1.0:
   version "4.3.0"
@@ -257,10 +257,10 @@ ret@~0.1.10:
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
 
-subsembly-core@1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/subsembly-core/-/subsembly-core-1.0.7.tgz#2f28bc42141344b30b97d0810dfe4f260e9ca8e1"
-  integrity sha512-VI5ha4l96vQajJOjKnp9vIuxyeWq+H3h0plnsZfUCLsYl/PuBydEG1Oyn2ABdNFSCijf2zcw7MzNAigffQXnlQ==
+subsembly-core@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/subsembly-core/-/subsembly-core-1.0.8.tgz#76a620c02f972299fbd11c6aa0463a712b2798e9"
+  integrity sha512-SGsZqYS/T/Krl//TxFc/TkZfE2p81eR0Qimu5fp68X8VUX5i2aePNWGWZQ4TqUvhSYo88fbBwbhPfCpMteLV9g==
   dependencies:
     "@assemblyscript/loader" "^0.17.9"
     as-scale-codec "^0.2.3"
