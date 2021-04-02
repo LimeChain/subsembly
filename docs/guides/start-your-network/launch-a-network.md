@@ -131,8 +131,11 @@ You can also connect this node to PolkadotJs interface. To do that, you will nee
 ### Insert Keys
 
 After we launched the nodes and they are successfully connected, we have to insert their respective Aura keys to start the block production.
+
 **Important**
-The params that you are providing in the curl request is the mnemonic of the generated key in step 1. First, we insert the keys for **Alice**:
+The params that you are providing in the curl request are the mnemonic and public key generated in step 1.
+
+Insert the keys for **Alice**:
 
 ```text
 curl --location --request POST '0.0.0.0:9933' \
@@ -144,6 +147,7 @@ curl --location --request POST '0.0.0.0:9933' \
     "id": 1
 }'
 ```
+
 Keep in mind that your params will be different, since the generated mnemonic/pub key tuple will be different from this one!
 The first part of the "params" is the mnemonic and the last parameter is the public key both derived the subkey generation.
 
