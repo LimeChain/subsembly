@@ -15,7 +15,6 @@ function _getFallback(type){
         case polkadotTypes.AccountId:
             return "0x".concat("00".repeat(32));
         case polkadotTypes.BlockNumber:
-        case polkadotTypes.Amount:
         case polkadotTypes.Int64:
         case polkadotTypes.Moment:
         case polkadotTypes.Nonce:
@@ -28,6 +27,8 @@ function _getFallback(type){
         case polkadotTypes.Int16:
         case polkadotTypes.UInt16:
             return "0x".concat("00".repeat(2));
+        case polkadotTypes.AccountInfo:
+            return "0x".concat("00".repeat(72));
         default:
             return "0x00";
     }
@@ -117,7 +118,7 @@ function _extractNode(obj) {
                     default: 1
                 },
                 documentation: _extractComments(obj.jsDoc),
-                fallback: _getFallback(type.Plain),
+                fallback: _getFallback(type.Plain || type.Map.value),
                 type
             };
         default:

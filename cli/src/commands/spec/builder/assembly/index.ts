@@ -1,8 +1,8 @@
-import { BytesReader, CompactInt, UInt64 } from 'as-scale-codec';
+import { u128 } from 'as-bignum';
+import { BytesReader, CompactInt, UInt128 } from 'as-scale-codec';
 import { AccountData, AccountId, Utils } from 'subsembly-core';
 
-// Note: Until we fix the issue with UInt128, fixed Balance type is UInt64
-export type Balance = UInt64;
+export type Balance = UInt128;
 
 /**
  * @description Gets the AccountData converted to the bytes
@@ -10,7 +10,7 @@ export type Balance = UInt64;
  */
 export function getAccountDataBytes(freeBalance: Uint8Array): u8[] {
   const balance = BytesReader.decodeInto<Balance>(Utils.toU8Array(freeBalance));
-  const accData = new AccountData<Balance>(balance, instantiate<Balance>(0));
+  const accData = new AccountData<Balance>(balance, instantiate<Balance>(u128.Zero));
   return accData.toU8a();
 }
 

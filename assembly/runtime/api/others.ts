@@ -76,9 +76,6 @@ export function TransactionPaymentApi_query_info(data: i32, len: i32): u64 {
     const input = Serialiser.deserialiseInput(data, len);
     const bytesReader = new BytesReader(input);
     const ext = bytesReader.readInto<UncheckedExtrinsic>();
-    const length = bytesReader.readInto<UInt32>();
-    const queryInfo = TransactionPayment._queryInfo(ext, length);
-    const ONE_U128: u8[] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0, 0, 0];
-    const result = queryInfo.weight.toU8a().concat([<u8>queryInfo.klass]);
-    return Serialiser.serialiseResult(result.concat(ONE_U128));
+    const queryInfo = TransactionPayment._queryInfo(ext, new UInt32(ext.encodedLength()));
+    return Serialiser.serialiseResult(queryInfo.toU8a());
 }

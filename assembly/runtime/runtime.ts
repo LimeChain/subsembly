@@ -1,4 +1,5 @@
-import { ByteArray, BytesReader, CompactInt, Hash, UInt32, UInt64 } from "as-scale-codec";
+import { u128 } from "as-bignum";
+import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
 import {
     AccountData, AccountId, AccountInfo, Block, DigestItem, ExtrinsicData,
     GenericExtrinsic, Header, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
@@ -8,19 +9,18 @@ export type HashType = Hash;
 export type Moment = UInt64;
 export type NonceType = UInt32;
 export type ExtrinsicIndexType = UInt32;
-export type AmountType = UInt64;
+export type AmountType = Balance;
 export type SignedTransactionType = SignedTransaction<HashType, AmountType, NonceType, SignatureType>;
 export type BlockNumber = CompactInt;
 export type AccountIdType = AccountId;
 export type SignatureType = Signature;
 export type DigestItemType = DigestItem;
-export type Balance = UInt64;
+export type Balance = UInt128;
 export type HeaderType = Header<BlockNumber, HashType>;
 export type BlockType = Block<HeaderType, UncheckedExtrinsic>;
 export type Inherent = UncheckedExtrinsic;
 export type ExtrinsicDataType = ExtrinsicData<ExtrinsicIndexType, ByteArray>;
 export type Multiplier = UInt64;
-export type ByteFee = Balance;
 export type Weight = UInt64;
 export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceType, SignatureType>;
 export type AccountDataType = AccountData<Balance>;
@@ -124,6 +124,6 @@ export class BalancesConfig {
      * @description Existential deposit
      */
     static existentialDeposit(): Balance {
-        return BytesReader.decodeInto<Balance>([<u8>0xfd]);
+        return instantiate<Balance>(u128.fromU32(1000));
     }
 }
