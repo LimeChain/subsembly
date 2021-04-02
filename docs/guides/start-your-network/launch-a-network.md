@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Before we generate our keys and edit the chain spec files, we need are going to launch a network of two nodes: **Alice** and **Bob**.
+We are going to launch the 2 validator nodes of the network - **Alice** and **Bob**.
 
 ## Alice Starts the Node
 
@@ -130,7 +130,9 @@ You can also connect this node to PolkadotJs interface. To do that, you will nee
 
 ### Insert Keys
 
-After we launched the nodes and they are successfully connected, we insert Aura keys to start the block production. First, we insert keys for **Alice**:
+After we launched the nodes and they are successfully connected, we have to insert their respective Aura keys to start the block production.
+**Important**
+The params that you are providing in the curl request is the mnemonic of the generated key in step 1. First, we insert the keys for **Alice**:
 
 ```text
 curl --location --request POST '0.0.0.0:9933' \
@@ -142,8 +144,10 @@ curl --location --request POST '0.0.0.0:9933' \
     "id": 1
 }'
 ```
+Keep in mind that your params will be different, since the generated mnemonic/pub key tuple will be different from this one!
+The first part of the "params" is the mnemonic and the last parameter is the public key both derived the subkey generation.
 
-Then, for **Bob**:
+We do the same for **Bob**:
 
 ```text
 curl --location --request POST '0.0.0.0:9933' \
@@ -174,4 +178,4 @@ Apr 02 10:24:30.073  INFO 🔖 Pre-sealed block for proposal at 1. Hash now 0x23
 Apr 02 10:24:30.074  INFO ✨ Imported #1 (0x2322…d2df)    
 Apr 02 10:24:30.133  INFO 💤 Idle (0 peers), best: #1 (0x2322…d2df), finalized #0 (0xe3c0…1d52), ⬇ 0 ⬆ 0
 ```
-
+If you inserted the keys for both nodes correctly, you should see blocks beeing produced every 5 seconds.
