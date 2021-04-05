@@ -1,7 +1,8 @@
-import { BytesReader, UInt128, UInt32 } from 'as-scale-codec';
+import { u128 } from 'as-bignum';
+import { UInt128, UInt32 } from 'as-scale-codec';
 import { DispatchClass, DispatchInfo, Pays, PostDispatchInfo, RuntimeDispatchInfo, WeightToFeeCoefficient, WeightToFeePolynomial } from 'subsembly-core';
 import { StorageEntry } from '../../frame';
-import { AccountIdType, Balance, ByteFee, Multiplier, SystemConfig, UncheckedExtrinsic, Weight } from '../../runtime/runtime';
+import { AccountIdType, Balance, Multiplier, SystemConfig, UncheckedExtrinsic, Weight } from '../../runtime/runtime';
 import { Payment } from './payment';
 
 /**
@@ -18,8 +19,8 @@ export namespace TransactionPaymentStorageEntries {
     /**
      * @description Fee for each byte
      */
-    export function TransactionByteFee(): StorageEntry<ByteFee> {
-        return new StorageEntry<ByteFee>("TransactionPayment", "ByteFee");
+    export function TransactionByteFee(): StorageEntry<Balance> {
+        return new StorageEntry<Balance>("TransactionPayment", "ByteFee");
     }
 }
 
@@ -75,20 +76,18 @@ export class TransactionPayment {
      */
     static _computeFeeRaw(len: UInt32, weight: Weight, tip: Balance, paysFee: Pays): Balance {
         if (paysFee == Pays.Yes) {
-            let length: Balance = BytesReader.decodeInto<Balance>(len.toU8a());
-            let perByte: ByteFee = TransactionPaymentStorageEntries.TransactionByteFee().get();
-
-            
-            if (perByte.unwrap() == 0) {
-                perByte = instantiate<ByteFee>(1);
+            let length: Balance = instantiate<Balance>(u128.fromU32(len.unwrap()));
+            let perByte: Balance = TransactionPaymentStorageEntries.TransactionByteFee().get();
+            if (perByte.unwrap() == u128.Zero) {
+                perByte = instantiate<Balance>(u128.One);
             }
 
             // length fee. not adjusted
-            let fixedLenFee = length.unwrap() * perByte.unwrap() / 10;
+            let fixedLenFee = length.unwrap() * perByte.unwrap();
 
             // the adjustable part of the fee
             let unadjustedWeightFee = this._weightToFee(weight);
-            let multiplier = BytesReader.decodeInto<Balance>(TransactionPaymentStorageEntries.NextFeeMultiplier().get().toU8a());
+            let multiplier = instantiate<Balance>(u128.fromU64(TransactionPaymentStorageEntries.NextFeeMultiplier().get().unwrap()));
 
             // final adjusted part of the fee
             const adjustedWeightFee = multiplier.unwrap() * unadjustedWeightFee.unwrap();   
@@ -135,8 +134,8 @@ export class TransactionPayment {
      * @param len 
      */
     static _queryInfo(ext: UncheckedExtrinsic, len: UInt32): RuntimeDispatchInfo<UInt128, Weight> {
-        const dispatchInfo = new DispatchInfo<Weight>(instantiate<Weight>(1), Pays.Yes, DispatchClass.Normal);
-        const _partialFee = this._computeFee(len, dispatchInfo, instantiate<Balance>(0));
-        return new RuntimeDispatchInfo<UInt128, Weight>(dispatchInfo.weight, dispatchInfo.klass, UInt128.One);
+        const dispatchInfo = new DispatchInfo<Weight>(instantiate<Weight>(ext.encodedLength()), Pays.Yes, DispatchClass.Normal);
+        const partialFee = this._computeFee(len, dispatchInfo, instantiate<Balance>(u128.Zero));
+        return new RuntimeDispatchInfo<UInt128, Weight>(dispatchInfo.weight, dispatchInfo.klass, partialFee);
     }
 }

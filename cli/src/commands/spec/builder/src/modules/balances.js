@@ -3,6 +3,7 @@ const { Keyring } = require('@polkadot/api');
 const { u8aToHex } = require('@polkadot/util');
 const Utils = require('../utils');
 const { TypeRegistry } = require('@polkadot/types');
+const System = require('./system');
 
 class Balances {
     /**
@@ -26,11 +27,13 @@ class Balances {
         const typeReg = new TypeRegistry();
         balancesArray.forEach(balanceArray => {
             validateIsArray(balanceArray);
-            
             const keyringInstance = keyring.addFromAddress(balanceArray[0]);
             const key = Utils.getHashKey(this.MODULE_PREFIX, this.MODULE_KEY, keyringInstance.publicKey);
-            const value = accDataToHex(typeReg.createType("U64", balanceArray[1].toString()).toArray('le'));
-            rawBalances[key] = value;
+            const systemKey = Utils.getHashKey(System.MODULE_PREFIX, System.MODULE_KEY, keyringInstance.publicKey);
+            const accData = accDataToHex(typeReg.createType("U128", balanceArray[1].toString()).toU8a());
+            const accInfo = System.getAccountInfo(accData);
+            rawBalances[key] = accData;
+            rawBalances[systemKey] = accInfo;
         });
         return rawBalances;
     }

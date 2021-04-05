@@ -18,9 +18,9 @@ class DispatcherHelpers {
      */
     static _getImports(pallets) {
         const palletNames = pallets.members.map(([name, _value]) => name);
-        const scaleCodecImports = importer('as-scale-codec', ['BytesReader']).toString();
+        const scaleCodecImports = importer('as-scale-codec', ['BytesReader', 'ScaleString']).toString();
         const palletImports = importer('../pallets', palletNames.filter(pallet => pallet !== 'System')).toString();
-        const runtimeImports = importer('../runtime', ['Balance', 'Moment']).toString();
+        const runtimeImports = importer('../runtime', ['Balance', 'Moment', 'UncheckedExtrinsic']).toString();
         const subsemblyCoreImports = importer('subsembly-core', ["AccountId", "Call", "ResponseCodes"]).toString();
 
         return [scaleCodecImports, palletImports, runtimeImports, subsemblyCoreImports].join('\n');
@@ -31,7 +31,9 @@ class DispatcherHelpers {
      * @param call 
      */
     static _generateCallBody(call) {
-        return bytesReader('call.args', 0, call.args, this.indentLevel + 5).toString();
+        const transfer = call.name === 'transfer' ? `const source = ext.signature.signer` : '';
+        const body = bytesReader('ext.method.args', 0, call.args, this.indentLevel + 5).toString();
+        return [transfer, body].join('\n');
     }
 
     /**
@@ -65,15 +67,22 @@ class DispatcherHelpers {
      * @param {*} method 
      */
     static _getReturnStatement(module, method) {
-        const callArgs = method.args.map(arg => arg.name);
+        let methodName = method.name;
+        let callArgs = [];
+        if(method.name === 'transfer') {
+            methodName = '_applyTransfer';
+            callArgs.push('source');
+        }
+        callArgs = callArgs.concat(method.args.map(arg => arg.name));
+
         switch(method.type) {
             case 'void':
-                const methodCall = call(module.replace("Call", ""), method.name, callArgs, this.indentLevel + 5);
+                const methodCall = call(module.replace("Call", ""), methodName, callArgs, this.indentLevel + 5);
                 return methodCall.toString().concat("\n", returnType('ResponseCodes.SUCCESS;', this.indentLevel + 5).toString());
             case 'Vec<u8>':
-                return returnType(call(module.replace("Call", ""), method.name, callArgs), this.indentLevel + 5).toString();
+                return returnType(call(module.replace("Call", ""), methodName, callArgs), this.indentLevel + 5).toString();
             default:
-                return returnType(call(module.replace("Call", ""), `${method.name}().toU8a`, callArgs), this.indentLevel + 5).toString();
+                return returnType(call(module.replace("Call", ""), `${methodName}().toU8a`, callArgs), this.indentLevel + 5).toString();
         }
     }
 
@@ -88,9 +97,8 @@ class DispatcherHelpers {
             const body = this._generateCallBody(method);
             members.push([`${module}Calls.${method.name}`, body + "\n" + this._getReturnStatement(module, method)]);
         })
-        return switchCase("call.callIndex[1]", members, this.indentLevel + 4, returnType('ResponseCodes.CALL_ERROR'));
+        return switchCase("ext.method.callIndex[1]", members, this.indentLevel + 4, returnType('ResponseCodes.CALL_ERROR'));
     }
-
     /**
      * Generate body of the dispatch() function
      * @param {} pallets enum of pallets
@@ -105,7 +113,7 @@ class DispatcherHelpers {
                 palletMembers.push([`Pallets.${name}`, this._generateSwitchCall(name, module.calls)]);
             }
         })
-        return switchCase("call.callIndex[0]", palletMembers, this.indentLevel + 2, returnType('ResponseCodes.CALL_ERROR')).toString();
+        return switchCase("ext.method.callIndex[0]", palletMembers, this.indentLevel + 2, returnType('ResponseCodes.CALL_ERROR')).toString();
     }
 
     /**
@@ -114,7 +122,7 @@ class DispatcherHelpers {
      * @param {*} modules metadata modules
      */
     static _generateNamespace(pallets, modules) {
-        const callParam = param('call', 'Call');
+        const callParam = param('ext', 'UncheckedExtrinsic');
         const dispatch = method('dispatch', [callParam], 'u8[]', this._generateBody(pallets, modules), true);
         return namespace('Dispatcher', [dispatch], true).toString()
     }
