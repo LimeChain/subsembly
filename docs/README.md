@@ -2,17 +2,6 @@
 description: Substrate runtimes in AssemblyScript
 ---
 
-<p align="center">
-  <img src="../images/logo.svg">
-</p>
-
-<div align="center">
-
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Smoke Tests](https://github.com/LimeChain/subsembly/workflows/Smoke%20Tests/badge.svg)
-![Subsembly CLI Tests](https://github.com/LimeChain/subsembly/workflows/Subsembly%20CLI%20tests/badge.svg)
-
-</div>
-
 # Introduction
 
 ## `Subsembly`

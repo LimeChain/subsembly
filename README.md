@@ -9,9 +9,7 @@
 
 </div>
 
-# Introduction
-
-## `Subsembly`
+## Subsembly
 
 ### What is it?
 
