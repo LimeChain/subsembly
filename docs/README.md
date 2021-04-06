@@ -14,10 +14,6 @@ description: Substrate runtimes in AssemblyScript
 
 **`Substrate`** runtimes can be designed in any other language than Rust, provided that the language targets **`WebAssembly`**. This is where **`AssemblyScript`** and **`Subsembly`** come into play.
 
-### Documentation
-
-For more info refer to our documentation: https://subsembly.gitbook.io/subsembly
-
 ### Funding and Support
 
 **`Subsembly`** is funded by [**Web3 Foundation**](https://web3.foundation) **Grants** and developed, maintained by [**LimeChain**](https://limechain.tech).
