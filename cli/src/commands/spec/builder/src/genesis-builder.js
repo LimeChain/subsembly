@@ -1,6 +1,7 @@
 const Balances = require("./modules/balances");
 const System = require("./modules/system");
 const Aura = require('./modules/aura');
+const Grandpa = require('./modules/grandpa');
 
 /**
  * Class for the genesis configuration
@@ -39,6 +40,10 @@ class GenesisBuilder {
         if(genesisConfig.genesis.runtime.aura){
             const rawAura = Aura.toRaw(genesisConfig.genesis.runtime.aura.authorities);
             Object.assign(rawGenesis.raw.top, rawAura);
+        }
+        if(genesisConfig.genesis.runtime.grandpa) {
+            const rawGrandpa = Grandpa.toRaw(genesisConfig.genesis.runtime.grandpa.authorities);
+            Object.assign(rawGenesis.raw.top, rawGrandpa);
         }
         rawGenesis['raw']["childrenDefault"] = {};
         return rawGenesis;

@@ -1,6 +1,9 @@
 const { xxhashAsU8a } = require("@polkadot/util-crypto");
 const { u8aToHex } = require('@polkadot/util');
-const { stringToU8a, __newString, __getArray } = require('./wasm-loader');
+const { stringToU8a, __newString, 
+    __newArray, __getArray, 
+    getAccountIdBytes, UInt8Array_ID,
+} = require('./wasm-loader');
 /**
  * @description Utility functions
  */
@@ -29,6 +32,27 @@ class Utils {
         const bytesPtr = stringToU8a(__newString(str), isScale);
         const bytes = __getArray(bytesPtr);
         return bytes;
+    }
+
+    /**
+     * Validates whether the provided parameter is array. Throws otherwise
+     * @param {*} arr 
+     */
+    static validateIsArray (arr, errorMessage) {
+        if (!Array.isArray(arr)) {
+            throw new Error(errorMessage);
+        }
+    }
+
+    /**
+     * Get scale encoded list of Aura authorities
+     *  @param authorities list of authorities
+     */
+    static getAuthoritiesBytes = (authorities) => {
+        const aPtr = __newArray(UInt8Array_ID, authorities);
+        const auths = getAccountIdBytes(aPtr);
+        const result = __getArray(auths);
+        return result;
     }
 }
 
