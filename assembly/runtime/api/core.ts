@@ -1,5 +1,5 @@
 import { Bool, BytesReader } from "as-scale-codec";
-import { Serialiser } from "subsembly-core";
+import { Log, Serialiser } from "subsembly-core";
 import { Executive } from '../../frame/executive';
 import { BlockType, HeaderType, RuntimeConfig } from '../runtime';
 
@@ -32,6 +32,7 @@ export function Core_execute_block(data: i32, len: i32): u64 {
  */
 
 export function Core_initialize_block(data: i32, len: i32): u64 {
+    Log.info('init block ya no');
     const input = Serialiser.deserialiseInput(data, len);
     const header = BytesReader.decodeInto<HeaderType>(input);
     Executive.initializeBlock(header);

@@ -1,4 +1,5 @@
-import { Serialiser } from 'subsembly-core';
+import { ByteArray } from 'as-scale-codec';
+import { Log, Serialiser, Storage, Utils } from 'subsembly-core';
 
 
 /**
@@ -25,5 +26,9 @@ export function GrandpaApi_grandpa_forced_change(data: i32, len: i32): u64 {
  * @param len i32 length (in bytes) of the arguments passed
  */
 export function GrandpaApi_grandpa_authorities(data: i32, len: i32): u64 {
-    return Serialiser.serialiseResult([]);
+    const grandpaKey: string = ":grandpa_authorities";
+    Log.info("calling grandpa");
+    const entry = Storage.get(Utils.stringsToBytes([grandpaKey], false));
+    const auths =  entry.isSome() ? (<ByteArray>entry.unwrap()).unwrap() : [];
+    return Serialiser.serialiseResult(auths.slice(1));
 }

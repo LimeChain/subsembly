@@ -1,8 +1,9 @@
 import { BytesReader, CompactInt, UInt32 } from "as-scale-codec";
-import { Serialiser } from "subsembly-core";
+import { Log, Serialiser } from "subsembly-core";
 import { Executive, SystemStorageEntries } from "../../frame";
 import { Metadata } from "../../generated/metadata";
 import { TransactionPayment } from "../../pallets";
+import { SessionKeys } from "../../pallets/session/session-keys";
 import { AccountIdType, UncheckedExtrinsic } from "../runtime";
 
 /**
@@ -20,7 +21,11 @@ export function BabeApi_configuration(data: i32, len: i32): u64 {
  * @param len i32 length (in bytes) of the arguments passed
  */
 export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
-    return Serialiser.serialiseResult([]);
+    Log.info("generate session keys");
+    let input = Serialiser.deserialiseInput(data, len);
+    const keys = SessionKeys.generate(input);
+    Log.info("keys: " + keys.toString());
+    return Serialiser.serialiseResult(keys);
 }
 
 /**
@@ -30,6 +35,7 @@ export function SessionKeys_generate_session_keys(data: i32, len: i32): u64 {
  * @param len i32 length (in bytes) of the arguments passed
  */
 export function TaggedTransactionQueue_validate_transaction(data: i32, len: i32): u64 {
+    Log.info('called to validate');
     let input = Serialiser.deserialiseInput(data, len);
     const uxt = BytesReader.decodeInto<UncheckedExtrinsic>(input);
     const result = Executive.validateTransaction(uxt);
@@ -51,6 +57,7 @@ export function OffchainWorkerApi_offchain_worker(data: i32, len: i32): u64 {
  * @param len i32 length (in bytes) of the arguments passed
  */
 export function Metadata_metadata(data: i32, len: i32): u64 {
+    Log.info("called meta");
     const encodedLen = new CompactInt(Metadata.metadata().length);
     return Serialiser.serialiseResult(encodedLen.toU8a().concat(Metadata.metadata()));
 }

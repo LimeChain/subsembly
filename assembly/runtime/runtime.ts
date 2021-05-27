@@ -25,6 +25,15 @@ export type Weight = UInt64;
 export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceType, SignatureType>;
 export type AccountDataType = AccountData<Balance>;
 export type AccountInfoType = AccountInfo<NonceType, AccountDataType>;
+
+/**
+ * Session Types
+ */
+
+/// Simple index type with which we can count sessions.
+export type SessionIndex = UInt32;
+export type ValidatorId = AccountId;
+
 /**
  * Note: Originally Events are stored as a vector of RawEvents,
  * since we don't have support for vector of Codec types (i.e Codec[]),
@@ -42,7 +51,7 @@ export class RuntimeConfig {
         const SPEC_NAME: string = "node-template";
         const IMPL_NAME: string = "AssemblyScript"
         const AUTHORING_VERSION: u32 = 1;
-        const SPEC_VERSION: u32 = 1;
+        const SPEC_VERSION: u32 = 100;
         const IMPL_VERSION: u32 = 1;
 
         const APIS_VEC: SupportedAPIs = new SupportedAPIs();
@@ -126,4 +135,8 @@ export class BalancesConfig {
     static existentialDeposit(): Balance {
         return instantiate<Balance>(u128.fromU32(1000));
     }
+}
+
+export class SessionConfig {
+    static keyTypeIds: string[] = ['aura', 'gran'];
 }

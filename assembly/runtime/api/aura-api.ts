@@ -1,4 +1,4 @@
-import { Serialiser } from "subsembly-core";
+import { Log, Serialiser } from "subsembly-core";
 import { Aura } from "../../pallets";
 
 /**
@@ -11,6 +11,7 @@ import { Aura } from "../../pallets";
  * @param len - i32 length (in bytes) of the arguments passed
  */
 export function AuraApi_slot_duration(data: i32, len: i32): u64 {
+
     return Serialiser.serialiseResult(Aura._getSlotDuration().toU8a());
 }
 
@@ -20,5 +21,6 @@ export function AuraApi_slot_duration(data: i32, len: i32): u64 {
  * @param len - i32 length (in bytes) of the arguments passed
  */
 export function AuraApi_authorities(data: i32, len: i32): u64 {
+    Log.info("aura authhs");
     return Serialiser.serialiseResult(Aura._getAuthorities());
 }

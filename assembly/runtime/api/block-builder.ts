@@ -1,5 +1,5 @@
 import { Bool, ByteArray, BytesReader } from 'as-scale-codec';
-import { InherentData, Serialiser } from 'subsembly-core';
+import { InherentData, Log, Serialiser } from 'subsembly-core';
 import { Executive } from '../../frame/executive';
 import { UncheckedExtrinsic } from '../runtime';
 
@@ -13,6 +13,7 @@ import { UncheckedExtrinsic } from '../runtime';
  * @param len - i32 length (in bytes) of the arguments passed
  */
 export function BlockBuilder_apply_extrinsic(data: i32, len: i32): u64 {
+    Log.info("apply ext");
     const input = Serialiser.deserialiseInput(data, len);
     const ext = BytesReader.decodeInto<UncheckedExtrinsic>(input);
     const result = Executive.applyExtrinsic(ext);
@@ -26,6 +27,7 @@ export function BlockBuilder_apply_extrinsic(data: i32, len: i32): u64 {
  */
 
 export function BlockBuilder_inherent_extrinsics(data: i32, len: i32): u64 {
+    Log.info("inherents");
     const input = Serialiser.deserialiseInput(data, len);
     const inherent = BytesReader.decodeInto<InherentData<ByteArray>>(input);
     const inherents = Executive.createExtrinsics(inherent);
