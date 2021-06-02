@@ -29,7 +29,7 @@ describe('Build spec tests', () => {
     })
 
     it('correctly converts customSpec without Grandpa authorities', async function() {
-        await Utils.spec('./test/json-files/customSpec-noGrandpa.json', './test/actual-raw-files/customSpecRaw-noGrandpa.json', './test/utils/wasm-exmpl');
+        await Utils.spec('./test/json-files/customspec-noGrandpa.json', './test/actual-raw-files/customSpecRaw-noGrandpa.json', './test/utils/wasm-exmpl');
         
         assert.isTrue(fs.existsSync('./test/actual-raw-files/customSpecRaw-noGrandpa.json'), 'file does not exist');
         
