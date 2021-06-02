@@ -24,8 +24,6 @@ class SpecBuilder{
      * @param {*} wasmPath path to wasm-subsembly
      */
     static toRaw(specPath, rawSpecPath, wasmPath) {
-        console.log(__dirname);
-        console.log(specPath);
         if(!fs.existsSync(specPath)){
             throw new Error(`Spec file doesn't exist at the provided path: ${specPath}`);
         };
