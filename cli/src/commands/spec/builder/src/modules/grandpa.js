@@ -23,6 +23,8 @@ class Grandpa {
         }
         // boolean byte indicating if authorities are present
         let rawAuthorities = "0x01";
+        const authsLen = typeReg.createType('Compact<U64>', authorities.length);
+        rawAuthorities = rawAuthorities.concat(hexStripPrefix(u8aToHex(authsLen.toU8a())))
         const keyring = new Keyring({ type: 'ed25519' });
 
         authorities.forEach(([accountId, weight]) => {
