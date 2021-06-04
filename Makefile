@@ -18,5 +18,5 @@ run-node:
 ifdef help
 	@docker run -it limechain/as-substrate:node-v1 --help
 else
-	@docker run -p ${RPC-PORT}:${RPC-PORT} -p ${WS-PORT}:${WS-PORT} -p ${PORT}:${PORT} -v "$(CURDIR)/${spec}":/raw-chain-spec.json -v /tmp/node01:/tmp/node01 limechain/as-substrate:grandpa --base-path /tmp/${NAME} --port ${PORT} --ws-port ${WS-PORT} --rpc-port ${RPC-PORT} --execution Wasm --offchain-worker Never --name=${NAME} ${OTHER}
+	@docker run -p ${RPC-PORT}:${RPC-PORT} -p ${WS-PORT}:${WS-PORT} -p ${PORT}:${PORT} -v "$(CURDIR)/${spec}":/raw-chain-spec.json -v /tmp:/tmp limechain/as-substrate:grandpa --base-path /tmp/${NAME} --port ${PORT} --ws-port ${WS-PORT} --rpc-port ${RPC-PORT} --execution Wasm --offchain-worker Never --validator --name=${NAME} ${OTHER}
 endif
