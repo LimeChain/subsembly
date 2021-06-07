@@ -31,7 +31,7 @@ jobs:
             WS-PORT=9944 \
             RPC-PORT=9933 \
             spec=raw-chain-spec.json  detached=1 \
-            && bash .github/workflows/scripts/insert-aura.sh \
+            && bash .github/workflows/scripts/insert-keys.sh \
             && docker stop node01
         - name: Sleep for 10 seconds
           uses: jakejarvis/wait-action@master
