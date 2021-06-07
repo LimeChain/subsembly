@@ -11,7 +11,7 @@ export type Weight = UInt64;
  */
 export function getAccountDataBytes(freeBalance: Uint8Array): u8[] {
   const balance = BytesReader.decodeInto<Balance>(Utils.toU8Array(freeBalance));
-  const accData = new AccountData<Balance>(balance, instantiate<Balance>(u128.Zero), instantiate<Balance>(u128.Zero), instantiate<Balance>(u128.Zero));
+  const accData = new AccountData<Balance>(balance, instantiate<Balance>(u128.Zero));
   return accData.toU8a();
 }
 

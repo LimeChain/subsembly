@@ -24,7 +24,15 @@ jobs:
         - name: Compile runtime
           run: bash .github/workflows/scripts/compile.sh
         - name: Run the node and insert Aura keys
-          run: make run-node-demo spec=./raw-chain-spec.json detached=1 && bash .github/workflows/scripts/insert-aura.sh
+          run: | 
+            make run-node \
+            NAME=node01 \
+            PORT=30333 \
+            WS-PORT=9944 \
+            RPC-PORT=9933 \
+            spec=raw-chain-spec.json  detached=1 \
+            && bash .github/workflows/scripts/insert-aura.sh \
+            && docker stop node01
         - name: Sleep for 10 seconds
           uses: jakejarvis/wait-action@master
           with:
@@ -32,7 +40,8 @@ jobs:
         - name: Get latest header
           id: check-header
           run: |
-            echo "::set-output name=tx-output::$(bash .github/workflows/scripts/get-latest-header.sh)\n" 
+            docker start node01 \
+            && echo "::set-output name=tx-output::$(bash .github/workflows/scripts/get-latest-header.sh)\n" 
         - name: |
             Check the latest header
             If it contains number":"0x0",
