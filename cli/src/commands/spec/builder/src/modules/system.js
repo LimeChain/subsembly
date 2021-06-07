@@ -1,4 +1,4 @@
-const { stringToHex, hexAddPrefix, hexStripPrefix } = require('@polkadot/util');
+const { stringToHex, hexStripPrefix } = require('@polkadot/util');
 
 class System {
 

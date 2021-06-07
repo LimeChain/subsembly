@@ -1,9 +1,5 @@
 const { u8aToHex } = require('@polkadot/util');
 const { Keyring } = require('@polkadot/api');
-const { 
-    __newArray, __getArray,
-    UInt8Array_ID, getAccountIdBytes 
-} = require('../wasm-loader');
 const Utils = require('../utils');
 
 class Aura {
@@ -22,7 +18,7 @@ class Aura {
      * @param authorities list of authorities
      */
     static toRaw(authorities){
-        validateIsArray(authorities);
+        Utils.validateIsArray(authorities, "Aura: Invalid or no Aura array provided");
 
         if (authorities.length === 0){
             throw new Error("Aura: Array of authorities is empty");
@@ -36,32 +32,11 @@ class Aura {
             const keyringInstance = keyring.addFromAddress(element);
             rawAuthorities = rawAuthorities.concat(Array.from(keyringInstance.publicKey));
         });
-        const auths = getAuthoritiesBytes(rawAuthorities);
+        const auths = Utils.getAuthoritiesBytes(rawAuthorities);
         return {
             [key]: u8aToHex(auths)
         }
     }
-}
-
-/**
- * Validates whether the provided parameter is array. Throws otherwise
- * @param {*} arr 
- */
-function validateIsArray (arr) {
-    if (!Array.isArray(arr)) {
-        throw new Error("Aura: Invalid or no authorities array provided");
-    }
-}
-
-/**
- * Get scale encoded list of Aura authorities
- *  @param authorities list of authorities
- */
-const getAuthoritiesBytes = (authorities) => {
-    const aPtr = __newArray(UInt8Array_ID, authorities);
-    const auths = getAccountIdBytes(aPtr);
-    const result = __getArray(auths);
-    return result;
 }
 
 module.exports = Aura;

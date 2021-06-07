@@ -8,23 +8,18 @@ jobs:
         - uses: actions/checkout@v2
         - name: Install jq and curl
           run: sudo apt-get update && sudo apt-get install -y jq curl make
-        - name: Cache node modules
-          uses: actions/cache@v2
-          env:
-            cache-name: cache-node-modules
-          with:
-            path: |
-              '**/node_modules'
-              '**/metadata/node_modules'
-            key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-build-${{ env.cache-name }}-
-              ${{ runner.os }}-build-
-              ${{ runner.os }}-
         - name: Compile runtime
           run: bash .github/workflows/scripts/compile.sh
         - name: Run the node and insert Aura keys
-          run: make run-node-demo spec=./raw-chain-spec.json detached=1 && bash .github/workflows/scripts/insert-aura.sh
+          run: | 
+            make run-node \
+            NAME=node01 \
+            PORT=30333 \
+            WS-PORT=9944 \
+            RPC-PORT=9933 \
+            spec=raw-chain-spec.json  detached=1 \
+            && bash .github/workflows/scripts/insert-keys.sh \
+            && docker restart node01
         - name: Sleep for 10 seconds
           uses: jakejarvis/wait-action@master
           with:
@@ -32,7 +27,8 @@ jobs:
         - name: Get latest header
           id: check-header
           run: |
-            echo "::set-output name=tx-output::$(bash .github/workflows/scripts/get-latest-header.sh)\n" 
+            docker start node01 \
+            && echo "::set-output name=tx-output::$(bash .github/workflows/scripts/get-latest-header.sh)\n" 
         - name: |
             Check the latest header
             If it contains number":"0x0",

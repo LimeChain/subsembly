@@ -20,43 +20,33 @@ class Balances {
      * @param balances array with accountId and balances
      */
     static toRaw(balancesArray) {
-        validateIsArray(balancesArray);
+        Utils.validateIsArray(balancesArray, "Balances: Invalid or no balances array provided");
 
         const rawBalances = {};
         const keyring = new Keyring({ type: 'sr25519' });
         const typeReg = new TypeRegistry();
         balancesArray.forEach(balanceArray => {
-            validateIsArray(balanceArray);
+            Utils.validateIsArray(balanceArray, "Balances: Invalid or no balances array provided");
             const keyringInstance = keyring.addFromAddress(balanceArray[0]);
             const key = Utils.getHashKey(this.MODULE_PREFIX, this.MODULE_KEY, keyringInstance.publicKey);
             const systemKey = Utils.getHashKey(System.MODULE_PREFIX, System.MODULE_KEY, keyringInstance.publicKey);
-            const accData = accDataToHex(typeReg.createType("U128", balanceArray[1].toString()).toU8a());
+            const accData = this.accDataToHex(typeReg.createType("U128", balanceArray[1].toString()).toU8a());
             const accInfo = System.getAccountInfo(accData);
             rawBalances[key] = accData;
             rawBalances[systemKey] = accInfo;
         });
         return rawBalances;
     }
-}
-
-/**
- * Validates whether the provided parameter is array. Throws otherwise
- * @param {*} arr 
- */
-function validateIsArray (arr) {
-    if (!Array.isArray(arr)) {
-        throw new Error("Balances: Invalid or no balances array provided");
+        /**
+     * 
+     * @param value encodes AccountData instance to hex
+     */
+    static accDataToHex = (value) => {
+        const accData = getAccountDataBytes(__newArray(UInt8Array_ID, value));
+        const res = __getArray(accData);
+        return u8aToHex(res);
     }
-}
- 
-/**
- * 
- * @param value encodes AccountData instance to hex
- */
-const accDataToHex = (value) => {
-    const accData = getAccountDataBytes(__newArray(UInt8Array_ID, value));
-    const res = __getArray(accData);
-    return u8aToHex(res);
+    
 }
 
 module.exports = Balances

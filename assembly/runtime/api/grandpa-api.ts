@@ -1,5 +1,5 @@
 import { Serialiser } from 'subsembly-core';
-
+import { Grandpa } from '../../pallets/grandpa/grandpa';
 
 /**
  * @description Attempt to extract a pending set-change signal from a digest.
@@ -25,5 +25,6 @@ export function GrandpaApi_grandpa_forced_change(data: i32, len: i32): u64 {
  * @param len i32 length (in bytes) of the arguments passed
  */
 export function GrandpaApi_grandpa_authorities(data: i32, len: i32): u64 {
-    return Serialiser.serialiseResult([]);
+    const authorities = Grandpa._authorities();
+    return Serialiser.serialiseResult(authorities.slice(1));
 }

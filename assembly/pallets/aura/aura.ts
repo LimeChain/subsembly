@@ -39,7 +39,6 @@ export class Aura {
 
     /**
      * @description Creates Aura inherent
-     * NOTE: Draft implementation
      * @param data Inherent data
      */
     static _createInherent(data: InherentData<ByteArray>): u8[] {

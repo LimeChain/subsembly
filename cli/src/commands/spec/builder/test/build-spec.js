@@ -28,6 +28,15 @@ describe('Build spec tests', () => {
         assert.deepEqual(actualRaw, MockedConstants.CUSTOM_SPEC_NO_AURA);
     })
 
+    it('correctly converts customSpec without Grandpa authorities', async function() {
+        await Utils.spec('./test/json-files/customspec-noGrandpa.json', './test/actual-raw-files/customSpecRaw-noGrandpa.json', './test/utils/wasm-exmpl');
+        
+        assert.isTrue(fs.existsSync('./test/actual-raw-files/customSpecRaw-noGrandpa.json'), 'file does not exist');
+        
+        const actualRaw = require('./actual-raw-files/customSpecRaw-noGrandpa.json');
+        assert.deepEqual(actualRaw, MockedConstants.CUSTOM_SPEC_NO_GRANDPA);
+    })
+
     it('correctly converts customSpec with system property only', async function() {
         await Utils.spec('./test/json-files/customSpec-code.json', './test/actual-raw-files/customSpecRaw-code.json', './test/utils/wasm-exmpl');
         

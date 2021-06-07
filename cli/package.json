@@ -4,7 +4,7 @@
   "description": "CLI tool for Subsembly",
   "main": "dist/src/index.js",
   "scripts": {
-    "test": "mocha 'test/**/*.js' --timeout 10000 && cd ./src/commands/spec/builder && npm run test",
+    "test": "npx mocha 'test/**/*.js' --timeout 10000 && cd ./src/commands/spec/builder && npm run test",
     "dev": "ts-node src/index.ts",
     "build-spec": "npm install --prefix ./src/commands/spec/builder && npm run asbuild --prefix ./src/commands/spec/builder",
     "copy-wasm": "mkdir -p ./dist/src/commands/spec/builder/build/ && cp ./src/commands/spec/builder/build/build-spec.wasm ./dist/src/commands/spec/builder/build/",

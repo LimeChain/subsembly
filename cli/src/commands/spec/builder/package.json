@@ -8,7 +8,7 @@
     "asbuild:optimized": "asc assembly/index.ts -b build/build-spec.wasm -t build/build-spec.wat --runtime full --optimize",
     "asbuild": "npm run asbuild:optimized"
   },
-  "author": "",
+  "author": "Dastanbek Samatov",
   "license": "ISC",
   "dependencies": {
     "@assemblyscript/loader": "^0.17.9",
