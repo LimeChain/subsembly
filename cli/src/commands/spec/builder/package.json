@@ -13,7 +13,7 @@
   "dependencies": {
     "@assemblyscript/loader": "^0.17.9",
     "as-scale-codec": "0.2.3",
-    "subsembly-core": "1.0.7"
+    "subsembly-core": "1.1.0"
   },
   "devDependencies": {
     "assemblyscript": "^0.17.9",

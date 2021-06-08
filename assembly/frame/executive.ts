@@ -147,6 +147,8 @@ export namespace Executive {
             const transactionVersion = RuntimeConfig.runtimeVersion().transactionVersion;
             const payload = utx.createPayload(blockHash, genesisHash, specVersion, transactionVersion);
 
+            Log.info("payload: " + Utils.toHexString(payload));
+
             if (!Crypto.verifySignature(<SignatureType>extSignature.signature, payload, from, SignatureTypes.sr25519)) {
                 Log.error("Validation error: Invalid signature");
                 return ResponseCodes.INVALID_SIGNATURE;

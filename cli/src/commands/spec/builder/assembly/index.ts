@@ -3,7 +3,6 @@ import { BytesReader, CompactInt, UInt128, UInt64 } from 'as-scale-codec';
 import { AccountData, AccountId, Utils } from 'subsembly-core';
 
 export type Balance = UInt128;
-export type Weight = UInt64;
 
 /**
  * @description Gets the AccountData converted to the bytes
@@ -11,7 +10,7 @@ export type Weight = UInt64;
  */
 export function getAccountDataBytes(freeBalance: Uint8Array): u8[] {
   const balance = BytesReader.decodeInto<Balance>(Utils.toU8Array(freeBalance));
-  const accData = new AccountData<Balance>(balance, instantiate<Balance>(u128.Zero));
+  const accData = new AccountData<Balance>(balance, instantiate<Balance>(u128.Zero), instantiate<Balance>(u128.Zero), instantiate<Balance>(u128.Zero));
   return accData.toU8a();
 }
 

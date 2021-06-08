@@ -26,7 +26,7 @@
   "dependencies": {
     "as-bignum": "^0.2.6",
     "as-scale-codec": "0.2.3",
-    "subsembly-core": "^1.0.8"
+    "subsembly-core": "^1.1.0"
   },
   "devDependencies": {
     "assemblyscript": "^0.17.1"
