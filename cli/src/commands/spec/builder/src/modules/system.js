@@ -33,7 +33,7 @@ class System {
     static getAccountInfo(hexAccountData) {
         // nonce and refCount are 0 for all accounts in genesis
         const nonce = "0x00000000";
-        const refCount = "0x00";
+        const refCount = "0x00000000";
         return nonce.concat(hexStripPrefix(refCount)).concat(hexStripPrefix(hexAccountData));
     }
 }

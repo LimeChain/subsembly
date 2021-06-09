@@ -24,7 +24,8 @@ export type Multiplier = UInt64;
 export type Weight = UInt64;
 export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceType, SignatureType>;
 export type AccountDataType = AccountData<Balance>;
-export type AccountInfoType = AccountInfo<NonceType, AccountDataType>;
+export type RefCount = UInt32;
+export type AccountInfoType = AccountInfo<NonceType, RefCount, AccountDataType>;
 /**
  * Note: Originally Events are stored as a vector of RawEvents,
  * since we don't have support for vector of Codec types (i.e Codec[]),
