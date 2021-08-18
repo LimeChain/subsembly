@@ -11,7 +11,7 @@ import {
     HashType, HeaderType, SystemConfig, UncheckedExtrinsic, VecEvent
 } from '../runtime/runtime';
 import { StorageEntry } from './models/storage-entry';
-import { SessionManager } from "../pallets";
+import {Hooks} from "./hooks/hooks";
 
 export enum SystemEvents {
     ExtrinsicSuccess = 0,
@@ -159,9 +159,9 @@ export class System {
         SystemStorageEntries.Digest().set(new ByteArray(digests));
         const blockNumber: BlockNumber = instantiate<BlockNumber>((<BlockNumber>header.getNumber()).unwrap() - 1);
         SystemStorageEntries.BlockHash().set(header.getParentHash(), blockNumber);
-        SessionManager._run();
         // Kill inspectable storage entries in state
         Storage.clear(Utils.getHashedKey("System", "Events", null));
+        Hooks._on_block_initialize();
     }
     /**
      * @description Removes temporary "environment" entries in storage and finalize block

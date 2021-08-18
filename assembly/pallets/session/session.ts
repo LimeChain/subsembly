@@ -1,6 +1,6 @@
-import {Log} from "subsembly-core";
-import {BlockNumber, SessionConfig, SessionIndex} from "../../runtime";
-import {StorageEntry, SystemStorageEntries} from "../../frame";
+import { BlockNumber, SessionConfig, SessionIndex } from "../../runtime";
+import { StorageEntry, SystemStorageEntries } from "../../frame";
+import { Hooks } from "../../frame/hooks/hooks";
 
 export namespace SessionStorageEntries {
     /**
@@ -41,16 +41,18 @@ export class SessionManager {
 
         const lastSessionBlock = Session.SessionPeriod * s.index.unwrap();
 
-        // if (currentBlock.unwrap() == lastSessionBlock) {
-        //     this._on_session_end();
-        // }
-
         if (currentBlock.unwrap() == lastSessionBlock + 1) {
+            //start new session
             s.start(instantiate<SessionIndex>(
                 s.index.unwrap() + 1
             ));
-            //this._on_session_start();
-            Log.info('New Session started');
+            Hooks._on_session_start();
+        }
+
+        if (currentBlock.unwrap() == lastSessionBlock) {
+            //save session to the session history
+
+            Hooks._on_session_end();
         }
         return s;
     }

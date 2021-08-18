@@ -1,5 +1,5 @@
 import { u128 } from "as-bignum";
-import { ByteArray, CompactInt, Hash, UInt128, UInt32, UInt64 } from "as-scale-codec";
+import {ByteArray, CompactInt, Hash, ScaleString, UInt128, UInt32, UInt64} from "as-scale-codec";
 import {
     AccountData, AccountId, AccountInfo, Block, DigestItem, ExtrinsicData,
     GenericExtrinsic, Header, RuntimeVersion, Signature, SignedTransaction, SupportedAPIs
@@ -27,6 +27,10 @@ export type AccountDataType = AccountData<Balance>;
 export type RefCount = UInt32;
 export type AccountInfoType = AccountInfo<NonceType, RefCount, AccountDataType>;
 
+
+/**
+ * Session types
+ */
 export type SessionIndex = UInt32;
 
 /**
