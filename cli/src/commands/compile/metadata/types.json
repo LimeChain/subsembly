@@ -39,5 +39,6 @@
     "PostDispatchInfo": "DispatchInfo",
     "WithdrawReasons": "WithdrawReasons",
     "ExistenceRequirement": "bool",
-    "VecEvent": "Vec<EventRecord>"
+    "VecEvent": "Vec<EventRecord>",
+    "SessionIndex": "SessionIndex"
 }

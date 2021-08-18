@@ -26,6 +26,9 @@ export type UncheckedExtrinsic = GenericExtrinsic<AccountIdType, Balance, NonceT
 export type AccountDataType = AccountData<Balance>;
 export type RefCount = UInt32;
 export type AccountInfoType = AccountInfo<NonceType, RefCount, AccountDataType>;
+
+export type SessionIndex = UInt32;
+
 /**
  * Note: Originally Events are stored as a vector of RawEvents,
  * since we don't have support for vector of Codec types (i.e Codec[]),
@@ -127,4 +130,14 @@ export class BalancesConfig {
     static existentialDeposit(): Balance {
         return instantiate<Balance>(u128.fromU32(1000));
     }
+}
+
+/**
+ * @description Constants used in Session module
+ */
+export class SessionConfig {
+    /**
+     * @description Session period represented in N blocks
+     */
+    static SessionPeriod: u32 = 5;
 }
